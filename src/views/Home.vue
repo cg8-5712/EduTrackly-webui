@@ -7,6 +7,9 @@
 
     <students v-if="!loading" />
 
+    <DatePicker mode="single" />
+
+    <DatePicker mode="range" />
   </div>
 </template>
 
@@ -17,6 +20,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import Homework from "@/components/homework/homework.vue";
 import students from "@/components/student/students.vue"
 import notification from "@/services/common/notification";
+import DatePicker from "@/components/common/calendar.vue";
 
 const { t } = useI18n();
 

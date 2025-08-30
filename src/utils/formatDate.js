@@ -19,3 +19,4 @@ export default function formatYYYYMMDDToDate(dateInt) {
     // 返回中文日期格式：8月30日 星期六
     return `${month + 1}月${day}日 星期${dayOfWeek}`;
 }
+
