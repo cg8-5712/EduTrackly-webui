@@ -1,3 +1,6 @@
+import axios from 'axios';
+import AuthService from '@/services/common/auth';
+
 class ApiPrefix {
     constructor() {
         this.api = axios.create({
