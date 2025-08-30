@@ -2,6 +2,7 @@
   <div class="home-page">
     <LoadingSpinner v-if="loading" />
     <h1 v-else>{{ t('welcome') }}</h1>
+
   </div>
 </template>
 
@@ -9,8 +10,12 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
+import notification from "@/services/common/notification.js";
 
 const { t } = useI18n();
+
+notification.notify('信息提示', 'success')
+
 
 // 一直显示 loading
 const loading = ref(true);
