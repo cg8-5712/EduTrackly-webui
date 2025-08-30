@@ -9,6 +9,7 @@ const app = createApp(App)
 
 app.component('LoadingSpinner', LoadingSpinner)
 
+
 app.use(router)
 app.use(i18n)
 
