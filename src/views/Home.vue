@@ -5,6 +5,8 @@
 
     <Homework v-if="!loading" />
 
+    <students v-if="!loading" />
+
   </div>
 </template>
 
@@ -13,7 +15,8 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import Homework from "@/components/homework/homework.vue";
-import notification from "@/services/common/notification.js";
+import students from "@/components/student/students.vue"
+import notification from "@/services/common/notification";
 
 const { t } = useI18n();
 

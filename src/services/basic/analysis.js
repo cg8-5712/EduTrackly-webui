@@ -1,13 +1,13 @@
 import ApiPrefix from '@/utils/ApiPrefix';
 
-class HomeworkService extends ApiPrefix {
+class AnalysisService extends ApiPrefix {
     constructor() {
         super();
     }
 
-    async getTodayHomework(cid) {
+    async getTodayAnalysis(cid) {
         try {
-            const data = await this.api.get(`/homework/get?cid=${cid}`);
+            const data = await this.api.get(`/analysis/basic?cid=${cid}`);
             console.log(data.data.message)
 
             if (data.data.code !== 0) {
@@ -21,4 +21,4 @@ class HomeworkService extends ApiPrefix {
     }
 }
 
-export default new HomeworkService();
+export default new AnalysisService();
