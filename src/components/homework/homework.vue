@@ -25,6 +25,8 @@ const props = defineProps({
   }
 })
 
+console.log(props.selectedDate)
+
 const homework = ref('')
 const loading = ref(false)
 const error = ref(null)
@@ -34,6 +36,7 @@ const fetchHomework = async () => {
   error.value = null
 
   try {
+    console.log(props.selectedDate)
     const response = props.selectedDate
         ? await HomeworkService.getHomeworkByDate(1, props.selectedDate)
         : await HomeworkService.getTodayHomework(1)
