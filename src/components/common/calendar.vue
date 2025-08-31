@@ -24,92 +24,95 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps({
   mode: {
     type: String,
     default: 'single', // 默认模式为 'single'
   }
-});
+})
 
-const currentDate = ref(new Date());
-const selectedDate = ref(null);
-const startDate = ref(null);
-const endDate = ref(null);
+// ✅ 新增 emit
+const emit = defineEmits(['select-date'])
+
+const currentDate = ref(new Date())
+const selectedDate = ref(null)
+const startDate = ref(null)
+const endDate = ref(null)
 
 const prevMonth = () => {
-  currentDate.value.setMonth(currentDate.value.getMonth() - 1);
-};
+  currentDate.value.setMonth(currentDate.value.getMonth() - 1)
+}
 
 const nextMonth = () => {
-  currentDate.value.setMonth(currentDate.value.getMonth() + 1);
-};
+  currentDate.value.setMonth(currentDate.value.getMonth() + 1)
+}
 
 const daysInMonth = computed(() => {
-  const year = currentDate.value.getFullYear();
-  const month = currentDate.value.getMonth();
-  const date = new Date(year, month, 1);
-  const days = [];
+  const year = currentDate.value.getFullYear()
+  const month = currentDate.value.getMonth()
+  const date = new Date(year, month, 1)
+  const days = []
   while (date.getMonth() === month) {
-    days.push(date.getDate());
-    date.setDate(date.getDate() + 1);
+    days.push(date.getDate())
+    date.setDate(date.getDate() + 1)
   }
-  return days;
-});
+  return days
+})
 
 const currentMonth = computed(() => {
   const monthNames = [
-    '1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'
-  ];
-  return `${currentDate.value.getFullYear()}年 ${monthNames[currentDate.value.getMonth()]}`;
-});
+    '1月', '2月', '3月', '4月', '5月', '6月',
+    '7月', '8月', '9月', '10月', '11月', '12月'
+  ]
+  return `${currentDate.value.getFullYear()}年 ${monthNames[currentDate.value.getMonth()]}`
+})
 
-// 切换模式（单一日期或时间段选择）
+// 切换模式
 watch(() => props.mode, (newMode) => {
   if (newMode === 'single') {
-    startDate.value = null;
-    endDate.value = null;
+    startDate.value = null
+    endDate.value = null
   } else if (newMode === 'range') {
-    selectedDate.value = null;
+    selectedDate.value = null
   }
-});
+})
 
 const selectDate = (day) => {
-  const selected = new Date(currentDate.value);
-  selected.setDate(day);
+  const selected = new Date(currentDate.value)
+  selected.setDate(day)
 
   if (props.mode === 'single') {
-    selectedDate.value = formatDate(selected);
+    selectedDate.value = formatDate(selected)
+    emit('select-date', selectedDate.value)   // ✅ 通知父组件
   } else if (props.mode === 'range') {
     if (!startDate.value) {
-      startDate.value = formatDate(selected);
+      startDate.value = formatDate(selected)
     } else if (!endDate.value) {
-      endDate.value = formatDate(selected);
+      endDate.value = formatDate(selected)
 
-      // 检查结束日期是否小于开始日期，如果是，则清空
-      console.log(new Date(endDate.value), startDate.value);
-      console.log(new Date(endDate.value) < startDate.value);
-
+      // 检查结束日期是否小于开始日期
       if (endDate.value < startDate.value) {
-        startDate.value = null;
-        endDate.value = null;
+        startDate.value = null
+        endDate.value = null
+      } else {
+        emit('select-date', { start: startDate.value, end: endDate.value }) // ✅ 抛给父组件
       }
     } else {
-      // 如果已经选择了开始和结束日期，再次点击则清除之前的选择
-      startDate.value = formatDate(selected);
-      endDate.value = null;
+      startDate.value = formatDate(selected)
+      endDate.value = null
     }
   }
-};
+}
 
 // 格式化日期为 YYYYMMDD
 const formatDate = (date) => {
-  const year = date.getFullYear();
-  const month = ('0' + (date.getMonth() + 1)).slice(-2); // 月份从0开始
-  const day = ('0' + date.getDate()).slice(-2);
-  return `${year}${month}${day}`;
-};
+  const year = date.getFullYear()
+  const month = ('0' + (date.getMonth() + 1)).slice(-2)
+  const day = ('0' + date.getDate()).slice(-2)
+  return `${year}${month}${day}`
+}
 </script>
 
 <style scoped>
