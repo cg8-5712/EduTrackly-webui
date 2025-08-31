@@ -183,15 +183,16 @@ const hideReason = () => {
 
 .stat {
   background-color: #2b2b3d;
-  padding: 12px;
+  padding: 16px;
   border-radius: 8px;
   color: #f0f0f0;
+  font-size: 1.8rem;
 }
 
 .section-title {
-  font-size: 1.125rem;
+  font-size: 2rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   color: #90caf9;
 }
 
@@ -201,13 +202,14 @@ const hideReason = () => {
 }
 
 .event-item {
-  padding: 10px;
+  padding: 16px;
   background-color: #2b2b3d;
   border-radius: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   display: flex;
   justify-content: space-between;
   color: #e0e0e0;
+  font-size: 1.6rem;
 }
 
 .student-name {
@@ -219,12 +221,12 @@ const hideReason = () => {
 .tooltip {
   position: absolute;
   left: 100%;
-  margin-left: 8px;
+  margin-left: 12px;
   background-color: rgba(30, 30, 30, 0.9);
   color: #fff;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 1.4rem;
   white-space: nowrap;
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }

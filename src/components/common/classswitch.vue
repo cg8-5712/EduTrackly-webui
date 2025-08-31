@@ -133,7 +133,7 @@ export default {
   background: transparent;
   border: none;
   color: #e0e0e0;
-  font-size: 1.1rem;
+  font-size: 1.6rem;
   padding: 0.5rem;
   outline: none;
   width: 100%;
@@ -188,7 +188,7 @@ select::-ms-expand {
   background: none;
   border: none;
   color: #9ed2ff;
-  font-size: 1.2rem;
+  font-size: 1.8rem;
   padding: 0.25rem 0.5rem;
   cursor: pointer;
   transition: color 0.2s;
@@ -204,7 +204,7 @@ select::-ms-expand {
   left: 0;
   margin-top: 0.5rem;
   color: #ff6b6b;
-  font-size: 0.9rem;
+  font-size: 1.4rem;
 }
 
 /* 滚动条样式 */

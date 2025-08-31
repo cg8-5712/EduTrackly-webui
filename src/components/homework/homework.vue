@@ -124,18 +124,19 @@ const homeworkLines = computed(() => {
 }
 
 .loading {
-  font-size: 1.25rem;
+  font-size: 2rem;
   color: #9ed2ff;
 }
 
 .error {
-  font-size: 1.25rem;
+  font-size: 2rem;
   color: #ff6b6b;
 }
 
 .homework-content {
-  font-size: 1.25rem;
+  font-size: 8rem;
   color: #e0e0e0;
   word-break: break-word;
+  line-height: 3;
 }
 </style>

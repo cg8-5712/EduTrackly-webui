@@ -189,7 +189,7 @@ html, body {
 }
 
 .current-date, .selected-date-top {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
 }
 
@@ -243,7 +243,7 @@ html, body {
 .calendar-btn {
   background: none;
   border: none;
-  font-size: 1.75rem;
+  font-size: 2.5rem;
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 4px;
@@ -263,7 +263,7 @@ html, body {
 }
 
 .current-time {
-  font-size: 2.5rem;
+  font-size: 3.5rem;
   font-weight: bold;
   color: #9ed2ff;
   font-family: monospace;
@@ -279,9 +279,9 @@ html, body {
   background: #3a3a3a;
   color: #9ed2ff;
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: 1rem 2rem;
   border-radius: 8px;
-  font-size: 1.2rem;
+  font-size: 1.8rem;
   cursor: pointer;
   transition: background-color 0.2s;
 }
@@ -318,13 +318,13 @@ html, body {
 }
 
 .homework-title {
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: 700;
   color: #9ed2ff;
 }
 
 .selected-date {
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: #7eb3db;
 }
 
@@ -333,7 +333,7 @@ html, body {
   text-align: center;
   background: #2d2d2d;
   color: #666;
-  font-size: 1rem;
+  font-size: 1.4rem;
   margin-top: auto;
 }
 
