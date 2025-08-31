@@ -1,24 +1,19 @@
 <template>
   <div class="calendar-container">
-    <!-- 显示当前月份的日历 -->
     <div class="calendar-header">
-      <button @click="prevMonth">&#8249;</button>
-      <span>{{ currentMonth }}</span>
-      <button @click="nextMonth">&#8250;</button>
+      <button @click="prevMonth" class="nav-btn">&#8249;</button>
+      <span class="month-text">{{ currentMonth }}</span>
+      <button @click="nextMonth" class="nav-btn">&#8250;</button>
     </div>
     <div class="calendar-days">
-      <div class="day" v-for="(day, index) in daysInMonth" :key="index" @click="selectDate(day)">
+      <div 
+        v-for="(day, index) in daysInMonth" 
+        :key="index" 
+        @click="selectDate(day)"
+        :class="['day', { 'selected': isSelected(day) }]"
+      >
         {{ day }}
       </div>
-    </div>
-
-    <!-- 显示选择的日期 -->
-    <div v-if="mode === 'single'">
-      <p>选择的日期: {{ selectedDate ? selectedDate : '无' }}</p>
-    </div>
-    <div v-if="mode === 'range'">
-      <p>开始日期: {{ startDate ? startDate : '无' }}</p>
-      <p>结束日期: {{ endDate ? endDate : '无' }}</p>
     </div>
   </div>
 </template>
@@ -113,56 +108,76 @@ const formatDate = (date) => {
   const day = ('0' + date.getDate()).slice(-2)
   return `${year}${month}${day}`
 }
+
+// 添加判断选中日期的方法
+const isSelected = (day) => {
+  const date = new Date(currentDate.value)
+  date.setDate(day)
+  return selectedDate.value === formatDate(date)
+}
 </script>
 
 <style scoped>
 .calendar-container {
-  max-width: 280px;
-  margin: auto;
-  padding: 10px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
+  width: 280px;
+  padding: 1rem;
+  background-color: #2d2d2d;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .calendar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  color: #9ed2ff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.2s;
+}
+
+.nav-btn:hover {
+  color: #7eb3db;
+}
+
+.month-text {
+  color: #9ed2ff;
+  font-size: 1.2rem;
+  font-weight: 500;
 }
 
 .calendar-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
-  margin-top: 10px;
+  gap: 0.5rem;
 }
 
 .day {
-  padding: 10px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  color: #e0e0e0;
   cursor: pointer;
-  border-radius: 50%;
-  background-color: #f0f0f0;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-size: 1.1rem;
 }
 
 .day:hover {
-  background-color: #ddd;
+  background-color: #3d3d3d;
 }
 
-p {
-  margin: 5px 0;
-  text-align: center;
-}
-
-.tooltip {
-  position: absolute;
-  top: 20px;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 5px;
-  border-radius: 4px;
-  font-size: 12px;
+.day.selected {
+  background-color: #9ed2ff;
+  color: #2d2d2d;
+  font-weight: 500;
 }
 </style>
