@@ -1,17 +1,18 @@
 <template>
-  <div class="p-4">
+  <div class="p-4 dark-theme">
     <!-- 加载中 -->
     <div v-if="loading" class="flex justify-center items-center h-40">
       <LoadingSpinner />
     </div>
 
     <!-- 错误提示 -->
-    <div v-else-if="error" class="text-red-500">
+    <div v-else-if="error" class="text-red-400 text-center">
       {{ error }}
     </div>
 
     <!-- 展示出勤数据 -->
-    <div v-else-if="attendance.class_name" class="space-y-4">
+    <div v-else-if="attendance.class_name" class="space-y-6">
+      <!-- 出勤统计 -->
       <div class="attendance-stats">
         <div class="stat">
           <span class="font-bold">应到：</span>{{ attendance.expected_attend }}人
@@ -23,7 +24,7 @@
 
       <!-- 请假名单 -->
       <div v-if="hasAbsentStudents" class="attendance-details">
-        <h3 class="text-lg font-semibold">请假名单：</h3>
+        <h3 class="section-title">请假名单</h3>
         <ul>
           <li v-for="(event, index) in absentStudents"
               :key="index"
@@ -42,7 +43,7 @@
 
       <!-- 临时参加名单 -->
       <div v-if="tempStudents.length > 0" class="attendance-details">
-        <h3 class="text-lg font-semibold">临时参加名单：</h3>
+        <h3 class="section-title">临时参加名单</h3>
         <ul>
           <li v-for="(event, index) in tempStudents" :key="index" class="event-item">
             {{ event.student_name }}
@@ -52,7 +53,7 @@
     </div>
 
     <!-- 没有数据 -->
-    <div v-else class="text-gray-400">
+    <div v-else class="text-gray-400 text-center">
       暂无出勤信息
     </div>
   </div>
@@ -63,7 +64,6 @@ import { ref, computed, watch } from 'vue'
 import AttendanceService from '@/services/basic/analysis'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
-// 接收外部传入的日期 (YYYYMMDD)
 const props = defineProps({
   selectedDate: {
     type: String,
@@ -85,23 +85,18 @@ const error = ref(null)
 const showTooltip = ref(false)
 const currentEventId = ref(null)
 
-// 获取请假学生列表
-const absentStudents = computed(() => {
-  return attendance.value.event_list.filter(event =>
-      ['personal', 'official', 'sick'].includes(event.event_type)
-  )
-})
+const absentStudents = computed(() =>
+    attendance.value.event_list.filter(event =>
+        ['personal', 'official', 'sick'].includes(event.event_type)
+    )
+)
 
-// 获取临时参加学生列表
-const tempStudents = computed(() => {
-  return attendance.value.event_list.filter(event =>
-      event.event_type === 'temp'
-  )
-})
+const tempStudents = computed(() =>
+    attendance.value.event_list.filter(event => event.event_type === 'temp')
+)
 
 const hasAbsentStudents = computed(() => absentStudents.value.length > 0)
 
-// 请假类型转换
 const getEventTypeText = (type) => {
   const typeMap = {
     'personal': '事假',
@@ -111,7 +106,6 @@ const getEventTypeText = (type) => {
   return typeMap[type] || type
 }
 
-// 封装请求函数
 const fetchAttendance = async () => {
   loading.value = true
   try {
@@ -129,7 +123,6 @@ const fetchAttendance = async () => {
   }
 }
 
-// 监听 props.selectedDate 变化，首次挂载立即执行
 watch(() => props.selectedDate, async () => {
   await fetchAttendance()
 }, { immediate: true })
@@ -148,16 +141,31 @@ const hideReason = () => {
 </script>
 
 <style scoped>
+.dark-theme {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  min-height: 100%;
+  border-radius: 12px;
+}
+
 .attendance-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
 }
 
 .stat {
-  background-color: #f9f9f9;
+  background-color: #2b2b3d;
   padding: 12px;
   border-radius: 8px;
+  color: #f0f0f0;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #90caf9;
 }
 
 .attendance-details ul {
@@ -166,26 +174,31 @@ const hideReason = () => {
 }
 
 .event-item {
-  padding: 8px;
-  background-color: #f9f9f9;
+  padding: 10px;
+  background-color: #2b2b3d;
   border-radius: 8px;
   margin-bottom: 8px;
   display: flex;
   justify-content: space-between;
+  color: #e0e0e0;
 }
 
 .student-name {
   cursor: pointer;
-  color: #007bff;
+  color: #64b5f6;
+  position: relative;
 }
 
 .tooltip {
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.75);
-  color: white;
+  left: 100%;
+  margin-left: 8px;
+  background-color: rgba(30, 30, 30, 0.9);
+  color: #fff;
   padding: 4px 8px;
-  border-radius: 5px;
+  border-radius: 6px;
   font-size: 14px;
   white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 </style>

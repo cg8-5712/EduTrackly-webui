@@ -5,6 +5,21 @@ class AnalysisService extends ApiPrefix {
         super();
     }
 
+    async getTodayAnalysis(cid) {
+        try {
+            const data = await this.api.get(`/analysis/basic?cid=${cid}`);
+            console.log(data.data.message)
+
+            if (data.data.code !== 0) {
+                Error(data.data.message);
+            }
+            return data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     async getAnalysisByDate(cid, date) {
         try {
             const data = await this.api.get(`/analysis/basic?cid=${cid}&date=${date}`);

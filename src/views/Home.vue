@@ -100,7 +100,28 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 保留原有样式，添加新样式 */
+/* 基础样式重置 */
+html, body {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: #1a1a1a;
+  overflow: hidden;
+}
+
+.home-container {
+  height: 100vh;
+  width: 100%;
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* -------- 原有样式保持不变 -------- */
 .date-display {
   display: flex;
   flex-direction: column;
@@ -143,16 +164,6 @@ onMounted(() => {
   .current-date, .selected-date-top {
     font-size: 1.25rem;
   }
-}
-
-.home-container {
-  min-height: 100vh;
-  background-color: #1a1a1a;
-  color: #e0e0e0;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.5rem;
 }
 
 .top-bar {
@@ -205,10 +216,13 @@ onMounted(() => {
 }
 
 .main-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
   flex: 1;
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 1.5rem;
+  min-height: 0; /* 关键：允许内容收缩 */
+  padding: 1.5rem 0 1rem 0; /* 添加上边距 */
+  margin-top: 1rem; /* 增加与顶部的距离 */
 }
 
 .left-panel, .right-panel {
@@ -217,7 +231,8 @@ onMounted(() => {
   padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   overflow-y: auto;
-  max-height: calc(100vh - 140px);
+  overflow-x: hidden;
+  min-height: 0; /* 关键：允许内容收缩 */
 }
 
 .homework-header {
@@ -262,16 +277,8 @@ onMounted(() => {
     grid-template-columns: 1fr;
   }
 
-  .date-info, .current-time {
-    font-size: 1.25rem;
-  }
-
-  .homework-title {
-    font-size: 1.5rem;
-  }
-
-  .selected-date {
-    font-size: 1.25rem;
+  .left-panel, .right-panel {
+    max-height: 45vh;
   }
 }
 </style>
