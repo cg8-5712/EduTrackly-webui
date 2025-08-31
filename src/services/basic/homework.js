@@ -19,6 +19,21 @@ class HomeworkService extends ApiPrefix {
             throw error;
         }
     }
+
+    async getHomeworkByDate(cid, date) {
+        try {
+            const data = await this.api.get(`/homework/get?cid=${cid}&date=${date}`);
+            console.log(data.data.message)
+
+            if (data.data.code !== 0) {
+                Error(data.data.message);
+            }
+            return data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
 }
 
 export default new HomeworkService();
