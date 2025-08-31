@@ -28,6 +28,7 @@ class HomeworkService extends ApiPrefix {
             if (data.data.code !== 0) {
                 Error(data.data.message);
             }
+            console.log(data.data.data)
             return data;
         } catch (error) {
             console.error(error);
