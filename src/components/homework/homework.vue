@@ -1,75 +1,75 @@
+<!-- homework.vue -->
 <template>
-  <div class="p-4">
-    <!-- 加载中 -->
-    <div v-if="loading" class="flex justify-center items-center h-40">
-      <LoadingSpinner />
+  <div class="homework-container">
+    <!-- 作业内容展示 -->
+    <div v-if="loading" class="loading">
+      加载中...
     </div>
-
-    <!-- 出错提示 -->
-    <div v-else-if="error" class="text-red-500">
+    <div v-else-if="error" class="error">
       {{ error }}
     </div>
-
-    <!-- 正常展示作业 -->
-    <div v-else-if="homework" class="space-y-2">
-      <h2 class="text-xl font-semibold">
-        {{ homework.class_name }}
-
-        <!-- 判断是否是今天，如果不是今天，显示截止日期 -->
-        <span class="ml-2 text-gray-500 text-sm" v-if="!isToday(homework.due_date)">
-          截止 {{ formatYYYYMMDDToDate(homework.due_date) }}
-        </span>
-      </h2>
-
-      <!-- 显示作业内容 -->
-      <div class="homework-content" v-html="formattedContent"></div>
-    </div>
-
-    <!-- 没有数据 -->
-    <div v-else class="text-gray-400">
-      暂无作业信息
+    <div v-else class="homework-content">
+      {{ homework }}
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, watch } from 'vue'
 import HomeworkService from '@/services/basic/homework'
-import formatYYYYMMDDToDate from '@/utils/formatDate'
 
-const homework = ref(null)
-const loading = ref(true)
+const props = defineProps({
+  selectedDate: {
+    type: String,
+    default: null
+  }
+})
+
+const homework = ref('')
+const loading = ref(false)
 const error = ref(null)
-let formattedContent = ''
 
-// 判断日期是否是今天
-const isToday = (dueDate) => {
-  const today = new Date()
+const fetchHomework = async () => {
+  loading.value = true
+  error.value = null
 
-  // 将日期格式化为 'YYYY-MM-DD'，方便比较
-  const todayFormatted = today.toISOString().split('T')[0].replace(/-/g, '')
-  const dueDateFormatted = homework.value.due_date.toString()
-
-  console.log(todayFormatted, dueDateFormatted)
-  console.log(todayFormatted===dueDateFormatted)
-
-  return todayFormatted === dueDateFormatted
-}
-
-onMounted(async () => {
   try {
-    const res = await HomeworkService.getTodayHomework(1)
-    homework.value = res.data.data
+    const response = props.selectedDate
+        ? await HomeworkService.getHomeworkByDate(1, props.selectedDate)
+        : await HomeworkService.getTodayHomework(1)
 
-    // 格式化作业内容，处理换行符
-    formattedContent = computed(() => {
-      return homework.value.homework_content.replace(/\n/g, '<br>')
-    })
-
+    homework.value = response.data.data || '暂无作业'
   } catch (err) {
-    error.value = err.message || '失败'
+    error.value = err.message || '获取作业失败'
   } finally {
     loading.value = false
   }
-})
+}
+
+watch(() => props.selectedDate, () => {
+  fetchHomework()
+}, { immediate: true })
 </script>
+
+<style scoped>
+.homework-container {
+  font-size: 1.5rem;
+  line-height: 1.6;
+}
+
+.homework-content {
+  white-space: pre-wrap;
+  color: #e0e0e0;
+}
+
+.loading {
+  color: #9ed2ff;
+  text-align: center;
+  font-size: 1.25rem;
+}
+
+.error {
+  color: #ff6b6b;
+  text-align: center;
+}
+</style>

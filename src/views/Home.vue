@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted,computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import students from '@/components/student/students.vue'
 import Homework from '@/components/homework/homework.vue'
 import Calendar from '@/components/common/calendar.vue'
