@@ -11,7 +11,7 @@ class ClassService extends ApiPrefix {
   async getAllClasses() {
     try {
       // 第一次获取 total
-      const firstResp = await this.api.post("/class/list?order=asc", {
+      const firstResp = await this.api.get("/class/list?order=asc", {
         page: 1,
         size: 1,
       });
@@ -23,7 +23,7 @@ class ClassService extends ApiPrefix {
       const total = firstResp.data.pagination.total;
 
       // 再请求一次，拿到所有数据
-      const resp = await this.api.post("/class/list?order=asc", {
+      const resp = await this.api.get("/class/list?order=asc", {
         page: 1,
         size: total,
       });

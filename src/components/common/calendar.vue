@@ -136,19 +136,21 @@ const isSelected = (day) => {
 .nav-btn {
   background: none;
   border: none;
-  color: #9ed2ff;
+  color: #a8a8a8;
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0.5rem;
   transition: color 0.2s;
+  border-radius: 8px;
 }
 
 .nav-btn:hover {
-  color: #7eb3db;
+  color: #ffffff;
+  background-color: #3d3d3d;
 }
 
 .month-text {
-  color: #9ed2ff;
+  color: #e0e0e0;
   font-size: 1.2rem;
   font-weight: 500;
 }
@@ -176,8 +178,8 @@ const isSelected = (day) => {
 }
 
 .day.selected {
-  background-color: #9ed2ff;
-  color: #2d2d2d;
+  background-color: #808080;
+  color: #ffffff;
   font-weight: 500;
 }
 </style>

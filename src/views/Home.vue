@@ -16,6 +16,10 @@
           <Calendar mode="single" @select-date="onDateSelect" />
         </div>
       </div>
+
+      <!-- 替换原有班级选择为新组件 -->
+      <ClassSwitch v-model:cid="selectedCid" />
+
       <div class="controls">
         <div class="current-time">{{ currentTime }}</div>
         <button @click.stop="toggleFullscreen" class="fullscreen-btn">
@@ -28,7 +32,7 @@
     <div class="main-content">
       <!-- 左侧考勤信息 -->
       <div class="left-panel">
-        <students ref="studentsComponent" :selected-date="selectedDate" />
+        <students ref="studentsComponent" :selected-date="selectedDate" :selected-cid="selectedCid" />
       </div>
 
       <!-- 右侧作业信息 -->
@@ -37,7 +41,7 @@
           <h2 class="homework-title">作业内容</h2>
           <span class="selected-date">{{ selectedDateText }}</span>
         </div>
-        <Homework :selected-date="selectedDate" ref="homeworkComponent" />
+        <Homework :selected-date="selectedDate" :selected-cid="selectedCid" ref="homeworkComponent" />
       </div>
     </div>
 
@@ -48,10 +52,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import students from '@/components/student/students.vue'
 import Homework from '@/components/homework/homework.vue'
 import Calendar from '@/components/common/calendar.vue'
+import ClassSwitch from '@/components/common/classswitch.vue'
 import formatYYYYMMDDToDate from '@/utils/formatDate'
 
 const currentTime = ref('')
@@ -63,7 +68,10 @@ const studentsComponent = ref(null)
 const homeworkComponent = ref(null)
 const isFullscreen = ref(false)
 
-// 计算属性：格式化选中的日期
+// 班级相关
+const selectedCid = ref(null)
+
+// 计算属性
 const formattedSelectedDate = computed(() => {
   if (selectedDate.value) {
     return formatYYYYMMDDToDate(parseInt(selectedDate.value))
@@ -71,7 +79,6 @@ const formattedSelectedDate = computed(() => {
   return ''
 })
 
-// 计算属性：作业标题日期显示
 const selectedDateText = computed(() => {
   if (selectedDate.value && selectedDate.value !== todayDateInt.value) {
     return formattedSelectedDate.value + '作业'
@@ -79,6 +86,7 @@ const selectedDateText = computed(() => {
   return '今日作业'
 })
 
+// 更新时间
 const updateTime = () => {
   const now = new Date()
   const hours = String(now.getHours()).padStart(2, '0')
@@ -86,6 +94,7 @@ const updateTime = () => {
   currentTime.value = `${hours}:${minutes}`
 }
 
+// 更新日期
 const updateDate = () => {
   const now = new Date()
   const dateInt = parseInt(
@@ -97,11 +106,13 @@ const updateDate = () => {
   todayDate.value = formatYYYYMMDDToDate(dateInt)
 }
 
+// 日期选择
 const onDateSelect = (date) => {
   selectedDate.value = date
   showCalendar.value = false
 }
 
+// 切换全屏
 const toggleFullscreen = () => {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen()
@@ -112,14 +123,26 @@ const toggleFullscreen = () => {
   }
 }
 
+// 点击空白关闭日历
 const handleGlobalClick = (event) => {
-  // 如果点击的不是日历组件内的元素，则关闭日历
   if (showCalendar.value && !event.target.closest('.calendar-popup') && !event.target.closest('.calendar-btn')) {
     showCalendar.value = false
   }
 }
 
-// 监听全屏变化
+// 监听班级变化刷新学生和作业
+watch(selectedCid, (newCid) => {
+  if (!newCid) return
+  
+  const cid = Number(newCid)
+  if (studentsComponent.value?.fetchAttendance) {
+    studentsComponent.value.fetchAttendance()
+  }
+  if (homeworkComponent.value?.fetchHomework) {
+    homeworkComponent.value.fetchHomework()
+  }
+}, { immediate: true })
+
 onMounted(() => {
   updateDate()
   updateTime()

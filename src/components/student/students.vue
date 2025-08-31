@@ -68,6 +68,11 @@ const props = defineProps({
   selectedDate: {
     type: String,
     default: null
+  },
+  selectedCid: {
+    type: Number,
+    required: true,
+    default: 1
   }
 })
 
@@ -107,25 +112,47 @@ const getEventTypeText = (type) => {
 }
 
 const fetchAttendance = async () => {
+  if (!props.selectedCid) {
+    error.value = '请先选择班级'
+    loading.value = false
+    return
+  }
+
   loading.value = true
+  error.value = null
+  
   try {
     const res = props.selectedDate
-        ? await AttendanceService.getAnalysisByDate(1, props.selectedDate)
-        : await AttendanceService.getTodayAnalysis(1)
+        ? await AttendanceService.getAnalysisByDate(Number(props.selectedCid), props.selectedDate)
+        : await AttendanceService.getTodayAnalysis(Number(props.selectedCid))
 
-    if (res.data?.data) {
+    if (res.data?.code === 0 && res.data?.data) {
       attendance.value = res.data.data
+    } else {
+      throw new Error(res.data?.message || '获取数据失败')
     }
   } catch (err) {
-    error.value = err.message || '获取出勤信息失败'
+    console.error('获取出勤信息失败:', err)
+    error.value = '获取出勤信息失败'
+    attendance.value = {
+      class_name: '',
+      expected_attend: 0,
+      actual_attend: 0,
+      event_list: []
+    }
   } finally {
     loading.value = false
   }
 }
 
-watch(() => props.selectedDate, async () => {
-  await fetchAttendance()
-}, { immediate: true })
+// 同时监听日期和班级变化
+watch(
+  () => [props.selectedDate, props.selectedCid],
+  async () => {
+    await fetchAttendance()
+  },
+  { immediate: true }
+)
 
 const showReason = (event, index) => {
   if (['personal', 'official', 'sick'].includes(event.event_type)) {
