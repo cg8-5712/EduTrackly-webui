@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container">
+  <div class="home-container" @click="handleGlobalClick">
     <!-- 顶部栏 -->
     <div class="top-bar">
       <div class="date-info">
@@ -16,7 +16,12 @@
           <Calendar mode="single" @select-date="onDateSelect" />
         </div>
       </div>
-      <div class="current-time">{{ currentTime }}</div>
+      <div class="controls">
+        <div class="current-time">{{ currentTime }}</div>
+        <button @click.stop="toggleFullscreen" class="fullscreen-btn">
+          {{ isFullscreen ? '退出全屏' : '全屏' }}
+        </button>
+      </div>
     </div>
 
     <!-- 主要内容区域 -->
@@ -35,6 +40,10 @@
         <Homework :selected-date="selectedDate" ref="homeworkComponent" />
       </div>
     </div>
+
+    <footer v-if="!isFullscreen" class="footer">
+      <p>© 2024 Edutrackly. All rights reserved.</p>
+    </footer>
   </div>
 </template>
 
@@ -52,6 +61,7 @@ const showCalendar = ref(false)
 const selectedDate = ref(null)
 const studentsComponent = ref(null)
 const homeworkComponent = ref(null)
+const isFullscreen = ref(false)
 
 // 计算属性：格式化选中的日期
 const formattedSelectedDate = computed(() => {
@@ -92,10 +102,31 @@ const onDateSelect = (date) => {
   showCalendar.value = false
 }
 
+const toggleFullscreen = () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen()
+    isFullscreen.value = true
+  } else {
+    document.exitFullscreen()
+    isFullscreen.value = false
+  }
+}
+
+const handleGlobalClick = (event) => {
+  // 如果点击的不是日历组件内的元素，则关闭日历
+  if (showCalendar.value && !event.target.closest('.calendar-popup') && !event.target.closest('.calendar-btn')) {
+    showCalendar.value = false
+  }
+}
+
+// 监听全屏变化
 onMounted(() => {
   updateDate()
   updateTime()
   setInterval(updateTime, 60000)
+  document.addEventListener('fullscreenchange', () => {
+    isFullscreen.value = !!document.fullscreenElement
+  })
 })
 </script>
 
@@ -135,8 +166,8 @@ html, body {
 }
 
 .current-date, .selected-date-top {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 .selected-date-top {
@@ -209,10 +240,31 @@ html, body {
 }
 
 .current-time {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: bold;
   color: #9ed2ff;
   font-family: monospace;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.fullscreen-btn {
+  background: #3a3a3a;
+  color: #9ed2ff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.fullscreen-btn:hover {
+  background: #4a4a4a;
 }
 
 .main-content {
@@ -243,14 +295,23 @@ html, body {
 }
 
 .homework-title {
-  font-size: 2rem;
-  font-weight: 600;
+  font-size: 2.5rem;
+  font-weight: 700;
   color: #9ed2ff;
 }
 
 .selected-date {
-  font-size: 1.5rem;
+  font-size: 2rem;
   color: #7eb3db;
+}
+
+.footer {
+  padding: 1rem;
+  text-align: center;
+  background: #2d2d2d;
+  color: #666;
+  font-size: 1rem;
+  margin-top: auto;
 }
 
 /* 自定义滚动条样式 */
