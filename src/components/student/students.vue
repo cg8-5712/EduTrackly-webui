@@ -28,7 +28,9 @@
           <li v-for="(event, index) in absentStudents"
               :key="index"
               class="event-item">
-            <span class="student-name" @mouseover="showReason(event, index)" @mouseleave="hideReason">
+            <span class="student-name"
+                  @mouseover="showReason(event, index)"
+                  @mouseleave="hideReason">
               {{ event.student_name }}
               <span v-if="showTooltip && currentEventId === index" class="tooltip">
                 {{ getEventTypeText(event.event_type) }}
@@ -57,9 +59,17 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import AttendanceService from '@/services/basic/analysis'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+
+// 接收外部传入的日期 (YYYYMMDD)
+const props = defineProps({
+  selectedDate: {
+    type: String,
+    default: null
+  }
+})
 
 const attendance = ref({
   class_name: '',
@@ -101,9 +111,14 @@ const getEventTypeText = (type) => {
   return typeMap[type] || type
 }
 
-onMounted(async () => {
+// 封装请求函数
+const fetchAttendance = async () => {
+  loading.value = true
   try {
-    const res = await AttendanceService.getTodayAnalysis(1)
+    const res = props.selectedDate
+        ? await AttendanceService.getAnalysisByDate(1, props.selectedDate)
+        : await AttendanceService.getTodayAnalysis(1)
+
     if (res.data?.data) {
       attendance.value = res.data.data
     }
@@ -112,7 +127,12 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
-})
+}
+
+// 监听 props.selectedDate 变化，首次挂载立即执行
+watch(() => props.selectedDate, async () => {
+  await fetchAttendance()
+}, { immediate: true })
 
 const showReason = (event, index) => {
   if (['personal', 'official', 'sick'].includes(event.event_type)) {

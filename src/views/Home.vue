@@ -3,12 +3,15 @@
     <!-- 顶部栏 -->
     <div class="top-bar">
       <div class="date-info">
-        <span class="current-date">{{ formattedDate }}</span>
-        <!-- 日历组件按钮 -->
+        <div class="date-display">
+          <span class="current-date">今日：{{ todayDate }}</span>
+          <span v-if="selectedDate && selectedDate !== todayDateInt" class="selected-date-top">
+            选中：{{ formattedSelectedDate }}
+          </span>
+        </div>
         <button @click="showCalendar = !showCalendar" class="calendar-btn">
           📅
         </button>
-        <!-- 日历弹窗 -->
         <div v-if="showCalendar" class="calendar-popup">
           <Calendar mode="single" @select-date="onDateSelect" />
         </div>
@@ -20,7 +23,7 @@
     <div class="main-content">
       <!-- 左侧考勤信息 -->
       <div class="left-panel">
-        <students />
+        <students ref="studentsComponent" :selected-date="selectedDate" />
       </div>
 
       <!-- 右侧作业信息 -->
@@ -29,7 +32,7 @@
           <h2 class="homework-title">作业内容</h2>
           <span class="selected-date">{{ selectedDateText }}</span>
         </div>
-        <Homework :selected-date="selectedDate" />
+        <Homework :selected-date="selectedDate" ref="homeworkComponent" />
       </div>
     </div>
   </div>
@@ -43,14 +46,25 @@ import Calendar from '@/components/common/calendar.vue'
 import formatYYYYMMDDToDate from '@/utils/formatDate'
 
 const currentTime = ref('')
-const formattedDate = ref('')
+const todayDate = ref('')
+const todayDateInt = ref('')
 const showCalendar = ref(false)
 const selectedDate = ref(null)
+const studentsComponent = ref(null)
+const homeworkComponent = ref(null)
 
-// 计算显示的日期文本
-const selectedDateText = computed(() => {
+// 计算属性：格式化选中的日期
+const formattedSelectedDate = computed(() => {
   if (selectedDate.value) {
     return formatYYYYMMDDToDate(parseInt(selectedDate.value))
+  }
+  return ''
+})
+
+// 计算属性：作业标题日期显示
+const selectedDateText = computed(() => {
+  if (selectedDate.value && selectedDate.value !== todayDateInt.value) {
+    return formattedSelectedDate.value + '作业'
   }
   return '今日作业'
 })
@@ -69,7 +83,8 @@ const updateDate = () => {
       String(now.getMonth() + 1).padStart(2, '0') +
       String(now.getDate()).padStart(2, '0')
   )
-  formattedDate.value = formatYYYYMMDDToDate(dateInt)
+  todayDateInt.value = String(dateInt)
+  todayDate.value = formatYYYYMMDDToDate(dateInt)
 }
 
 const onDateSelect = (date) => {
@@ -85,6 +100,51 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 保留原有样式，添加新样式 */
+.date-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.date-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.current-date, .selected-date-top {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.selected-date-top {
+  color: #7eb3db;
+}
+
+.calendar-popup {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  z-index: 1000;
+  background: #2d2d2d;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .date-display {
+    flex-direction: row;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .current-date, .selected-date-top {
+    font-size: 1.25rem;
+  }
+}
+
 .home-container {
   min-height: 100vh;
   background-color: #1a1a1a;

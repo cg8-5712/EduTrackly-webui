@@ -8,7 +8,7 @@
       {{ error }}
     </div>
     <div v-else class="homework-content">
-      {{ homework }}
+      {{ homework.homework_content }}
     </div>
   </div>
 </template>
