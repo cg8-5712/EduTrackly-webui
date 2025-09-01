@@ -1,16 +1,20 @@
 <template>
   <div class="submit-homework">
     <h2>提交作业</h2>
-    <div class="subjects">
-      <label v-for="subject in subjects" :key="subject" class="subject-label">
-        {{ subject }}
+    <div class="subjects-grid">
+      <div
+          v-for="subject in subjects"
+          :key="subject"
+          class="subject-item"
+      >
+        <label>{{ subject }}</label>
         <textarea
-          v-model="homeworkContent[subject]"
-          @input="resizeTextarea($event)"
-          placeholder="请输入作业内容"
-          rows="1"
+            v-model="homeworkContent[subject]"
+            @input="resizeTextarea($event)"
+            placeholder="请输入作业内容"
+            rows="1"
         ></textarea>
-      </label>
+      </div>
     </div>
     <button @click="submitHomework">提交</button>
   </div>
@@ -19,6 +23,7 @@
 <script setup>
 import { reactive, watch } from 'vue';
 import HomeworkService from '@/services/basic/homework';
+import {formatDateToYYYYMMDD} from "@/utils/formatDate.js";
 
 const props = defineProps({
   cid: {
@@ -29,22 +34,17 @@ const props = defineProps({
 
 const subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '地理', '政治'];
 
-// 作业内容
 const homeworkContent = reactive({});
 function resetHomework() {
   subjects.forEach(sub => homeworkContent[sub] = '');
 }
-
-// 初始化作业内容
 resetHomework();
 
-// 当班级切换时，清空作业内容
 watch(() => props.cid, (newCid, oldCid) => {
-  console.log('班级切换', oldCid, '→', newCid);
   resetHomework();
 });
 
-const dueDate = Math.floor(Date.now() / 1000);
+const dueDate = formatDateToYYYYMMDD(new Date())
 
 function resizeTextarea(event) {
   const textarea = event.target;
@@ -56,9 +56,8 @@ async function submitHomework() {
   try {
     for (const subject of subjects) {
       if (!homeworkContent[subject].trim()) continue;
-
       const payload = {
-        cid: props.cid,  // 使用最新的班级ID
+        cid: props.cid,
         homework_content: `${subject}: ${homeworkContent[subject]}`,
         due_date: dueDate
       };
@@ -76,34 +75,76 @@ async function submitHomework() {
 
 <style scoped>
 .submit-homework {
-  max-width: 600px;
-  margin: auto;
+  width: 85%;
+  padding: 20px;
+  background-color: #1f1f2e; /* 深色背景 */
+  border-radius: 12px;
+  color: #f0f0f0; /* 字体颜色亮一点 */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  margin-top: 30px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 22px;
+
 }
 
-.subjects {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.submit-homework h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fff;
 }
 
-.subject-label {
+.subjects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.subject-item {
   display: flex;
   flex-direction: column;
+}
+
+.subject-item label {
+  margin-bottom: 5px;
   font-weight: bold;
 }
 
-textarea {
-  margin-top: 5px;
+.subject-item textarea {
   resize: none;
   overflow: hidden;
-  padding: 5px;
+  padding: 8px;
   font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  background-color: #2b2b3b; /* 深色输入框 */
+  color: #f0f0f0;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.subject-item textarea:focus {
+  box-shadow: 0 0 5px #4f91ff;
+  background-color: #3a3a50;
+}
+
+.subject-item textarea {
+  font-size: 20px; /* 文本区域的文字大小 */
 }
 
 button {
   margin-top: 20px;
-  padding: 10px 20px;
+  padding: 10px 25px;
   font-size: 16px;
   cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  background-color: #4f91ff;
+  color: #fff;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #3570d1;
 }
 </style>

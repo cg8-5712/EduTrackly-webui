@@ -148,13 +148,13 @@ defineExpose({ fetchStudents })
   padding: 16px;
   border-radius: 12px;
   background-color: #1e1e1e;
-  background-image: repeating-linear-gradient(
-    45deg,
-    rgba(255, 255, 255, 0.05),
-    rgba(255, 255, 255, 0.05) 4px,
-    transparent 4px,
-    transparent 8px
-  );
+  //background-image: repeating-linear-gradient(
+  //  45deg,
+  //  rgba(255, 255, 255, 0.05),
+  //  rgba(255, 255, 255, 0.05) 4px,
+  //  transparent 4px,
+  //  transparent 8px
+  //);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 
   /* 高度控制 */

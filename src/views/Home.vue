@@ -57,7 +57,7 @@ import students from '@/components/student/students.vue'
 import Homework from '@/components/homework/homework.vue'
 import Calendar from '@/components/common/calendar.vue'
 import ClassSwitch from '@/components/common/ClasssWitch.vue'
-import formatYYYYMMDDToDate from '@/utils/formatDate'
+import { formatYYYYMMDDToDate } from '@/utils/formatDate'
 
 const currentTime = ref('')
 const todayDate = ref('')

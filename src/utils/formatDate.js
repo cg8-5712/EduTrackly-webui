@@ -1,4 +1,4 @@
-export default function formatYYYYMMDDToDate(dateInt) {
+export function formatYYYYMMDDToDate(dateInt) {
     // 确保传入的是有效的 8 位整数（YYYYMMDD）
     const dateString = dateInt.toString();
     if (dateString.length !== 8 || isNaN(dateInt)) {
@@ -20,3 +20,21 @@ export default function formatYYYYMMDDToDate(dateInt) {
     return `${month + 1}月${day}日 星期${dayOfWeek}`;
 }
 
+
+/**
+ * 将日期格式化为 YYYY-MM-DD 字符串
+ * @param {Date | string | number} date - Date 对象或可解析的日期字符串/时间戳
+ * @returns {string} YYYY-MM-DD 格式
+ */
+export function formatDateToYYYYMMDD(date) {
+    const d = new Date(date);
+    if (isNaN(d)) {
+        throw new Error('Invalid date');
+    }
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0'); // 月份从0开始
+    const day = String(d.getDate()).padStart(2, '0');
+
+    return `${year}${month}${day}`;
+}
