@@ -128,12 +128,14 @@ const fetchStudents = async () => {
     const res = await StudentService.getStudentList(props.cid)
     const analysis = await AnalysisService.getTodayAnalysis(props.cid)
     const existingEvents = {}
-    if (analysis.data?.event_list) {
-      analysis.data.event_list.forEach(e => {
+    console.log(analysis.data.data.event_list)
+    if (analysis.data?.data.event_list) {
+      analysis.data.data.event_list.forEach(e => {
         const student = res.data.data.find(s => s.student_name === e.student_name)
         if (student) existingEvents[student.sid] = e.event_type
       })
     }
+    console.log('Fetched students and existing events:', existingEvents)
     students.value = res.data.data.map(s => ({ ...s }))
     selectedEvents.value = { ...existingEvents }
   } catch (err) {
@@ -220,3 +222,4 @@ defineExpose({ fetchStudents })
   color: #e0e0e0;
 }
 </style>
+  
