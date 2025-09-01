@@ -73,7 +73,7 @@ const students = ref([])
 const selectedEvents = ref({})
 const loading = ref(false)
 
-// 设置学生事件
+// 设置学生事件，点击再次取消
 const setEvent = (sid, event_type) => {
   if (selectedEvents.value[sid] === event_type) {
     delete selectedEvents.value[sid]
@@ -88,7 +88,7 @@ const handleStudentClick = (student) => {
     if (selectedEvents.value[student.sid]) {
       delete selectedEvents.value[student.sid]
     } else {
-      selectedEvents.value[student.sid] = 'personal' // 默认可设置为事假或保留空，用户再选择
+      selectedEvents.value[student.sid] = 'personal' // 默认事假，可悬浮再选择
     }
   } else {
     if (selectedEvents.value[student.sid] === 'temp') {
@@ -101,13 +101,12 @@ const handleStudentClick = (student) => {
 
 // 提交所有事件
 const submitEvents = async () => {
-  const eventsArray = Object.entries(selectedEvents.value).map(([sid, event_type]) => ({
-    sid: Number(sid),
-    event_type
+  // ✅ 始终构造完整列表
+  const eventsArray = students.value.map(s => ({
+    sid: s.sid,
+    event_type: selectedEvents.value[s.sid] || ''
   }))
-  if (eventsArray.length === 0) {
-    return ElMessage({ type: 'warning', message: '没有需要提交的事件' })
-  }
+
   try {
     loading.value = true
     await StudentService.submitStudentEvents(eventsArray)
@@ -128,7 +127,6 @@ const fetchStudents = async () => {
     loading.value = true
     const res = await StudentService.getStudentList(props.cid)
     const analysis = await AnalysisService.getTodayAnalysis(props.cid)
-    // 构建已有状态映射
     const existingEvents = {}
     if (analysis.data?.event_list) {
       analysis.data.event_list.forEach(e => {
@@ -136,9 +134,7 @@ const fetchStudents = async () => {
         if (student) existingEvents[student.sid] = e.event_type
       })
     }
-    students.value = res.data.data.map(s => ({
-      ...s
-    }))
+    students.value = res.data.data.map(s => ({ ...s }))
     selectedEvents.value = { ...existingEvents }
   } catch (err) {
     console.error('获取学生列表失败', err)
