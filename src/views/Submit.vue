@@ -1,22 +1,13 @@
 <template>
   <div class="submit-container">
-    <!-- 班级选择 -->
-    <ClassSwitch v-model:selectedCid="selectedCid" />
-
-    <!-- 学生列表 -->
+    <!-- 使用 update:cid 而不是 update:selectedCid -->
+    <ClassSwitch @update:cid="handleClassChange" />
     <StudentList :cid="selectedCid" ref="studentListComponent" />
-
-    <!-- 提交按钮 -->
-    <div class="submit-button-wrapper">
-      <el-button type="primary" @click="submitEvents">
-        提交今日事件
-      </el-button>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import ClassSwitch from '@/components/common/ClassSwitch.vue'
 import StudentList from '@/components/student/StudentList.vue'
 
@@ -26,17 +17,23 @@ const selectedCid = ref(1) // 默认1班
 // ref StudentList组件
 const studentListComponent = ref(null)
 
-// 点击提交按钮
-const submitEvents = async () => {
-  if (!studentListComponent.value) return
-  try {
-    await studentListComponent.value.submitSelectedEvents()
-    // 提交成功可做提示
-    ElMessage.success('提交成功')
-  } catch (err) {
-    ElMessage.error(err.message || '提交失败')
-  }
+// 处理班级变化
+const handleClassChange = (newCid) => {
+  console.log('Class changed:', newCid)
+  selectedCid.value = newCid
 }
+
+// 移除 onMounted 中的 watch，改用普通的 watch
+watch(
+  selectedCid,
+  async (newVal) => {
+    console.log('Selected CID changed:', newVal)
+    if (studentListComponent.value) {
+      await studentListComponent.value.fetchStudents()
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped>
