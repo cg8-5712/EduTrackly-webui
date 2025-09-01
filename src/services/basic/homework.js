@@ -35,6 +35,20 @@ class HomeworkService extends ApiPrefix {
             throw error;
         }
     }
+
+    // 新增函数：提交作业
+    async postHomework(payload) {
+        try {
+            const data = await this.api.post('/homework/post', payload);
+            if (data.data.code !== 0) {
+                throw new Error(data.data.message);
+            }
+            return data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
 }
 
 export default new HomeworkService();
