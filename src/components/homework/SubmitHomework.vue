@@ -54,16 +54,28 @@ function resizeTextarea(event) {
 
 async function submitHomework() {
   try {
+    // 拼接内容，只有非空学科才加入
+    let contentLines = [];
     for (const subject of subjects) {
-      if (!homeworkContent[subject].trim()) continue;
-      const payload = {
-        cid: props.cid,
-        homework_content: `${subject}: ${homeworkContent[subject]}`,
-        due_date: dueDate
-      };
-      const res = await HomeworkService.postHomework(payload);
-      console.log(res.data.message);
+      const text = homeworkContent[subject].trim();
+      if (text) contentLines.push(`${subject}：${text}`);
     }
+
+    if (contentLines.length === 0) {
+      alert('请至少填写一个学科的作业内容');
+      return;
+    }
+
+    const fullContent = contentLines.join('\n'); // 换行拼接
+
+    const payload = {
+      cid: props.cid,
+      homework_content: fullContent,
+      due_date: dueDate
+    };
+
+    const res = await HomeworkService.postHomework(payload);
+    console.log(res.data.message);
     alert('作业提交成功！');
     resetHomework();
   } catch (err) {
