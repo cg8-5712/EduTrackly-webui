@@ -21,9 +21,9 @@
 </template>
 
 <script setup>
-import { reactive, watch } from 'vue';
+import { reactive, watch, onMounted } from 'vue';
 import HomeworkService from '@/services/basic/homework';
-import {formatDateToYYYYMMDD} from "@/utils/formatDate.js";
+import { formatDateToYYYYMMDD } from "@/utils/formatDate.js";
 
 const props = defineProps({
   cid: {
@@ -40,11 +40,39 @@ function resetHomework() {
 }
 resetHomework();
 
-watch(() => props.cid, (newCid, oldCid) => {
+const dueDate = formatDateToYYYYMMDD(new Date());
+
+// 自动拉取今日作业
+async function fetchTodayHomework(cid) {
+  try {
+    const res = await HomeworkService.getTodayHomework(cid);
+    console.log('获取今日作业成功:', res.data.message);
+    if (res.data.code === 0 && res.data.data?.homework_content) {
+      resetHomework();
+
+      // 解析格式：每行 "学科：内容"
+      const lines = res.data.data.homework_content.split('\n');
+      for (const line of lines) {
+        for (const subject of subjects) {
+          if (line.startsWith(subject + '：')) {
+            homeworkContent[subject] = line.replace(subject + '：', '').trim();
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error('获取今日作业失败:', err);
+  }
+}
+
+watch(() => props.cid, (newCid) => {
   resetHomework();
+  fetchTodayHomework(newCid);
 });
 
-const dueDate = formatDateToYYYYMMDD(new Date())
+onMounted(() => {
+  fetchTodayHomework(props.cid);
+});
 
 function resizeTextarea(event) {
   const textarea = event.target;
@@ -54,7 +82,6 @@ function resizeTextarea(event) {
 
 async function submitHomework() {
   try {
-    // 拼接内容，只有非空学科才加入
     let contentLines = [];
     for (const subject of subjects) {
       const text = homeworkContent[subject].trim();
@@ -66,7 +93,7 @@ async function submitHomework() {
       return;
     }
 
-    const fullContent = contentLines.join('\n'); // 换行拼接
+    const fullContent = contentLines.join('\n');
 
     const payload = {
       cid: props.cid,
@@ -78,6 +105,7 @@ async function submitHomework() {
     console.log(res.data.message);
     alert('作业提交成功！');
     resetHomework();
+    fetchTodayHomework(props.cid); // 重新加载
   } catch (err) {
     console.error(err);
     alert('提交失败，请重试');

@@ -18,11 +18,13 @@
       </div>
       <!-- 如果返回对象则显示作业内容 -->
       <template v-else>
-        <div v-for="(line, index) in homeworkLines" 
-             :key="index" 
-             class="homework-container"
-             :class="{ 'empty-line': !line.trim() }">
-          {{ line || '&nbsp;' }}
+        <div class="homework-lines" :style="gridStyle">
+          <div v-for="(line, index) in homeworkLines"
+               :key="index"
+               class="homework-container"
+               :class="{ 'empty-line': !line.trim() }">
+            {{ line || '&nbsp;' }}
+          </div>
         </div>
       </template>
     </template>
@@ -33,13 +35,17 @@
 import { ref, watch, computed } from 'vue'
 import HomeworkService from '@/services/basic/homework'
 
-// Props：选中日期 + 选中班级
+// Props：选中日期 + 选中班级 + 列数（默认值为 1）
 const props = defineProps({
   selectedDate: {
     type: String,
     default: null
   },
   selectedCid: {
+    type: Number,
+    default: 1
+  },
+  columns: {
     type: Number,
     default: 1
   }
@@ -58,8 +64,8 @@ const fetchHomework = async () => {
 
   try {
     const response = props.selectedDate
-      ? await HomeworkService.getHomeworkByDate(props.selectedCid, props.selectedDate)
-      : await HomeworkService.getTodayHomework(props.selectedCid)
+        ? await HomeworkService.getHomeworkByDate(props.selectedCid, props.selectedDate)
+        : await HomeworkService.getTodayHomework(props.selectedCid)
 
     // 处理无作业
     if (response.data.code === 2001) {
@@ -83,17 +89,26 @@ const fetchHomework = async () => {
 
 // 监听日期或班级变化，立即执行
 watch(
-  () => [props.selectedDate, props.selectedCid],
-  () => {
-    fetchHomework()
-  },
-  { immediate: true }
+    () => [props.selectedDate, props.selectedCid],
+    () => {
+      fetchHomework()
+    },
+    { immediate: true }
 )
 
 // 新增计算属性处理换行
 const homeworkLines = computed(() => {
   if (!homework.value?.homework_content) return [];
   return homework.value.homework_content.split('\n');
+});
+
+// 计算动态样式，用于控制显示列数
+const gridStyle = computed(() => {
+  return {
+    display: 'grid',
+    gridTemplateColumns: `repeat(${props.columns}, 1fr)`,
+    gap: '1rem'
+  }
 });
 </script>
 
@@ -140,5 +155,10 @@ const homeworkLines = computed(() => {
   color: #e0e0e0;
   word-break: break-word;
   line-height: 3;
+}
+
+.homework-lines {
+  display: grid;
+  gap: 1rem;
 }
 </style>

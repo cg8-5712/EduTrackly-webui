@@ -41,7 +41,7 @@
           <h2 class="homework-title">作业内容</h2>
           <span class="selected-date">{{ selectedDateText }}</span>
         </div>
-        <Homework :selected-date="selectedDate" :selected-cid="selectedCid" ref="homeworkComponent" />
+        <Homework :selected-date="selectedDate" :selected-cid="selectedCid" ref="homeworkComponent" :columns="1"/>
       </div>
     </div>
 
