@@ -75,7 +75,7 @@ const fetchHomework = async () => {
 
     homework.value = response.data.data || '暂无作业'
   } catch (err) {
-    error.value = err.message || '获取作业失败'
+    error.value = '获取作业失败，请稍后重试'
   } finally {
     loading.value = false
   }

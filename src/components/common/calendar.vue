@@ -37,11 +37,15 @@ const startDate = ref(null)
 const endDate = ref(null)
 
 const prevMonth = () => {
-  currentDate.value.setMonth(currentDate.value.getMonth() - 1)
+  const newDate = new Date(currentDate.value)
+  newDate.setMonth(newDate.getMonth() - 1)
+  currentDate.value = newDate
 }
 
 const nextMonth = () => {
-  currentDate.value.setMonth(currentDate.value.getMonth() + 1)
+  const newDate = new Date(currentDate.value)
+  newDate.setMonth(newDate.getMonth() + 1)
+  currentDate.value = newDate
 }
 
 const daysInMonth = computed(() => {
