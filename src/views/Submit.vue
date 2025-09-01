@@ -2,6 +2,8 @@
   <div class="submit-container">
     <ClassSwitch @update:cid="handleClassChange" />
     <StudentList :cid="selectedCid" ref="studentListComponent" />
+    <!-- 引入作业提交组件 -->
+    <SubmitHomework :cid="selectedCid" />
   </div>
 </template>
 
@@ -9,6 +11,7 @@
 import { ref, watch } from 'vue'
 import ClassSwitch from '@/components/common/ClassSwitch.vue'
 import StudentList from '@/components/student/StudentList.vue'
+import SubmitHomework from '@/components/homework/SubmitHomework.vue' // 引入组件
 
 // 选中的班级ID
 const selectedCid = ref(1) // 默认1班
@@ -22,16 +25,16 @@ const handleClassChange = (newCid) => {
   selectedCid.value = newCid
 }
 
-// 移除 onMounted 中的 watch，改用普通的 watch
+// watch selectedCid，班级变化时刷新学生列表
 watch(
-  selectedCid,
-  async (newVal) => {
-    console.log('Selected CID changed:', newVal)
-    if (studentListComponent.value) {
-      await studentListComponent.value.fetchStudents()
-    }
-  },
-  { immediate: true }
+    selectedCid,
+    async (newVal) => {
+      console.log('Selected CID changed:', newVal)
+      if (studentListComponent.value) {
+        await studentListComponent.value.fetchStudents()
+      }
+    },
+    { immediate: true }
 )
 </script>
 

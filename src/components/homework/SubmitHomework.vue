@@ -17,17 +17,34 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, watch } from 'vue';
 import HomeworkService from '@/services/basic/homework';
+
+const props = defineProps({
+  cid: {
+    type: Number,
+    required: true
+  }
+});
 
 const subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '地理', '政治'];
 
-// 使用 reactive 保存各科作业内容
+// 作业内容
 const homeworkContent = reactive({});
-subjects.forEach(sub => homeworkContent[sub] = '');
+function resetHomework() {
+  subjects.forEach(sub => homeworkContent[sub] = '');
+}
 
-const cid = 0; // 根据实际情况动态传入课程ID
-const dueDate = Math.floor(Date.now() / 1000); // 示例: 当前时间戳
+// 初始化作业内容
+resetHomework();
+
+// 当班级切换时，清空作业内容
+watch(() => props.cid, (newCid, oldCid) => {
+  console.log('班级切换', oldCid, '→', newCid);
+  resetHomework();
+});
+
+const dueDate = Math.floor(Date.now() / 1000);
 
 function resizeTextarea(event) {
   const textarea = event.target;
@@ -39,9 +56,9 @@ async function submitHomework() {
   try {
     for (const subject of subjects) {
       if (!homeworkContent[subject].trim()) continue;
-      
+
       const payload = {
-        cid,
+        cid: props.cid,  // 使用最新的班级ID
         homework_content: `${subject}: ${homeworkContent[subject]}`,
         due_date: dueDate
       };
@@ -49,6 +66,7 @@ async function submitHomework() {
       console.log(res.data.message);
     }
     alert('作业提交成功！');
+    resetHomework();
   } catch (err) {
     console.error(err);
     alert('提交失败，请重试');
