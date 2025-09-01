@@ -263,10 +263,10 @@ html, body {
 }
 
 .current-time {
-  font-size: 3.5rem;
-  font-weight: bold;
+  font-size: 3.7rem;
+  font-weight: bolder;
   color: #9ed2ff;
-  font-family: monospace;
+  font-family: inherit;
 }
 
 .controls {
@@ -294,10 +294,10 @@ html, body {
   flex: 1;
   display: grid;
   grid-template-columns: 0.8fr 1.2fr;
-  gap: 1.5rem;
+  gap: 1rem;
   min-height: 0; /* 关键：允许内容收缩 */
-  padding: 1.5rem 0 1rem 0; /* 添加上边距 */
-  margin-top: 1rem; /* 增加与顶部的距离 */
+  padding: 0.5rem 0 0.5rem 0; /* 添加上边距 */
+  margin-top: 0.5rem; /* 增加与顶部的距离 */
 }
 
 .left-panel, .right-panel {
@@ -314,7 +314,12 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin: 0;          /* 清掉外边距 */
+  padding: 0.25rem 0; /* 缩小上下内边距 */
+}
+
+.homework-header > * {
+  margin: 0;          /* 去掉子元素的默认 margin（尤其是 h1、h2、p） */
 }
 
 .homework-title {
@@ -329,11 +334,11 @@ html, body {
 }
 
 .footer {
-  padding: 1rem;
   text-align: center;
   background: #2d2d2d;
   color: #666;
-  font-size: 1.4rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 1.2rem;
   margin-top: auto;
 }
 

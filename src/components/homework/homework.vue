@@ -115,6 +115,8 @@ const homeworkLines = computed(() => {
   align-items: center;
   justify-content: center;
   text-align: center;
+  font-size: 1.8rem;
+  font-weight: bolder;
 }
 
 .empty-line {
