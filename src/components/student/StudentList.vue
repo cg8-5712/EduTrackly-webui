@@ -59,6 +59,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import StudentService from '@/services/basic/student'
+import AnalysisService from '@/services/basic/analysis'
 import { ElButton, ElPopover, ElMessage } from 'element-plus'
 
 const props = defineProps({
@@ -74,7 +75,28 @@ const loading = ref(false)
 
 // 设置学生事件
 const setEvent = (sid, event_type) => {
-  selectedEvents.value[sid] = event_type
+  if (selectedEvents.value[sid] === event_type) {
+    delete selectedEvents.value[sid]
+  } else {
+    selectedEvents.value[sid] = event_type
+  }
+}
+
+// 点击学生卡片处理事件
+const handleStudentClick = (student) => {
+  if (student.attendance) {
+    if (selectedEvents.value[student.sid]) {
+      delete selectedEvents.value[student.sid]
+    } else {
+      selectedEvents.value[student.sid] = 'personal' // 默认可设置为事假或保留空，用户再选择
+    }
+  } else {
+    if (selectedEvents.value[student.sid] === 'temp') {
+      delete selectedEvents.value[student.sid]
+    } else {
+      selectedEvents.value[student.sid] = 'temp'
+    }
+  }
 }
 
 // 提交所有事件
@@ -99,24 +121,25 @@ const submitEvents = async () => {
   }
 }
 
-// 处理学生点击事件
-const handleStudentClick = (student) => {
-  if (!student.attendance) {
-    setEvent(student.sid, 'temp')
-  }
-}
-
-// 获取学生列表
+// 获取学生列表并标注已有状态
 const fetchStudents = async () => {
-  console.log('fetching students for cid:', props.cid) // 添加日志便于调试
   if (!props.cid) return
   try {
     loading.value = true
     const res = await StudentService.getStudentList(props.cid)
+    const analysis = await AnalysisService.getTodayAnalysis(props.cid)
+    // 构建已有状态映射
+    const existingEvents = {}
+    if (analysis.data?.event_list) {
+      analysis.data.event_list.forEach(e => {
+        const student = res.data.data.find(s => s.student_name === e.student_name)
+        if (student) existingEvents[student.sid] = e.event_type
+      })
+    }
     students.value = res.data.data.map(s => ({
       ...s
     }))
-    selectedEvents.value = {}
+    selectedEvents.value = { ...existingEvents }
   } catch (err) {
     console.error('获取学生列表失败', err)
     ElMessage.error('获取学生列表失败')
@@ -125,11 +148,10 @@ const fetchStudents = async () => {
   }
 }
 
-// 移除 onMounted 中的 watch，直接使用 watch
+// 监听班级切换
 watch(
   () => props.cid,
   async (newVal, oldVal) => {
-    console.log('StudentList watching cid change:', newVal, oldVal)
     if (newVal !== oldVal) {
       await fetchStudents()
     }
@@ -137,11 +159,7 @@ watch(
   { immediate: true }
 )
 
-
-// 导出fetchStudents方法供父组件调用
-defineExpose({
-  fetchStudents
-})
+defineExpose({ fetchStudents })
 </script>
 
 <style scoped>

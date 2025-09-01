@@ -1,6 +1,5 @@
 <template>
   <div class="submit-container">
-    <!-- 使用 update:cid 而不是 update:selectedCid -->
     <ClassSwitch @update:cid="handleClassChange" />
     <StudentList :cid="selectedCid" ref="studentListComponent" />
   </div>
