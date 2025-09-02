@@ -47,23 +47,6 @@ class AuthService {
         }
     }
 
-
-    getUserInfo() {
-        const token = this.getToken();
-        if (!token) return null;
-
-        try {
-            // 解码JWT获取用户信息
-            const decoded = jwtDecode(token);
-            console.log('Decoded token:');
-            console.log(decoded);
-            return decoded;
-        } catch (error) {
-            console.error('解码token失败:', error);
-            return null;
-        }
-    }
-
     async validateToken(token) {
         try {
             localStorage.setItem('access_token', token)
