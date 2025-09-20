@@ -36,7 +36,11 @@
           <h2 class="homework-title">作业内容</h2>
           <span class="selected-date">{{ selectedDateText }}</span>
         </div>
-        <Homework :selected-date="selectedDate" :selected-cid="selectedCid" ref="homeworkComponent" :columns="2"/>
+        <Homework
+            :selected-date="selectedDate"
+            :selected-cid="selectedCid"
+            :columns="2"
+        />
       </div>
     </div>
 
@@ -47,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import Homework from '@/components/homework/homework.vue'
 import Calendar from '@/components/common/calendar.vue'
 import ClassSwitch from '@/components/common/ClassSwitch.vue'
@@ -121,16 +125,6 @@ const handleGlobalClick = (event) => {
     showCalendar.value = false
   }
 }
-
-// 监听班级变化刷新作业
-watch(selectedCid, (newCid) => {
-  if (!newCid) return
-
-  const cid = Number(newCid)
-  if (homeworkComponent.value?.fetchHomework) {
-    homeworkComponent.value.fetchHomework()
-  }
-}, { immediate: true })
 
 onMounted(() => {
   updateDate()

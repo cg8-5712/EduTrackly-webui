@@ -3,15 +3,15 @@
     <h2>提交作业</h2>
     <div class="subjects-grid">
       <div
-          v-for="subject in subjects"
-          :key="subject"
+          v-for="subject in subjectsConfig"
+          :key="subject.key"
           class="subject-item"
       >
-        <label>{{ subject }}</label>
+        <label>{{ subject.name }}</label>
         <textarea
-            v-model="homeworkContent[subject]"
+            v-model="homeworkContent[subject.key]"
             @input="resizeTextarea($event)"
-            placeholder="请输入作业内容"
+            :placeholder="`请输入${subject.name}作业内容`"
             rows="1"
         ></textarea>
       </div>
@@ -32,12 +32,28 @@ const props = defineProps({
   }
 });
 
-const subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '地理', '政治'];
+// 科目配置 - 与API字段对应
+const subjectsConfig = [
+  { key: 'chinese', name: '语文' },
+  { key: 'maths', name: '数学' },
+  { key: 'english', name: '英语' },
+  { key: 'physics', name: '物理' },
+  { key: 'chemistry', name: '化学' },
+  { key: 'biology', name: '生物' },
+  { key: 'history', name: '历史' },
+  { key: 'geography', name: '地理' },
+  { key: 'politics', name: '政治' },
+  { key: 'others', name: '其他' }
+];
 
 const homeworkContent = reactive({});
+
 function resetHomework() {
-  subjects.forEach(sub => homeworkContent[sub] = '');
+  subjectsConfig.forEach(subject => {
+    homeworkContent[subject.key] = '';
+  });
 }
+
 resetHomework();
 
 const dueDate = formatDateToYYYYMMDD(new Date());
@@ -47,31 +63,40 @@ async function fetchTodayHomework(cid) {
   try {
     const res = await HomeworkService.getTodayHomework(cid);
     console.log('获取今日作业成功:', res.data.message);
+
     if (res.data.code === 0 && res.data.data?.homework_content) {
       resetHomework();
 
-      // 解析格式：每行 "学科：内容"
-      const lines = res.data.data.homework_content.split('\n');
-      for (const line of lines) {
-        for (const subject of subjects) {
-          if (line.startsWith(subject + '：')) {
-            homeworkContent[subject] = line.replace(subject + '：', '').trim();
-          }
+      // 新API格式直接是对象，无需解析
+      const apiHomeworkContent = res.data.data.homework_content;
+
+      // 将API返回的内容填充到表单中
+      subjectsConfig.forEach(subject => {
+        if (apiHomeworkContent[subject.key]) {
+          homeworkContent[subject.key] = apiHomeworkContent[subject.key];
         }
-      }
+      });
     }
   } catch (err) {
     console.error('获取今日作业失败:', err);
+    // 如果是404错误（暂无作业），不显示错误
+    if (err.response?.status !== 404) {
+      console.error('获取作业时发生错误:', err);
+    }
   }
 }
 
 watch(() => props.cid, (newCid) => {
   resetHomework();
-  fetchTodayHomework(newCid);
+  if (newCid) {
+    fetchTodayHomework(newCid);
+  }
 });
 
 onMounted(() => {
-  fetchTodayHomework(props.cid);
+  if (props.cid) {
+    fetchTodayHomework(props.cid);
+  }
 });
 
 function resizeTextarea(event) {
@@ -82,33 +107,48 @@ function resizeTextarea(event) {
 
 async function submitHomework() {
   try {
-    let contentLines = [];
-    for (const subject of subjects) {
-      const text = homeworkContent[subject].trim();
-      if (text) contentLines.push(`${subject}：${text}`);
-    }
+    // 检查是否至少填写了一个科目
+    const hasContent = subjectsConfig.some(subject =>
+        homeworkContent[subject.key] && homeworkContent[subject.key].trim()
+    );
 
-    if (contentLines.length === 0) {
+    if (!hasContent) {
       alert('请至少填写一个学科的作业内容');
       return;
     }
 
-    const fullContent = contentLines.join('\n');
+    // 构造新API格式的homework_content对象
+    const homework_content = {};
+    subjectsConfig.forEach(subject => {
+      // 只传递有内容的科目，空的传空字符串
+      homework_content[subject.key] = homeworkContent[subject.key]?.trim() || "";
+    });
 
     const payload = {
       cid: props.cid,
-      homework_content: fullContent,
-      due_date: dueDate
+      homework_content: homework_content,
+      due_date: parseInt(dueDate) // 确保是数字格式
     };
 
+    console.log('提交的数据:', payload);
+
     const res = await HomeworkService.postHomework(payload);
-    console.log(res.data.message);
-    alert('作业提交成功！');
-    resetHomework();
-    fetchTodayHomework(props.cid); // 重新加载
+    console.log('提交响应:', res.data);
+
+    if (res.data.code === 0) {
+      alert('作业提交成功！');
+      resetHomework();
+      fetchTodayHomework(props.cid); // 重新加载
+    } else {
+      alert(`提交失败：${res.data.message}`);
+    }
   } catch (err) {
-    console.error(err);
-    alert('提交失败，请重试');
+    console.error('提交作业失败:', err);
+    if (err.response?.data?.message) {
+      alert(`提交失败：${err.response.data.message}`);
+    } else {
+      alert('提交失败，请重试');
+    }
   }
 }
 </script>
@@ -125,7 +165,6 @@ async function submitHomework() {
   margin-left: auto;
   margin-right: auto;
   font-size: 22px;
-
 }
 
 .submit-homework h2 {
@@ -148,19 +187,21 @@ async function submitHomework() {
 .subject-item label {
   margin-bottom: 5px;
   font-weight: bold;
+  color: #9ed2ff;
 }
 
 .subject-item textarea {
   resize: none;
   overflow: hidden;
   padding: 8px;
-  font-size: 14px;
+  font-size: 20px;
   border-radius: 6px;
   border: none;
   background-color: #2b2b3b; /* 深色输入框 */
   color: #f0f0f0;
   outline: none;
   transition: all 0.2s ease-in-out;
+  min-height: 40px;
 }
 
 .subject-item textarea:focus {
@@ -168,23 +209,48 @@ async function submitHomework() {
   background-color: #3a3a50;
 }
 
-.subject-item textarea {
-  font-size: 20px; /* 文本区域的文字大小 */
+.subject-item textarea::placeholder {
+  color: #888;
 }
 
 button {
   margin-top: 20px;
-  padding: 10px 25px;
-  font-size: 16px;
+  padding: 12px 30px;
+  font-size: 18px;
   cursor: pointer;
   border: none;
   border-radius: 8px;
   background-color: #4f91ff;
   color: #fff;
   transition: background-color 0.2s ease-in-out;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 button:hover {
   background-color: #3570d1;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .subjects-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .submit-homework {
+    width: 95%;
+    padding: 15px;
+    font-size: 18px;
+  }
+
+  .subject-item textarea {
+    font-size: 16px;
+  }
 }
 </style>

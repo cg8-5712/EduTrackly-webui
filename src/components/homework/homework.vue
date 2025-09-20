@@ -1,29 +1,37 @@
 <template>
   <div class="homework-wrapper">
     <!-- 加载中 -->
-    <div v-if="loading" class="homework-container">
+    <div v-if="loading" class="homework-container loading">
       加载中...
     </div>
 
     <!-- 错误提示 -->
-    <div v-else-if="error && error !== 'no-homework'" class="homework-container">
+    <div v-else-if="error && error !== 'no-homework'" class="homework-container error">
       {{ error }}
     </div>
 
     <!-- 作业内容展示 -->
     <template v-else>
-      <!-- 如果返回是字符串说明暂无作业 -->
-      <div v-if="typeof homework === 'string'" class="homework-container">
-        {{ homework }}
+      <!-- 如果无作业数据 -->
+      <div v-if="error === 'no-homework'" class="homework-container">
+        暂无作业
       </div>
-      <!-- 如果返回对象则显示作业内容 -->
+      <!-- 显示分科目作业内容 -->
       <template v-else>
         <div class="homework-lines" :style="gridStyle">
-          <div v-for="(line, index) in homeworkLines"
-               :key="index"
-               class="homework-container"
-               :class="{ 'empty-line': !line.trim() }">
-            {{ line || '&nbsp;' }}
+          <div v-for="subject in subjectsWithContent"
+               :key="subject.key"
+               class="homework-container subject-container">
+            <div class="subject-header">
+              {{ subject.name }}
+            </div>
+            <div class="subject-content">
+              <div v-for="(line, index) in subject.lines"
+                   :key="index"
+                   class="content-line">
+                {{ line }}
+              </div>
+            </div>
           </div>
         </div>
       </template>
@@ -52,15 +60,29 @@ const props = defineProps({
 })
 
 // 作业数据与状态
-const homework = ref('')
+const homework = ref(null)
 const loading = ref(false)
 const error = ref(null)
+
+// 科目映射配置
+const subjectConfig = {
+  chinese: '语文',
+  maths: '数学',
+  english: '英语',
+  physics: '物理',
+  chemistry: '化学',
+  biology: '生物',
+  history: '历史',
+  geography: '地理',
+  politics: '政治',
+  others: '其他'
+}
 
 // 获取作业函数
 const fetchHomework = async () => {
   loading.value = true
   error.value = null
-  homework.value = ''
+  homework.value = null
 
   try {
     const response = props.selectedDate
@@ -69,7 +91,7 @@ const fetchHomework = async () => {
 
     // 处理无作业
     if (response.data.code === 2001) {
-      homework.value = '暂无作业'
+      homework.value = null
       error.value = 'no-homework'
       return
     }
@@ -79,8 +101,9 @@ const fetchHomework = async () => {
       throw new Error(response.data.message)
     }
 
-    homework.value = response.data.data || '暂无作业'
+    homework.value = response.data.data || null
   } catch (err) {
+    console.error('获取作业失败:', err)
     error.value = '获取作业失败，请稍后重试'
   } finally {
     loading.value = false
@@ -96,11 +119,28 @@ watch(
     { immediate: true }
 )
 
-// 新增计算属性处理换行
-const homeworkLines = computed(() => {
-  if (!homework.value?.homework_content) return [];
-  return homework.value.homework_content.split('\n');
-});
+// 计算有内容的科目
+const subjectsWithContent = computed(() => {
+  if (!homework.value?.homework_content) return []
+
+  const subjects = []
+  const homeworkContent = homework.value.homework_content
+
+  // 遍历所有科目，只显示有内容的科目
+  Object.keys(subjectConfig).forEach(key => {
+    const content = homeworkContent[key]
+    if (content && content.trim()) {
+      subjects.push({
+        key,
+        name: subjectConfig[key],
+        content: content.trim(),
+        lines: content.trim().split('\n')
+      })
+    }
+  })
+
+  return subjects
+})
 
 // 计算动态样式，用于控制显示列数
 const gridStyle = computed(() => {
@@ -109,7 +149,7 @@ const gridStyle = computed(() => {
     gridTemplateColumns: `repeat(${props.columns}, 1fr)`,
     gap: '1rem'
   }
-});
+})
 </script>
 
 <style scoped>
@@ -134,10 +174,44 @@ const gridStyle = computed(() => {
   font-weight: bolder;
 }
 
+.subject-container {
+  flex-direction: row;
+  align-items: flex-start;
+  text-align: left;
+  //min-height: 120px;
+  gap: 1rem;
+}
+
+.subject-header {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #9ed2ff;
+  min-width: 60px;
+  flex-shrink: 0;
+  text-align: center;
+  padding: 0.5rem;
+  background-color: rgba(158, 210, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(158, 210, 255, 0.2);
+}
+
+.subject-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-top: 0.5rem;
+}
+
+.content-line {
+  font-size: 1.3rem;
+  line-height: 1.6;
+  color: #e0e0e0;
+  word-break: break-word;
+}
+
 .empty-line {
-  min-height: 20px;
-  background-color: transparent;
-  box-shadow: none;
+  /* 移除空行样式，因为不再显示空行 */
 }
 
 .loading {
@@ -150,15 +224,45 @@ const gridStyle = computed(() => {
   color: #ff6b6b;
 }
 
-.homework-content {
-  font-size: 8rem;
-  color: #e0e0e0;
-  word-break: break-word;
-  line-height: 3;
-}
-
 .homework-lines {
   display: grid;
   gap: 1rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .homework-container {
+    font-size: 1.4rem;
+    padding: 0.8rem;
+  }
+
+  .subject-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .subject-header {
+    font-size: 1rem;
+    min-width: auto;
+    text-align: center;
+  }
+
+  .subject-content {
+    padding-top: 0;
+  }
+
+  .content-line {
+    font-size: 1.1rem;
+  }
+}
+
+/* 当只有一个科目时的特殊样式 */
+.homework-lines:has(.subject-container:only-child) .subject-container {
+  min-height: 200px;
+}
+
+.homework-lines:has(.subject-container:only-child) .content-line {
+  font-size: 1.5rem;
+  line-height: 1.8;
 }
 </style>

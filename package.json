@@ -1,7 +1,7 @@
 {
-  "name": "yunji-bot-web-management-platform",
+  "name": "Edutrackly-webui",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.4.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",

@@ -300,7 +300,7 @@ html, body {
   margin-top: 0.5rem; /* 增加与顶部的距离 */
 }
 
-.left-panel, .right-panel {
+.left-panel {
   background-color: #2d2d2d;
   border-radius: 12px;
   padding: 1.5rem;
@@ -310,12 +310,23 @@ html, body {
   min-height: 0; /* 关键：允许内容收缩 */
 }
 
+.right-panel {
+  background-color: #2d2d2d;
+  border-radius: 12px;
+  padding: 0.2rem 0.6rem 1rem; /* 上0.5rem，左右1rem，下1rem */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0; /* 关键：允许内容收缩 */
+}
+
+
 .homework-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin: 0;          /* 清掉外边距 */
-  padding: 0.25rem 0; /* 缩小上下内边距 */
+  padding: 0.1rem 0; /* 缩小上下内边距 */
 }
 
 .homework-header > * {
