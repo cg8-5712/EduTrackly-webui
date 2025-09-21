@@ -148,6 +148,7 @@ defineExpose({ fetchStudents })
   padding: 16px;
   border-radius: 12px;
   background-color: #1e1e1e;
+  min-height: 30vh;
   //background-image: repeating-linear-gradient(
   //  45deg,
   //  rgba(255, 255, 255, 0.05),

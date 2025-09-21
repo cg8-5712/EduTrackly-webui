@@ -21,7 +21,7 @@
         <div class="homework-lines" :style="gridStyle">
           <div v-for="subject in subjectsWithContent"
                :key="subject.key"
-               class="homework-container subject-container">
+               class="homework-container">
             <div class="subject-header">
               {{ subject.name }}
             </div>
@@ -165,22 +165,24 @@ const gridStyle = computed(() => {
   color: #e0e0e0;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-  min-height: 60px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  //align-items: center;
+
   font-size: 1.8rem;
   font-weight: bolder;
 }
 
-.subject-container {
-  flex-direction: row;
-  align-items: flex-start;
-  text-align: left;
-  //min-height: 120px;
-  gap: 1rem;
+.subject-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-top: 0.5rem;
+
+  /* 新增缩进，让内容和标签有间距 */
+  padding-left: 0.8rem;
 }
+
 
 .subject-header {
   font-size: 1.2rem;
@@ -208,10 +210,6 @@ const gridStyle = computed(() => {
   line-height: 1.6;
   color: #e0e0e0;
   word-break: break-word;
-}
-
-.empty-line {
-  /* 移除空行样式，因为不再显示空行 */
 }
 
 .loading {

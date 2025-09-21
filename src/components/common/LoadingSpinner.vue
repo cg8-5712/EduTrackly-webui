@@ -17,21 +17,20 @@ const { t } = useI18n();
 const props = defineProps({
   size: {
     type: [String, Number],
-    default: 50,
+    default: 50, // 默认 50px
   },
   color: {
     type: String,
-    default: '#42b983',
+    default: '#42b983', // 默认 Vue 绿色
   },
-  // 传入 i18n key
-  messageKey: {
+  message: {
     type: String,
-    default: 'components.loadingSpinner.loading',
+    default: '',
   },
 });
 
 const displayMessage = computed(() => {
-  return t(props.messageKey);
+  return t('components.loadingSpinner.loading') || props.message;
 });
 
 const spinnerStyle = computed(() => ({
@@ -51,7 +50,7 @@ const spinnerStyle = computed(() => ({
 }
 
 .spinner {
-  border: 6px solid #f3f3f3;
+  border: 6px solid #f3f3f3; /* 灰色边框 */
   border-radius: 50%;
   border-right-color: transparent;
   border-bottom-color: transparent;
