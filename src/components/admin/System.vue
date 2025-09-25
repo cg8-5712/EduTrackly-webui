@@ -267,7 +267,7 @@ export default {
 
           console.log('New data point with stats:', newHistoryPoint)
 
-          // 保留最近30个数据点
+          // 添加新数据点并保留最后30个点
           historyData.value = [...historyData.value, newHistoryPoint].slice(-30)
         } else {
           console.warn('Missing data for chart:', {
@@ -290,6 +290,8 @@ export default {
             }
 
             console.log('Partial data point:', newHistoryPoint)
+
+            // 添加新数据点并保留最后30个点
             historyData.value = [...historyData.value, newHistoryPoint].slice(-30)
           }
         }
@@ -428,11 +430,47 @@ export default {
         const currentData = historyData.value
         const prevData = previousData.value
 
-        // 如果是动画过程中，进行数据插值
-        let displayData = currentData
+        // 固定显示时间范围 (2分钟)
+        const displayTimeRange = 2 * 60 * 1000 // 2分钟
+        const now = Date.now()
+        const startTime = now - displayTimeRange
+
+        // 创建显示数据，确保有足够的时间范围
+        let displayData = currentData.filter(point => point.timestamp >= startTime)
+
+        // 如果数据不足，在开始时间添加占位数据点
+        if (displayData.length > 0) {
+          const firstPoint = displayData[0]
+          if (firstPoint.timestamp > startTime) {
+            displayData = [{
+              time: new Date(startTime).toLocaleTimeString(),
+              timestamp: startTime,
+              cpu: firstPoint.cpu,
+              memory: firstPoint.memory,
+              load: firstPoint.load
+            }, ...displayData]
+          }
+        }
+
+        // 在结束时间添加当前数据点（如果需要）
+        if (displayData.length > 0) {
+          const lastPoint = displayData[displayData.length - 1]
+          if (lastPoint.timestamp < now - 3000) { // 如果最新数据超过3秒
+            displayData = [...displayData, {
+              time: new Date(now).toLocaleTimeString(),
+              timestamp: now,
+              cpu: lastPoint.cpu,
+              memory: lastPoint.memory,
+              load: lastPoint.load
+            }]
+          }
+        }
+
+        // 动画插值处理
         if (isAnimating.value && prevData.length > 0) {
-          displayData = currentData.map((current, index) => {
-            const prev = prevData[index] || current
+          const prevDisplayData = prevData.filter(point => point.timestamp >= startTime)
+          displayData = displayData.map((current, index) => {
+            const prev = prevDisplayData[index] || current
             return {
               time: current.time,
               timestamp: current.timestamp,
@@ -464,10 +502,19 @@ export default {
           ctx.lineWidth = lineWidth
           ctx.beginPath()
 
-          const points = displayData.map((point, index) => ({
-            x: padding + (chartWidth / Math.max(1, displayData.length - 1)) * index,
-            y: padding + chartHeight - (point[dataKey] / maxValue) * chartHeight
-          }))
+          // 确保数据点充满整个图表宽度
+          const points = displayData.map((point, index) => {
+            // 使用索引分布确保充满整个宽度
+            const xProgress = displayData.length > 1 ? index / (displayData.length - 1) : 0.5
+            // 限制Y值在有效范围内，防止超出图表边界
+            const clampedValue = Math.max(0, Math.min(maxValue, point[dataKey]))
+            return {
+              x: padding + chartWidth * xProgress,
+              y: padding + chartHeight - (clampedValue / maxValue) * chartHeight,
+              timestamp: point.timestamp,
+              value: clampedValue
+            }
+          })
 
           ctx.moveTo(points[0].x, points[0].y)
 
@@ -479,11 +526,18 @@ export default {
             const prev = points[i - 1] || curr
             const nextNext = points[i + 2] || next
 
-            const cp1x = curr.x + (next.x - prev.x) * tension
-            const cp1y = curr.y + (next.y - prev.y) * tension
+            let cp1x = curr.x + (next.x - prev.x) * tension
+            let cp1y = curr.y + (next.y - prev.y) * tension
 
-            const cp2x = next.x - (nextNext.x - curr.x) * tension
-            const cp2y = next.y - (nextNext.y - curr.y) * tension
+            let cp2x = next.x - (nextNext.x - curr.x) * tension
+            let cp2y = next.y - (nextNext.y - curr.y) * tension
+
+            // 限制控制点Y坐标在图表范围内，防止曲线超出边界
+            const minY = padding
+            const maxY = padding + chartHeight
+
+            cp1y = Math.max(minY, Math.min(maxY, cp1y))
+            cp2y = Math.max(minY, Math.min(maxY, cp2y))
 
             ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, next.x, next.y)
           }
@@ -639,7 +693,7 @@ export default {
       setTimeout(initChartWithRetry, 100)
 
       // 设置定时器，每5秒获取一次数据（不显示loading）
-      intervalRef.value = setInterval(() => fetchSystemInfo(false), 1500)
+      intervalRef.value = setInterval(() => fetchSystemInfo(false), 3000)
 
       // 监听窗口大小变化
       window.addEventListener('resize', handleResize)
