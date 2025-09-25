@@ -33,187 +33,144 @@
       />
 
       <template v-else>
-        <!-- 系统基本信息 -->
-        <div v-if="systemInfo.data.os" class="card">
-          <h2 class="card-title">
-            <span class="title-icon">🖥️</span>
-            系统信息
-          </h2>
-          <div class="system-grid">
-            <div class="info-item">
-              <div class="info-label">操作系统</div>
-              <div class="info-value">{{ systemInfo.data.os.type }}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">平台架构</div>
-              <div class="info-value">{{ systemInfo.data.os.arch }}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">系统版本</div>
-              <div class="info-value">{{ systemInfo.data.os.release }}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">主机名</div>
-              <div class="info-value">{{ systemInfo.data.os.hostname }}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">系统负载</div>
-              <div class="info-value">
-                {{ systemInfo.data.load ? systemInfo.data.load.join(' / ') : 'N/A' }}
+        <!-- 主要内容区域 - 使用两栏布局 -->
+        <div class="main-content">
+          <!-- 左栏 -->
+          <div class="left-column">
+            <!-- 系统基本信息 - 紧凑版 -->
+            <div v-if="systemInfo.data.os" class="card compact-card">
+              <h2 class="card-title">
+                <span class="title-icon">🖥️</span>
+                系统信息
+              </h2>
+              <div class="system-grid-compact">
+                <div class="info-item-compact">
+                  <span class="info-label-compact">系统</span>
+                  <span class="info-value-compact">{{ systemInfo.data.os.type }} {{ systemInfo.data.os.arch }}</span>
+                </div>
+                <div class="info-item-compact">
+                  <span class="info-label-compact">版本</span>
+                  <span class="info-value-compact">{{ systemInfo.data.os.release }}</span>
+                </div>
+                <div class="info-item-compact">
+                  <span class="info-label-compact">主机</span>
+                  <span class="info-value-compact">{{ systemInfo.data.os.hostname }}</span>
+                </div>
+                <div class="info-item-compact">
+                  <span class="info-label-compact">负载</span>
+                  <span class="info-value-compact">{{ systemInfo.data.load ? systemInfo.data.load.join(' / ') : 'N/A' }}</span>
+                </div>
+                <div class="info-item-compact">
+                  <span class="info-label-compact">运行时间</span>
+                  <span class="info-value-compact">{{ formatUptime(systemInfo.data.os.uptime || 0) }}</span>
+                </div>
               </div>
             </div>
-            <div class="info-item">
-              <div class="info-label">运行时间</div>
-              <div class="info-value">
-                {{ formatUptime(systemInfo.data.os.uptime || 0) }}
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- 实时监控图表 -->
-        <div v-if="historyData.length > 0" class="card">
-          <h2 class="card-title">
-            <span class="title-icon">📈</span>
-            实时性能监控
-          </h2>
-          <div class="chart-container">
-            <canvas ref="chartCanvas"></canvas>
-          </div>
-        </div>
-
-        <!-- 性能指标卡片 -->
-        <div class="metrics-grid">
-          <!-- CPU 卡片 -->
-          <div v-if="systemInfo.data.cpu" class="metric-card">
-            <h3 class="metric-title">
-              <span class="metric-icon cpu">⚡</span>
-              CPU 性能
-            </h3>
-            <div class="metric-content">
-              <div class="usage-row">
-                <span class="usage-label">使用率</span>
-                <span
-                    class="usage-value"
-                    :style="{ color: getUsageColor(parseFloat(systemInfo.data.cpu[0].usage_percent)) }"
-                >
-                  {{ systemInfo.data.cpu[0].usage_percent }}%
-                </span>
-              </div>
-              <div class="progress-bar">
+            <!-- 网络信息 - 紧凑版 -->
+            <div v-if="systemInfo.data.network && systemInfo.data.network.length > 0" class="card compact-card">
+              <h2 class="card-title">
+                <span class="title-icon">🌐</span>
+                网络接口
+              </h2>
+              <div class="network-compact">
                 <div
-                    class="progress-fill"
-                    :style="{
-                    width: `${systemInfo.data.cpu[0].usage_percent}%`,
-                    backgroundColor: getUsageColor(parseFloat(systemInfo.data.cpu[0].usage_percent))
-                  }"
-                ></div>
+                    v-for="(net, index) in systemInfo.data.network.slice(0, 2)"
+                    :key="index"
+                    class="network-item-compact"
+                >
+                  <div class="network-name-compact">{{ net.interface }}</div>
+                  <div v-for="(addr, addrIndex) in net.addresses.slice(0, 1)" :key="addrIndex">
+                    <div class="network-detail-compact">{{ addr.address }}</div>
+                  </div>
+                </div>
               </div>
-              <div class="metric-details">
-                <div>型号: {{ systemInfo.data.cpu[0].model }}</div>
-                <div>频率: {{ Math.round(systemInfo.data.cpu[0].speed) }} MHz</div>
+            </div>
+          </div>
+
+          <!-- 右栏 -->
+          <div class="right-column">
+            <!-- 实时监控图表 - 调整高度 -->
+            <div class="card">
+              <h2 class="card-title">
+                <span class="title-icon">📈</span>
+                实时性能监控
+              </h2>
+              <div class="chart-container-compact">
+                <canvas ref="chartCanvas"></canvas>
+                <div v-if="historyData.length === 0" class="chart-placeholder">
+                  <div class="placeholder-text">等待数据加载中...</div>
+                </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 性能指标卡片 - 水平排列 -->
+        <div class="metrics-row">
+          <!-- CPU 卡片 -->
+          <div v-if="systemInfo.data.cpu && systemInfo.data.avgCpuUsage !== undefined" class="metric-card-horizontal">
+            <div class="metric-header">
+              <h3 class="metric-title-small">
+                <span class="metric-icon cpu">⚡</span>
+                CPU ({{ systemInfo.data.cpu.length }}核)
+              </h3>
+              <span class="usage-value-large" :style="{ color: getUsageColor(parseFloat(systemInfo.data.avgCpuUsage || 0)) }">
+                {{ systemInfo.data.avgCpuUsage || '0' }}%
+              </span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" :style="{
+                width: `${systemInfo.data.avgCpuUsage || 0}%`,
+                backgroundColor: getUsageColor(parseFloat(systemInfo.data.avgCpuUsage || 0))
+              }"></div>
+            </div>
+            <div class="metric-details-small">
+              {{ systemInfo.data.cpu?.[0]?.model?.split(' ').slice(0, 3).join(' ') || 'N/A' }}
             </div>
           </div>
 
           <!-- 内存卡片 -->
-          <div v-if="systemInfo.data.memory" class="metric-card">
-            <h3 class="metric-title">
-              <span class="metric-icon memory">💾</span>
-              内存状态
-            </h3>
-            <div class="metric-content">
-              <div class="usage-row">
-                <span class="usage-label">使用率</span>
-                <span
-                    class="usage-value"
-                    :style="{ color: getUsageColor(parseFloat(systemInfo.data.memory.usage_percent)) }"
-                >
-                  {{ systemInfo.data.memory.usage_percent }}%
-                </span>
-              </div>
-              <div class="progress-bar">
-                <div
-                    class="progress-fill"
-                    :style="{
-                    width: `${systemInfo.data.memory.usage_percent}%`,
-                    backgroundColor: getUsageColor(parseFloat(systemInfo.data.memory.usage_percent))
-                  }"
-                ></div>
-              </div>
-              <div class="metric-details">
-                <div>已用: {{ formatBytes(systemInfo.data.memory.total - systemInfo.data.memory.free) }}</div>
-                <div>可用: {{ formatBytes(systemInfo.data.memory.free) }}</div>
-                <div>总计: {{ formatBytes(systemInfo.data.memory.total) }}</div>
-              </div>
+          <div v-if="systemInfo.data.memory" class="metric-card-horizontal">
+            <div class="metric-header">
+              <h3 class="metric-title-small">
+                <span class="metric-icon memory">💾</span>
+                内存
+              </h3>
+              <span class="usage-value-large" :style="{ color: getUsageColor(parseFloat(systemInfo.data.memory?.usage_percent || 0)) }">
+                {{ systemInfo.data.memory?.usage_percent || '0' }}%
+              </span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" :style="{
+                width: `${systemInfo.data.memory?.usage_percent || 0}%`,
+                backgroundColor: getUsageColor(parseFloat(systemInfo.data.memory?.usage_percent || 0))
+              }"></div>
+            </div>
+            <div class="metric-details-small">
+              {{ formatBytes((systemInfo.data.memory?.total || 0) - (systemInfo.data.memory?.free || 0)) }} / {{ formatBytes(systemInfo.data.memory?.total || 0) }}
             </div>
           </div>
 
           <!-- 磁盘卡片 -->
-          <div v-if="systemInfo.data.disk && systemInfo.data.disk.length > 0" class="metric-card">
-            <h3 class="metric-title">
-              <span class="metric-icon disk">💿</span>
-              磁盘存储
-            </h3>
-            <div class="metric-content">
-              <div class="usage-row">
-                <span class="usage-label">使用率</span>
-                <span
-                    class="usage-value"
-                    :style="{ color: getUsageColor(systemInfo.data.disk[0].used_percent) }"
-                >
-                  {{ systemInfo.data.disk[0].used_percent }}%
-                </span>
-              </div>
-              <div class="progress-bar">
-                <div
-                    class="progress-fill"
-                    :style="{
-                    width: `${systemInfo.data.disk[0].used_percent}%`,
-                    backgroundColor: getUsageColor(systemInfo.data.disk[0].used_percent)
-                  }"
-                ></div>
-              </div>
-              <div class="metric-details">
-                <div>挂载点: {{ systemInfo.data.disk[0].mount }}</div>
-                <div>已用: {{ formatBytes(systemInfo.data.disk[0].used) }}</div>
-                <div>可用: {{ formatBytes(systemInfo.data.disk[0].free) }}</div>
-                <div>总计: {{ formatBytes(systemInfo.data.disk[0].size) }}</div>
-              </div>
+          <div v-if="systemInfo.data.totalDisk" class="metric-card-horizontal">
+            <div class="metric-header">
+              <h3 class="metric-title-small">
+                <span class="metric-icon disk">💿</span>
+                磁盘 ({{ systemInfo.data.disk?.length || 0 }}个)
+              </h3>
+              <span class="usage-value-large" :style="{ color: getUsageColor(parseFloat(systemInfo.data.totalDisk.used_percent || 0)) }">
+                {{ systemInfo.data.totalDisk.used_percent || '0' }}%
+              </span>
             </div>
-          </div>
-        </div>
-
-        <!-- 网络信息 -->
-        <div v-if="systemInfo.data.network && systemInfo.data.network.length > 0" class="card">
-          <h2 class="card-title">
-            <span class="title-icon">🌐</span>
-            网络接口
-          </h2>
-          <div class="network-grid">
-            <div
-                v-for="(net, index) in systemInfo.data.network"
-                :key="index"
-                class="network-item"
-            >
-              <div class="network-name">
-                {{ net.interface }}
-              </div>
-              <div
-                  v-for="(addr, addrIndex) in net.addresses"
-                  :key="addrIndex"
-                  class="network-details"
-              >
-                <div class="network-detail">
-                  <span class="detail-label">IP地址:</span> {{ addr.address }}
-                </div>
-                <div class="network-detail">
-                  <span class="detail-label">MAC地址:</span> {{ addr.mac }}
-                </div>
-                <div class="network-detail">
-                  <span class="detail-label">类型:</span> {{ addr.family }}
-                </div>
-              </div>
+            <div class="progress-bar">
+              <div class="progress-fill" :style="{
+                width: `${systemInfo.data.totalDisk.used_percent || 0}%`,
+                backgroundColor: getUsageColor(parseFloat(systemInfo.data.totalDisk.used_percent || 0))
+              }"></div>
+            </div>
+            <div class="metric-details-small">
+              {{ formatBytes(systemInfo.data.totalDisk.used || 0) }} / {{ formatBytes(systemInfo.data.totalDisk.size || 0) }}
             </div>
           </div>
         </div>
@@ -225,9 +182,13 @@
 <script>
 import { ref, reactive, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import SystemService from '@/services/admin/system'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 export default {
   name: 'SystemMonitor',
+  components: {
+    LoadingSpinner
+  },
   setup() {
     const systemInfo = reactive({ data: {} })
     const loading = ref(true)
@@ -241,42 +202,104 @@ export default {
     let chart = null
 
     // 模拟API调用的函数
-    const fetchSystemInfo = async () => {
+    const fetchSystemInfo = async (isInitial = false) => {
       try {
-        loading.value = true
+        // 只有初始加载时才显示loading状态
+        if (isInitial) {
+          loading.value = true
+        }
 
         const response = await SystemService.getSystemInfo()
+        console.log('API Response:', response)
 
         if (response.code !== 0) {
           throw new Error(response.message || '获取系统信息失败')
         }
 
         const data = response.data
+        console.log('System data:', data)
+
+        // 验证数据结构
+        if (!data || typeof data !== 'object') {
+          throw new Error('无效的系统数据')
+        }
+
+        // 计算CPU平均使用率
+        if (data.cpu && data.cpu.length > 0) {
+          const totalCpuUsage = data.cpu.reduce((sum, cpu) => sum + (parseFloat(cpu.usage_percent) || 0), 0)
+          data.avgCpuUsage = (totalCpuUsage / data.cpu.length).toFixed(1)
+          console.log(`CPU cores: ${data.cpu.length}, average usage: ${data.avgCpuUsage}%`)
+        } else {
+          console.warn('CPU data missing or invalid:', data.cpu)
+        }
+
+        // 计算硬盘总容量和使用量
+        if (data.disk && data.disk.length > 0) {
+          const totalSize = data.disk.reduce((sum, disk) => sum + (disk.size || 0), 0)
+          const totalUsed = data.disk.reduce((sum, disk) => sum + (disk.used || 0), 0)
+          data.totalDisk = {
+            size: totalSize,
+            used: totalUsed,
+            used_percent: totalSize > 0 ? ((totalUsed / totalSize) * 100).toFixed(1) : 0
+          }
+        }
+
         Object.assign(systemInfo.data, data) // 更新系统信息
 
         connectionStatus.value = '已连接'
         error.value = null
-        loading.value = false
-
-        // 更新历史数据
-        const currentTime = new Date()
-        const timeStr = currentTime.toLocaleTimeString()
-
-        const newHistoryPoint = {
-          time: timeStr,
-          timestamp: currentTime.getTime(),
-          cpu: parseFloat(data.cpu[0].usage_percent),
-          memory: parseFloat(data.memory.usage_percent),
-          load: parseFloat(data.load[0]) // 取第一个负载值
+        if (isInitial) {
+          loading.value = false
         }
 
-        // 保留最近30个数据点
-        historyData.value = [...historyData.value, newHistoryPoint].slice(-30)
+        // 更新历史数据 - 使用统计后的数据
+        if (data.avgCpuUsage !== undefined && data.memory && data.load && data.load.length > 0) {
+          const currentTime = new Date()
+          const timeStr = currentTime.toLocaleTimeString()
+
+          const newHistoryPoint = {
+            time: timeStr,
+            timestamp: currentTime.getTime(),
+            cpu: parseFloat(data.avgCpuUsage) || 0,
+            memory: parseFloat(data.memory.usage_percent) || 0,
+            load: Math.min(parseFloat(data.load[0]) * 100 || 0, 100) // 将负载转换为百分比，最大100%
+          }
+
+          console.log('New data point with stats:', newHistoryPoint)
+
+          // 保留最近30个数据点
+          historyData.value = [...historyData.value, newHistoryPoint].slice(-30)
+        } else {
+          console.warn('Missing data for chart:', {
+            avgCpuUsage: data.avgCpuUsage,
+            memory: data.memory,
+            load: data.load
+          })
+
+          // 如果数据不完整，但有部分数据，仍然尝试生成数据点
+          if (data.avgCpuUsage !== undefined || data.memory || (data.load && data.load.length > 0)) {
+            const currentTime = new Date()
+            const timeStr = currentTime.toLocaleTimeString()
+
+            const newHistoryPoint = {
+              time: timeStr,
+              timestamp: currentTime.getTime(),
+              cpu: parseFloat(data.avgCpuUsage) || 0,
+              memory: parseFloat(data.memory?.usage_percent) || 0,
+              load: data.load && data.load.length > 0 ? Math.min(parseFloat(data.load[0]) * 100 || 0, 100) : 0
+            }
+
+            console.log('Partial data point:', newHistoryPoint)
+            historyData.value = [...historyData.value, newHistoryPoint].slice(-30)
+          }
+        }
       } catch (err) {
         console.error('获取系统信息失败:', err)
-        error.value = '获取系统信息失败'
+        error.value = err.message || '获取系统信息失败'
         connectionStatus.value = '连接失败'
-        loading.value = false
+        if (isInitial) {
+          loading.value = false
+        }
       }
     }
 
@@ -325,7 +348,10 @@ export default {
 
     // 初始化图表
     const initChart = async () => {
-      if (!chartCanvas.value) return
+      if (!chartCanvas.value) {
+        console.log('Chart canvas not available')
+        return
+      }
 
       // 使用原生Canvas绘制图表，支持动画
       const drawChart = (progress = 1) => {
@@ -335,10 +361,19 @@ export default {
         const ctx = canvas.getContext('2d')
         const rect = canvas.getBoundingClientRect()
 
+        // 确保canvas有有效尺寸
+        if (rect.width === 0 || rect.height === 0) {
+          console.log('Canvas has zero dimensions, skipping draw')
+          return
+        }
+
         // 设置canvas尺寸
-        canvas.width = rect.width * (window.devicePixelRatio || 1)
-        canvas.height = rect.height * (window.devicePixelRatio || 1)
-        ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1)
+        const deviceRatio = window.devicePixelRatio || 1
+        canvas.width = rect.width * deviceRatio
+        canvas.height = rect.height * deviceRatio
+        canvas.style.width = rect.width + 'px'
+        canvas.style.height = rect.height + 'px'
+        ctx.scale(deviceRatio, deviceRatio)
 
         const canvasWidth = rect.width
         const canvasHeight = rect.height
@@ -382,7 +417,12 @@ export default {
           ctx.fillText(`${value}%`, padding - 10, y)
         }
 
-        if (historyData.value.length === 0) return
+        if (historyData.value.length === 0) {
+          console.log('No history data available for chart')
+          return
+        }
+
+        console.log('Drawing chart with', historyData.value.length, 'data points')
 
         // 获取当前数据和之前数据，用于动画插值
         const currentData = historyData.value
@@ -554,10 +594,17 @@ export default {
     }
 
     // 监听历史数据变化，更新图表
-    watch(historyData, () => {
+    watch(historyData, (newData, oldData) => {
+      console.log('History data changed:', newData.length, 'points')
       if (chart) {
         nextTick(() => {
           chart.update()
+        })
+      } else if (newData.length > 0) {
+        // 如果图表还未初始化但有数据了，尝试初始化图表
+        console.log('Initializing chart due to data availability')
+        nextTick(() => {
+          initChart()
         })
       }
     }, { deep: true })
@@ -572,15 +619,27 @@ export default {
     }
 
     onMounted(async () => {
-      // 立即获取一次数据
-      await fetchSystemInfo()
+      // 立即获取一次数据（显示loading）
+      await fetchSystemInfo(true)
 
-      // 初始化图表
+      // 初始化图表 - 等待DOM更新和数据准备完成
       await nextTick()
-      initChart()
 
-      // 设置定时器，每5秒获取一次数据
-      intervalRef.value = setInterval(fetchSystemInfo, 1000)
+      // 延迟初始化图表，确保DOM完全渲染
+      const initChartWithRetry = () => {
+        if (chartCanvas.value && chartCanvas.value.getBoundingClientRect().width > 0) {
+          console.log('Initializing chart...')
+          initChart()
+        } else {
+          console.log('Retrying chart initialization...')
+          setTimeout(initChartWithRetry, 100)
+        }
+      }
+
+      setTimeout(initChartWithRetry, 100)
+
+      // 设置定时器，每5秒获取一次数据（不显示loading）
+      intervalRef.value = setInterval(() => fetchSystemInfo(false), 1500)
 
       // 监听窗口大小变化
       window.addEventListener('resize', handleResize)
@@ -754,6 +813,83 @@ export default {
   margin: 0;
 }
 
+/* 主要布局 */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 紧凑卡片样式 */
+.compact-card {
+  margin-bottom: 0;
+}
+
+.system-grid-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-item-compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.info-label-compact {
+  color: #6b7280;
+  font-weight: 500;
+  min-width: 60px;
+}
+
+.info-value-compact {
+  color: #1f2937;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* 网络信息紧凑样式 */
+.network-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.network-item-compact {
+  background: #f9fafb;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+}
+
+.network-name-compact {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.network-detail-compact {
+  color: #6b7280;
+  font-size: 0.8rem;
+}
+
 /* 图表样式 */
 .chart-container {
   height: 320px;
@@ -761,13 +897,85 @@ export default {
   width: 100%;
 }
 
-.chart-container canvas {
+.chart-container-compact {
+  height: 400px;
+  position: relative;
+  width: 100%;
+}
+
+.chart-container canvas,
+.chart-container-compact canvas {
   width: 100%;
   height: 100%;
   display: block;
 }
 
-/* 指标网格 */
+.chart-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.placeholder-text {
+  color: #6b7280;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* 水平指标行 */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metric-card-horizontal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  transition: box-shadow 0.3s ease;
+}
+
+.metric-card-horizontal:hover {
+  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.15);
+}
+
+.metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.metric-title-small {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.usage-value-large {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.metric-details-small {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 指标网格 - 备用（保留原有） */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -917,6 +1125,21 @@ export default {
 }
 
 /* 响应式设计 */
+@media (max-width: 1024px) {
+  .main-content {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .chart-container-compact {
+    height: 350px;
+  }
+
+  .metrics-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .system-monitor {
     padding: 16px;
@@ -928,6 +1151,24 @@ export default {
 
   .status-bar {
     gap: 16px;
+  }
+
+  .main-content {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .metrics-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .metric-card-horizontal {
+    padding: 12px;
+  }
+
+  .usage-value-large {
+    font-size: 1.25rem;
   }
 
   .system-grid {
@@ -942,8 +1183,9 @@ export default {
     grid-template-columns: 1fr;
   }
 
-  .chart-container {
-    height: 240px;
+  .chart-container,
+  .chart-container-compact {
+    height: 200px;
   }
 }
 
@@ -956,16 +1198,31 @@ export default {
     font-size: 1.75rem;
   }
 
-  .card {
+  .card,
+  .compact-card {
     padding: 16px;
   }
 
-  .metric-card {
-    padding: 16px;
+  .metric-card,
+  .metric-card-horizontal {
+    padding: 12px;
   }
 
   .usage-value {
     font-size: 1.5rem;
+  }
+
+  .usage-value-large {
+    font-size: 1.125rem;
+  }
+
+  .info-item-compact {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .metric-details-small {
+    font-size: 0.7rem;
   }
 }
 </style>
