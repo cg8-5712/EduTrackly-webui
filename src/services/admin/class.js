@@ -17,7 +17,9 @@ class AdminClassService extends ApiPrefix {
       const { page = 1, size = 10, order = 'asc' } = params;
       const url = `/class/list?order=${order}`;
 
-      const response = await this.adminGet(url, { page, size });
+      // page 和 size 作为 body 内容发送
+      const bodyData = { page, size };
+      const response = await this.adminPost(url, bodyData);
       console.log('获取班级列表成功:', response.message);
 
       if (response.code !== 0) {

@@ -30,12 +30,44 @@
             >
             <span class="search-icon">🔍</span>
           </div>
-          <div class="sort-controls">
-            <label>排序方式：</label>
-            <select v-model="sortOrder" @change="fetchClasses" class="sort-select">
-              <option value="asc">创建时间升序</option>
-              <option value="desc">创建时间降序</option>
-            </select>
+          <div class="page-size-controls">
+            <label>每页显示：</label>
+            <div class="custom-select" ref="pageSizeSelectRef">
+              <div class="select-trigger" @click="togglePageSizeDropdown">
+                <span class="select-value">{{ pagination.size }}条</span>
+                <span class="select-arrow" :class="{ active: showPageSizeDropdown }">▼</span>
+              </div>
+              <div class="select-dropdown" v-show="showPageSizeDropdown">
+                <div
+                  class="select-option"
+                  :class="{ selected: pagination.size === 5 }"
+                  @click="selectPageSizeOption(5)"
+                >
+                  5条
+                </div>
+                <div
+                  class="select-option"
+                  :class="{ selected: pagination.size === 20 }"
+                  @click="selectPageSizeOption(20)"
+                >
+                  20条
+                </div>
+                <div
+                  class="select-option"
+                  :class="{ selected: pagination.size === 50 }"
+                  @click="selectPageSizeOption(50)"
+                >
+                  50条
+                </div>
+                <div
+                  class="select-option"
+                  :class="{ selected: pagination.size === 100 }"
+                  @click="selectPageSizeOption(100)"
+                >
+                  100条
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -55,51 +87,69 @@
       <div v-if="!loading && !error" class="class-list">
         <div class="list-header">
           <div class="list-stats">
-            <span>共找到 {{ pagination.total }} 个班级</span>
+            <span>共找到 {{ pagination.total }} 个班级，每页显示 {{ pagination.size }} 条</span>
           </div>
         </div>
 
-        <div class="class-grid">
+        <!-- 表头排序 -->
+        <div class="table-header">
+          <div class="header-item flex-2">班级名称</div>
+          <div class="header-item sortable" @click="handleSort('cid')">
+            <span>ID</span>
+            <span class="sort-arrows">
+              <span class="arrow up" :class="{ active: sortField === 'cid' && sortDirection === 'asc' }">↑</span>
+              <span class="arrow down" :class="{ active: sortField === 'cid' && sortDirection === 'desc' }">↓</span>
+            </span>
+          </div>
+          <div class="header-item flex-1">学生人数</div>
+          <div class="header-item sortable" @click="handleSort('create_time')">
+            <span>创建时间</span>
+            <span class="sort-arrows">
+              <span class="arrow up" :class="{ active: sortField === 'create_time' && sortDirection === 'asc' }">↑</span>
+              <span class="arrow down" :class="{ active: sortField === 'create_time' && sortDirection === 'desc' }">↓</span>
+            </span>
+          </div>
+          <div class="header-item flex-1">操作</div>
+        </div>
+
+        <div class="class-table">
           <div
-            v-for="classItem in classList"
+            v-for="classItem in sortedClassList"
             :key="classItem.cid"
-            class="class-card"
+            class="class-row"
           >
-            <div class="card-header">
+            <div class="row-item flex-2">
               <h3 class="class-name">{{ classItem.class_name }}</h3>
-              <div class="class-id">ID: {{ classItem.cid }}</div>
             </div>
-
-            <div class="card-content">
-              <div class="class-info">
-                <div class="info-item">
-                  <span class="info-icon">👥</span>
-                  <span class="info-label">学生人数</span>
-                  <span class="info-value">{{ getStudentCount(classItem.cid) }}</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-icon">📅</span>
-                  <span class="info-label">创建时间</span>
-                  <span class="info-value">{{ formatDate(classItem.create_time) }}</span>
-                </div>
+            <div class="row-item">
+              <span class="class-id">{{ classItem.cid }}</span>
+            </div>
+            <div class="row-item flex-1">
+              <span class="student-count">
+                <span class="count-icon">👥</span>
+                {{ getStudentCount(classItem.cid) }}人
+              </span>
+            </div>
+            <div class="row-item">
+              <span class="create-time">{{ formatDate(classItem.create_time) }}</span>
+            </div>
+            <div class="row-item flex-1">
+              <div class="action-buttons">
+                <button
+                  @click="viewClassDetail(classItem)"
+                  class="action-btn view-btn"
+                  title="查看详情"
+                >
+                  <span class="btn-icon">👁️</span>
+                </button>
+                <button
+                  @click="confirmDelete(classItem)"
+                  class="action-btn delete-btn"
+                  title="删除班级"
+                >
+                  <span class="btn-icon">🗑️</span>
+                </button>
               </div>
-            </div>
-
-            <div class="card-actions">
-              <button
-                @click="viewClassDetail(classItem)"
-                class="action-btn view-btn"
-              >
-                <span class="btn-icon">👁️</span>
-                查看详情
-              </button>
-              <button
-                @click="confirmDelete(classItem)"
-                class="action-btn delete-btn"
-              >
-                <span class="btn-icon">🗑️</span>
-                删除
-              </button>
             </div>
           </div>
         </div>
@@ -225,7 +275,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, onUnmounted } from 'vue'
 import AdminClassService from '@/services/admin/class'
 
 // 响应式数据
@@ -233,12 +283,20 @@ const loading = ref(false)
 const error = ref('')
 const classList = ref([])
 const searchQuery = ref('')
-const sortOrder = ref('desc')
+const sortOrder = ref('desc') // API排序使用（仅用于创建时间）
+
+// 排序状态
+const sortField = ref('create_time') // 当前排序字段
+const sortDirection = ref('desc') // 当前排序方向
+
+// 自定义下拉框状态（移除排序下拉框相关）
+const showPageSizeDropdown = ref(false)
+const pageSizeSelectRef = ref(null)
 
 // 分页数据
 const pagination = reactive({
   page: 1,
-  size: 12,
+  size: 20, // 默认显示20条
   total: 0,
   pages: 0
 })
@@ -298,6 +356,48 @@ const paginationPages = computed(() => {
   return pages
 })
 
+// 排序后的班级列表计算属性
+const sortedClassList = computed(() => {
+  if (!classList.value || classList.value.length === 0) {
+    return []
+  }
+
+  // 如果是创建时间排序，直接返回（由API处理）
+  if (sortField.value === 'create_time') {
+    return classList.value
+  }
+
+  // 前端排序处理
+  const sorted = [...classList.value].sort((a, b) => {
+    let aValue, bValue
+
+    if (sortField.value === 'cid') {
+      aValue = a.cid
+      bValue = b.cid
+    } else if (sortField.value === 'class_name') {
+      aValue = a.class_name
+      bValue = b.class_name
+    } else {
+      return 0
+    }
+
+    // 数值排序
+    if (typeof aValue === 'number' && typeof bValue === 'number') {
+      return sortDirection.value === 'asc' ? aValue - bValue : bValue - aValue
+    }
+
+    // 字符串排序
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      const result = aValue.localeCompare(bValue, 'zh-CN')
+      return sortDirection.value === 'asc' ? result : -result
+    }
+
+    return 0
+  })
+
+  return sorted
+})
+
 // 方法
 const fetchClasses = async () => {
   try {
@@ -307,7 +407,7 @@ const fetchClasses = async () => {
     const params = {
       page: pagination.page,
       size: pagination.size,
-      order: sortOrder.value
+      order: sortField.value === 'create_time' ? sortDirection.value : sortOrder.value
     }
 
     const response = await AdminClassService.getClassList(params)
@@ -352,6 +452,49 @@ const changePage = (page) => {
   if (page !== '...' && page !== pagination.page) {
     pagination.page = page
     fetchClasses()
+  }
+}
+
+const handlePageSizeChange = () => {
+  // 每页显示数量变化时，重置到第一页
+  pagination.page = 1
+  fetchClasses()
+}
+
+// 排序处理方法
+const handleSort = (field) => {
+  if (sortField.value === field) {
+    // 如果点击的是当前排序字段，切换排序方向
+    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    // 如果点击的是新字段，设置为新字段并默认降序
+    sortField.value = field
+    sortDirection.value = 'desc'
+  }
+
+  // 如果是创建时间排序，需要重新请求API
+  if (field === 'create_time') {
+    pagination.page = 1 // 重置到第一页
+    fetchClasses()
+  }
+  // 其他排序由计算属性自动处理，不需要重新请求
+}
+
+// 自定义下拉框方法（仅保留每页显示数量）
+const togglePageSizeDropdown = () => {
+  showPageSizeDropdown.value = !showPageSizeDropdown.value
+}
+
+const selectPageSizeOption = (value) => {
+  pagination.size = value
+  showPageSizeDropdown.value = false
+  handlePageSizeChange()
+}
+
+// 点击外部关闭下拉框
+const handleClickOutside = (event) => {
+  if (pageSizeSelectRef.value && !pageSizeSelectRef.value.contains(event.target)) {
+    showPageSizeDropdown.value = false
   }
 }
 
@@ -438,6 +581,13 @@ const formatDate = (timestamp) => {
 // 初始化
 onMounted(() => {
   fetchClasses()
+  // 添加点击外部关闭下拉框的事件监听
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  // 清理事件监听
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -570,18 +720,120 @@ onMounted(() => {
   color: #6b7280;
 }
 
-.sort-controls {
+/* 排序控制器已移除，保留作为备用 */
+
+.page-size-controls {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.sort-select {
-  padding: 8px 16px;
+/* 自定义下拉框样式 */
+.custom-select {
+  position: relative;
+  min-width: 160px;
+}
+
+.select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: white;
   border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 0.875rem;
+  border-radius: 12px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.select-trigger:hover {
+  border-color: #2563eb;
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.1);
+}
+
+.select-value {
+  flex: 1;
+  text-align: left;
+}
+
+.select-arrow {
+  margin-left: 12px;
+  font-size: 0.75rem;
+  color: #6b7280;
+  transition: transform 0.3s ease;
+}
+
+.select-arrow.active {
+  transform: rotate(180deg);
+}
+
+.select-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdownSlide 0.2s ease;
+}
+
+.select-option {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.select-option:last-child {
+  border-bottom: none;
+}
+
+.select-option:hover {
+  background: #f8fafc;
+  color: #2563eb;
+}
+
+.select-option.selected {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  color: #2563eb;
+  font-weight: 600;
+  position: relative;
+}
+
+.select-option.selected::after {
+  content: '✓';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #2563eb;
+  font-weight: bold;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 旧样式移除，保留作为备用 */
+.sort-select {
+  display: none;
 }
 
 /* 加载和错误状态 */
@@ -636,95 +888,159 @@ onMounted(() => {
   font-weight: 500;
 }
 
-.class-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 20px;
-  padding: 24px;
+/* 表头样式 */
+.table-header {
+  display: flex;
+  background: #f8fafc;
+  border-bottom: 2px solid #e5e7eb;
+  padding: 16px 24px;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
 }
 
-.class-card {
-  background: #f9fafb;
-  border-radius: 12px;
-  border: 2px solid #e5e7eb;
-  transition: all 0.3s ease;
+.header-item {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  min-width: 0;
 }
 
-.class-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-color: #2563eb;
+.header-item.flex-1 {
+  flex: 1;
 }
 
-.card-header {
-  padding: 20px 20px 16px;
-  border-bottom: 1px solid #e5e7eb;
+.header-item.flex-2 {
+  flex: 2;
+}
+
+.header-item.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+  gap: 8px;
+}
+
+.header-item.sortable:hover {
+  color: #2563eb;
+}
+
+.sort-arrows {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-left: 4px;
+}
+
+.arrow {
+  font-size: 0.7rem;
+  color: #d1d5db;
+  transition: color 0.2s ease;
+  line-height: 1;
+}
+
+.arrow.active {
+  color: #2563eb;
+  font-weight: bold;
+}
+
+.arrow.up {
+  margin-bottom: -2px;
+}
+
+.arrow.down {
+  margin-top: -2px;
+}
+
+/* 表格内容样式 */
+.class-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.class-row {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.2s ease;
+}
+
+.class-row:hover {
+  background: #f8fafc;
+}
+
+.class-row:last-child {
+  border-bottom: none;
+}
+
+.row-item {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  min-width: 0;
+}
+
+.row-item.flex-1 {
+  flex: 1;
+}
+
+.row-item.flex-2 {
+  flex: 2;
 }
 
 .class-name {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 600;
   color: #1f2937;
-  margin: 0 0 8px 0;
+  margin: 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .class-id {
   font-size: 0.875rem;
   color: #6b7280;
   font-weight: 500;
+  background: #f3f4f6;
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
-.card-content {
-  padding: 16px 20px;
-}
-
-.class-info {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.info-item {
+.student-count {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
+  font-size: 0.875rem;
+  color: #374151;
+  font-weight: 500;
 }
 
-.info-icon {
-  font-size: 1.2rem;
-  width: 24px;
-  text-align: center;
+.count-icon {
+  font-size: 1rem;
 }
 
-.info-label {
+.create-time {
+  font-size: 0.875rem;
   color: #6b7280;
-  font-size: 0.875rem;
-  flex: 1;
+  font-weight: 500;
 }
 
-.info-value {
-  font-weight: 600;
-  color: #1f2937;
-  font-size: 0.875rem;
-}
-
-.card-actions {
-  padding: 16px 20px 20px;
+.action-buttons {
   display: flex;
-  gap: 12px;
+  gap: 8px;
 }
 
 .action-btn {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 10px 16px;
+  width: 36px;
+  height: 36px;
   border: none;
   border-radius: 8px;
   font-size: 0.875rem;
-  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -736,6 +1052,7 @@ onMounted(() => {
 
 .view-btn:hover {
   background: #dbeafe;
+  transform: scale(1.05);
 }
 
 .delete-btn {
@@ -745,6 +1062,11 @@ onMounted(() => {
 
 .delete-btn:hover {
   background: #fee2e2;
+  transform: scale(1.05);
+}
+
+.btn-icon {
+  font-size: 1rem;
 }
 
 /* 分页 */
@@ -1046,13 +1368,47 @@ onMounted(() => {
     gap: 16px;
   }
 
+  .page-size-controls {
+    justify-content: space-between;
+  }
+
+  .custom-select {
+    min-width: 140px;
+  }
+
+  .select-trigger {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
   .search-input-wrapper {
     min-width: auto;
   }
 
-  .class-grid {
-    grid-template-columns: 1fr;
-    padding: 16px;
+  .table-header {
+    padding: 12px 16px;
+    font-size: 0.8rem;
+  }
+
+  .class-row {
+    padding: 12px 16px;
+  }
+
+  .header-item,
+  .row-item {
+    padding: 0 4px;
+  }
+
+  .class-name {
+    font-size: 1rem;
+  }
+
+  .sort-arrows {
+    gap: 0;
+  }
+
+  .arrow {
+    font-size: 0.6rem;
   }
 
   .modal {
@@ -1070,8 +1426,55 @@ onMounted(() => {
     font-size: 1.75rem;
   }
 
-  .card-actions {
-    flex-direction: column;
+  .custom-select {
+    min-width: 120px;
+  }
+
+  .select-trigger {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+
+  .select-option {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
+
+  .table-header {
+    padding: 10px 12px;
+    font-size: 0.75rem;
+  }
+
+  .class-row {
+    padding: 10px 12px;
+  }
+
+  .header-item,
+  .row-item {
+    padding: 0 2px;
+  }
+
+  .class-name {
+    font-size: 0.9rem;
+  }
+
+  .class-id {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+  }
+
+  .student-count,
+  .create-time {
+    font-size: 0.75rem;
+  }
+
+  .action-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .btn-icon {
+    font-size: 0.9rem;
   }
 
   .modal-actions {
