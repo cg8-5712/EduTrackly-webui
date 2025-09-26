@@ -38,6 +38,38 @@ class ClassService extends ApiPrefix {
       throw error;
     }
   }
+
+  /**
+   * 获取班级基本信息（普通权限）
+   * @param {number} cid - 班级ID
+   * @param {string} className - 班级名称（与cid二选一）
+   */
+  async getClassInfo(cid = null, className = null) {
+    try {
+      if (!cid && !className) {
+        throw new Error('班级ID或班级名称不能同时为空');
+      }
+
+      let url = '/class/get?';
+      if (cid) {
+        url += `cid=${cid}`;
+      } else {
+        url += `class_name=${encodeURIComponent(className)}`;
+      }
+
+      const response = await this.get(url);
+      console.log('获取班级信息成功:', response.message);
+
+      if (response.code !== 0) {
+        throw new Error(response.message);
+      }
+
+      return response;
+    } catch (error) {
+      console.error('获取班级信息失败:', error);
+      throw error;
+    }
+  }
 }
 
 export default new ClassService();

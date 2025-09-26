@@ -3,20 +3,27 @@
     <div class="container">
       <!-- 标题和状态栏 -->
       <div class="header">
-        <h1 class="title">
-          系统监控面板
-        </h1>
-        <div class="status-bar">
-          <div class="status-item">
-            <div
-                class="status-dot"
-                :style="{ backgroundColor: getStatusColor(connectionStatus) }"
-            ></div>
-            <span class="status-text">状态: {{ connectionStatus }}</span>
+        <div class="header-content">
+          <div class="title-section">
+            <h1 class="title">系统监控面板</h1>
+            <p class="subtitle">实时监控系统性能指标</p>
           </div>
-          <span class="status-text">
-            监控时长: {{ systemInfo.data.os?.uptime ? formatUptime(systemInfo.data.os.uptime) : '0分' }}
-          </span>
+
+          <div class="status-section">
+            <div class="status-card" :class="getStatusClass(connectionStatus)">
+              <div class="status-indicator">
+                <div class="status-dot" :style="{ backgroundColor: getStatusColor(connectionStatus) }"></div>
+                <span class="status-label">{{ connectionStatus }}</span>
+              </div>
+            </div>
+
+            <div class="uptime-card">
+              <div class="uptime-content">
+                <span class="uptime-label">系统运行时长</span>
+                <span class="uptime-value">{{ systemInfo.data.os?.uptime ? formatUptime(systemInfo.data.os.uptime) : '0分' }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -339,6 +346,16 @@ export default {
         case '连接中...': return '#f39c12'
         case '连接失败': return '#e74c3c'
         default: return '#95a5a6'
+      }
+    }
+
+    // 获取状态类名
+    const getStatusClass = (status) => {
+      switch (status) {
+        case '已连接': return 'status-connected'
+        case '连接中...': return 'status-connecting'
+        case '连接失败': return 'status-error'
+        default: return 'status-unknown'
       }
     }
 
@@ -721,6 +738,7 @@ export default {
       formatUptime,
       getUsageColor,
       getStatusColor,
+      getStatusClass,
       Math
     }
   }
@@ -746,8 +764,20 @@ export default {
 
 /* 头部样式 */
 .header {
-  text-align: center;
   margin-bottom: 32px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.title-section {
+  flex: 1;
+  min-width: 300px;
 }
 
 .title {
@@ -758,8 +788,86 @@ export default {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  margin: 0 0 16px 0;
+  margin: 0 0 8px 0;
   padding: 0;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 1.125rem;
+  margin: 0;
+  font-weight: 400;
+}
+
+.status-section {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.status-card {
+  background: white;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.status-card.status-connected {
+  border-color: #d1fae5;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.status-card.status-connecting {
+  border-color: #fed7aa;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.status-card.status-error {
+  border-color: #fecaca;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #1f2937;
+}
+
+.uptime-card {
+  background: white;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  border: 2px solid #e5e7eb;
+  min-width: 160px;
+}
+
+.uptime-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.uptime-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.uptime-value {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #1f2937;
 }
 
 .status-bar {
@@ -1201,6 +1309,25 @@ export default {
 
   .title {
     font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .status-section {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .status-card, .uptime-card {
+    flex: 1;
+    min-width: 140px;
   }
 
   .status-bar {
