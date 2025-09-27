@@ -9,11 +9,13 @@
             选中：{{ formattedSelectedDate }}
           </span>
         </div>
-        <button @click="showCalendar = !showCalendar" class="text-4xl md:text-5xl p-1 rounded transition-transform hover:scale-110 border-0 bg-transparent cursor-pointer">
-          📅
-        </button>
-        <div v-if="showCalendar" class="absolute top-full left-0 mt-2 z-[1000] bg-gray-800 rounded-xl shadow-lg">
-          <Calendar mode="single" @select-date="onDateSelect" />
+        <div class="relative">
+          <button @click="showCalendar = !showCalendar" class="calendar-btn text-4xl md:text-5xl p-1 rounded transition-transform hover:scale-110 border-0 bg-transparent cursor-pointer">
+            📅
+          </button>
+          <div v-if="showCalendar" class="calendar-popup absolute top-full right-0 mt-2 z-[1000] bg-gray-800 rounded-xl shadow-lg">
+            <Calendar mode="single" @select-date="onDateSelect" />
+          </div>
         </div>
       </div>
 
