@@ -1,10 +1,10 @@
 <template>
-  <div class="spinner-container">
+  <div class="flex flex-col items-center justify-center p-5">
     <div
-        class="spinner"
+        class="border-8 border-gray-200 border-t-transparent border-r-transparent rounded-full animate-spin"
         :style="spinnerStyle"
     ></div>
-    <p v-if="displayMessage" class="spinner-message">{{ displayMessage }}</p>
+    <p v-if="displayMessage" class="mt-2.5 text-sm text-gray-700 text-center">{{ displayMessage }}</p>
   </div>
 </template>
 
@@ -40,32 +40,5 @@ const spinnerStyle = computed(() => ({
 }));
 </script>
 
-<style scoped>
-.spinner-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.spinner {
-  border: 6px solid #f3f3f3; /* 灰色边框 */
-  border-radius: 50%;
-  border-right-color: transparent;
-  border-bottom-color: transparent;
-  animation: spin 1s linear infinite;
-}
-
-.spinner-message {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #333;
-  text-align: center;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+<style>
 </style>

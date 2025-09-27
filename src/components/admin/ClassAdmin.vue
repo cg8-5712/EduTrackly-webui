@@ -1,16 +1,16 @@
 <template>
-  <div class="class-admin">
-    <div class="container">
+  <div class="bg-gradient-to-br from-gray-50 to-slate-200 min-h-screen p-6 font-sans">
+    <div class="max-w-6xl mx-auto">
       <!-- 头部区域 -->
-      <div class="header">
-        <div class="header-content">
-          <div class="title-section">
-            <h1 class="title">班级管理</h1>
-            <p class="subtitle">管理所有班级信息，查看学生人数和创建时间</p>
+      <div class="mb-8">
+        <div class="flex justify-between items-start flex-wrap gap-6">
+          <div class="flex-1 min-w-[300px]">
+            <h1 class="text-4xl font-bold bg-gradient-to-br from-blue-600 to-purple-600 bg-clip-text text-transparent m-0 mb-2">班级管理</h1>
+            <p class="text-gray-500 text-lg m-0 font-normal">管理所有班级信息，查看学生人数和创建时间</p>
           </div>
-          <div class="header-actions">
-            <button @click="showCreateDialog = true" class="create-btn">
-              <span class="btn-icon">➕</span>
+          <div class="flex gap-4">
+            <button @click="showCreateDialog = true" class="flex items-center gap-2 py-3 px-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white border-none rounded-xl text-base font-semibold cursor-pointer transition-all duration-300 shadow-lg shadow-blue-600/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-600/40">
+              <span class="text-base">➕</span>
               创建班级
             </button>
           </div>
@@ -18,53 +18,57 @@
       </div>
 
       <!-- 搜索和过滤区域 -->
-      <div class="search-section">
-        <div class="search-controls">
-          <div class="search-input-wrapper">
+      <div class="bg-white rounded-2xl p-6 mb-6 shadow-lg">
+        <div class="flex gap-6 items-center flex-wrap">
+          <div class="relative flex-1 min-w-[300px]">
             <input
               v-model="searchQuery"
               type="text"
               placeholder="搜索班级名称..."
-              class="search-input"
+              class="w-full py-3 pr-4 pl-12 border-2 border-gray-200 rounded-xl text-base transition-colors focus:outline-none focus:border-blue-600"
               @input="handleSearch"
             >
-            <span class="search-icon">🔍</span>
+            <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-lg text-gray-500">🔍</span>
           </div>
-          <div class="page-size-controls">
+          <div class="flex items-center gap-3">
             <label>每页显示：</label>
-            <div class="custom-select" ref="pageSizeSelectRef">
-              <div class="select-trigger" @click="togglePageSizeDropdown">
-                <span class="select-value">{{ pagination.size }}条</span>
-                <span class="select-arrow" :class="{ active: showPageSizeDropdown }">▼</span>
+            <div class="relative min-w-40" ref="pageSizeSelectRef">
+              <div class="flex items-center justify-between py-2.5 px-4 bg-white border-2 border-gray-200 rounded-xl cursor-pointer transition-all duration-300 text-sm font-medium text-gray-700 shadow-sm hover:border-blue-600 hover:shadow-blue-100 hover:shadow-lg" @click="togglePageSizeDropdown">
+                <span class="flex-1 text-left">{{ pagination.size }}条</span>
+                <span class="ml-3 text-xs text-gray-500 transition-transform duration-300" :class="{ 'rotate-180': showPageSizeDropdown }">▼</span>
               </div>
-              <div class="select-dropdown" v-show="showPageSizeDropdown">
+              <div class="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200" v-show="showPageSizeDropdown">
                 <div
-                  class="select-option"
-                  :class="{ selected: pagination.size === 5 }"
+                  class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                  :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': pagination.size === 5 }"
                   @click="selectPageSizeOption(5)"
                 >
                   5条
+                  <span v-if="pagination.size === 5" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
                 </div>
                 <div
-                  class="select-option"
-                  :class="{ selected: pagination.size === 20 }"
+                  class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                  :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': pagination.size === 20 }"
                   @click="selectPageSizeOption(20)"
                 >
                   20条
+                  <span v-if="pagination.size === 20" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
                 </div>
                 <div
-                  class="select-option"
-                  :class="{ selected: pagination.size === 50 }"
+                  class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                  :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': pagination.size === 50 }"
                   @click="selectPageSizeOption(50)"
                 >
                   50条
+                  <span v-if="pagination.size === 50" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
                 </div>
                 <div
-                  class="select-option"
-                  :class="{ selected: pagination.size === 100 }"
+                  class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                  :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': pagination.size === 100 }"
                   @click="selectPageSizeOption(100)"
                 >
                   100条
+                  <span v-if="pagination.size === 100" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
                 </div>
               </div>
             </div>
@@ -73,81 +77,81 @@
       </div>
 
       <!-- 加载状态 -->
-      <div v-if="loading" class="loading-container">
-        <div class="loading-spinner"></div>
-        <p class="loading-text">加载中...</p>
+      <div v-if="loading" class="text-center py-12">
+        <div class="w-12 h-12 border-4 border-gray-200 border-b-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="text-gray-500 text-base m-0">加载中...</p>
       </div>
 
       <!-- 错误提示 -->
-      <div v-if="error" class="error-message">
+      <div v-if="error" class="bg-red-50 border border-red-300 text-red-700 p-4 rounded-xl mb-6 text-center">
         {{ error }}
       </div>
 
       <!-- 班级列表 -->
-      <div v-if="!loading && !error" class="class-list">
-        <div class="list-header">
-          <div class="list-stats">
+      <div v-if="!loading && !error" class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="py-5 px-6 border-b border-gray-200 bg-gray-50">
+          <div class="text-gray-500 text-sm font-medium">
             <span>共找到 {{ pagination.total }} 个班级，每页显示 {{ pagination.size }} 条</span>
           </div>
         </div>
 
         <!-- 表头排序 -->
-        <div class="table-header">
-          <div class="header-item flex-2">班级名称</div>
-          <div class="header-item sortable" @click="handleSort('cid')">
+        <div class="flex bg-gray-50 border-b-2 border-gray-200 py-4 px-6 font-semibold text-gray-700 text-sm">
+          <div class="flex items-center px-2 min-w-0 flex-[2]">班级名称</div>
+          <div class="flex items-center px-2 min-w-0 cursor-pointer select-none transition-colors gap-2 hover:text-blue-600" @click="handleSort('cid')">
             <span>ID</span>
-            <span class="sort-arrows">
-              <span class="arrow up" :class="{ active: sortField === 'cid' && sortDirection === 'asc' }">↑</span>
-              <span class="arrow down" :class="{ active: sortField === 'cid' && sortDirection === 'desc' }">↓</span>
+            <span class="flex flex-col gap-0 ml-1">
+              <span class="text-xs text-gray-300 transition-colors leading-none -mb-0.5" :class="{ 'text-blue-600 font-bold': sortField === 'cid' && sortDirection === 'asc' }">↑</span>
+              <span class="text-xs text-gray-300 transition-colors leading-none -mt-0.5" :class="{ 'text-blue-600 font-bold': sortField === 'cid' && sortDirection === 'desc' }">↓</span>
             </span>
           </div>
-          <div class="header-item flex-1">学生人数</div>
-          <div class="header-item sortable" @click="handleSort('create_time')">
+          <div class="flex items-center px-2 min-w-0 flex-1">学生人数</div>
+          <div class="flex items-center px-2 min-w-0 cursor-pointer select-none transition-colors gap-2 hover:text-blue-600" @click="handleSort('create_time')">
             <span>创建时间</span>
-            <span class="sort-arrows">
-              <span class="arrow up" :class="{ active: sortField === 'create_time' && sortDirection === 'asc' }">↑</span>
-              <span class="arrow down" :class="{ active: sortField === 'create_time' && sortDirection === 'desc' }">↓</span>
+            <span class="flex flex-col gap-0 ml-1">
+              <span class="text-xs text-gray-300 transition-colors leading-none -mb-0.5" :class="{ 'text-blue-600 font-bold': sortField === 'create_time' && sortDirection === 'asc' }">↑</span>
+              <span class="text-xs text-gray-300 transition-colors leading-none -mt-0.5" :class="{ 'text-blue-600 font-bold': sortField === 'create_time' && sortDirection === 'desc' }">↓</span>
             </span>
           </div>
-          <div class="header-item flex-1">操作</div>
+          <div class="flex items-center px-2 min-w-0 flex-1">操作</div>
         </div>
 
-        <div class="class-table">
+        <div class="flex flex-col">
           <div
             v-for="classItem in sortedClassList"
             :key="classItem.cid"
-            class="class-row"
+            class="flex items-center py-4 px-6 border-b border-gray-100 transition-all duration-200 last:border-b-0 hover:bg-gray-50"
           >
-            <div class="row-item flex-2">
-              <h3 class="class-name">{{ classItem.class_name }}</h3>
+            <div class="flex items-center px-2 min-w-0 flex-[2]">
+              <h3 class="text-lg font-semibold text-gray-800 m-0 truncate">{{ classItem.class_name }}</h3>
             </div>
-            <div class="row-item">
-              <span class="class-id">{{ classItem.cid }}</span>
+            <div class="flex items-center px-2 min-w-0">
+              <span class="text-sm text-gray-500 font-medium bg-gray-100 py-1 px-2 rounded-md">{{ classItem.cid }}</span>
             </div>
-            <div class="row-item flex-1">
-              <span class="student-count">
-                <span class="count-icon">👥</span>
+            <div class="flex items-center px-2 min-w-0 flex-1">
+              <span class="flex items-center gap-1.5 text-sm text-gray-700 font-medium">
+                <span class="text-base">👥</span>
                 {{ getStudentCount(classItem.cid) }}人
               </span>
             </div>
-            <div class="row-item">
-              <span class="create-time">{{ formatDate(classItem.create_time) }}</span>
+            <div class="flex items-center px-2 min-w-0">
+              <span class="text-sm text-gray-500 font-medium">{{ formatDate(classItem.create_time) }}</span>
             </div>
-            <div class="row-item flex-1">
-              <div class="action-buttons">
+            <div class="flex items-center px-2 min-w-0 flex-1">
+              <div class="flex gap-2">
                 <button
                   @click="viewClassDetail(classItem)"
-                  class="action-btn view-btn"
+                  class="flex items-center justify-center w-9 h-9 border-none rounded-lg text-sm cursor-pointer transition-all duration-200 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:scale-105"
                   title="查看详情"
                 >
-                  <span class="btn-icon">👁️</span>
+                  <span class="text-base">👁️</span>
                 </button>
                 <button
                   @click="confirmDelete(classItem)"
-                  class="action-btn delete-btn"
+                  class="flex items-center justify-center w-9 h-9 border-none rounded-lg text-sm cursor-pointer transition-all duration-200 bg-red-50 text-red-600 hover:bg-red-100 hover:scale-105"
                   title="删除班级"
                 >
-                  <span class="btn-icon">🗑️</span>
+                  <span class="text-base">🗑️</span>
                 </button>
               </div>
             </div>
@@ -155,12 +159,12 @@
         </div>
 
         <!-- 分页组件 -->
-        <div class="pagination" v-if="pagination.pages > 1">
+        <div class="flex justify-center gap-2 py-6 border-t border-gray-200" v-if="pagination.pages > 1">
           <button
             @click="changePage(page)"
             v-for="page in paginationPages"
             :key="page"
-            :class="['page-btn', { active: page === pagination.page }]"
+            :class="['py-2 px-4 border-2 border-gray-200 bg-white text-gray-500 rounded-lg cursor-pointer text-sm font-medium transition-all duration-200 hover:border-blue-600 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50', { 'bg-blue-600 border-blue-600 text-white': page === pagination.page }]"
             :disabled="page === '...'"
           >
             {{ page }}
@@ -170,28 +174,28 @@
     </div>
 
     <!-- 创建班级对话框 -->
-    <div v-if="showCreateDialog" class="modal-overlay" @click.self="showCreateDialog = false">
-      <div class="modal">
-        <div class="modal-header">
-          <h3>创建新班级</h3>
-          <button @click="showCreateDialog = false" class="close-btn">✖️</button>
+    <div v-if="showCreateDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="showCreateDialog = false">
+      <div class="bg-white rounded-2xl w-[90%] max-w-md max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200">
+          <h3 class="m-0 text-xl font-bold text-gray-800">创建新班级</h3>
+          <button @click="showCreateDialog = false" class="bg-none border-none text-lg cursor-pointer p-1 rounded transition-colors hover:bg-gray-100">✖️</button>
         </div>
-        <div class="modal-content">
-          <div class="form-group">
-            <label for="className">班级名称</label>
+        <div class="p-6">
+          <div class="mb-5">
+            <label for="className" class="block mb-2 font-semibold text-gray-700">班级名称</label>
             <input
               id="className"
               v-model="newClassName"
               type="text"
               placeholder="请输入班级名称"
-              class="form-input"
+              class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-blue-600"
               @keyup.enter="createClass"
             >
           </div>
         </div>
-        <div class="modal-actions">
-          <button @click="showCreateDialog = false" class="cancel-btn">取消</button>
-          <button @click="createClass" :disabled="!newClassName.trim() || creating" class="confirm-btn">
+        <div class="flex gap-3 justify-end p-6 border-t border-gray-200">
+          <button @click="showCreateDialog = false" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-gray-100 text-gray-700 border-none hover:bg-gray-200">取消</button>
+          <button @click="createClass" :disabled="!newClassName.trim() || creating" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-blue-600 text-white border-none hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed">
             {{ creating ? '创建中...' : '确认创建' }}
           </button>
         </div>
@@ -199,51 +203,51 @@
     </div>
 
     <!-- 班级详情对话框 -->
-    <div v-if="showDetailDialog" class="modal-overlay" @click.self="showDetailDialog = false">
-      <div class="modal modal-large">
-        <div class="modal-header">
-          <h3>班级详情 - {{ selectedClass?.class_name }}</h3>
-          <button @click="showDetailDialog = false" class="close-btn">✖️</button>
+    <div v-if="showDetailDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="showDetailDialog = false">
+      <div class="bg-white rounded-2xl w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200">
+          <h3 class="m-0 text-xl font-bold text-gray-800">班级详情 - {{ selectedClass?.class_name }}</h3>
+          <button @click="showDetailDialog = false" class="bg-none border-none text-lg cursor-pointer p-1 rounded transition-colors hover:bg-gray-100">✖️</button>
         </div>
-        <div class="modal-content">
-          <div v-if="loadingDetail" class="loading-container">
-            <div class="loading-spinner"></div>
+        <div class="p-6">
+          <div v-if="loadingDetail" class="text-center py-12">
+            <div class="w-12 h-12 border-4 border-gray-200 border-b-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
             <p>加载详情中...</p>
           </div>
-          <div v-else-if="classDetail" class="class-detail">
-            <div class="detail-info">
-              <div class="detail-item">
-                <span class="detail-label">班级ID：</span>
-                <span class="detail-value">{{ classDetail.cid }}</span>
+          <div v-else-if="classDetail" class="flex flex-col gap-6">
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center py-2 border-b border-gray-100">
+                <span class="font-semibold text-gray-700 min-w-25">班级ID：</span>
+                <span class="text-gray-500">{{ classDetail.cid }}</span>
               </div>
-              <div class="detail-item">
-                <span class="detail-label">班级名称：</span>
-                <span class="detail-value">{{ classDetail.class_name }}</span>
+              <div class="flex items-center py-2 border-b border-gray-100">
+                <span class="font-semibold text-gray-700 min-w-25">班级名称：</span>
+                <span class="text-gray-500">{{ classDetail.class_name }}</span>
               </div>
-              <div class="detail-item">
-                <span class="detail-label">创建时间：</span>
-                <span class="detail-value">{{ formatDate(classDetail.create_time) }}</span>
+              <div class="flex items-center py-2 border-b border-gray-100">
+                <span class="font-semibold text-gray-700 min-w-25">创建时间：</span>
+                <span class="text-gray-500">{{ formatDate(classDetail.create_time) }}</span>
               </div>
             </div>
-            <div class="students-section">
-              <h4>班级学生 ({{ classDetail.students?.length || 0 }}人)</h4>
-              <div v-if="classDetail.students && classDetail.students.length > 0" class="students-list">
+            <div>
+              <h4 class="text-gray-800 text-lg m-0 mb-4">班级学生 ({{ classDetail.students?.length || 0 }}人)</h4>
+              <div v-if="classDetail.students && classDetail.students.length > 0" class="flex flex-col gap-2 max-h-75 overflow-y-auto">
                 <div
                   v-for="student in classDetail.students"
                   :key="student.sid"
-                  class="student-item"
+                  class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg border border-gray-200"
                 >
-                  <span class="student-name">{{ student.student_name }}</span>
-                  <span class="student-id">ID: {{ student.sid }}</span>
+                  <span class="font-semibold text-gray-800 flex-1">{{ student.student_name }}</span>
+                  <span class="text-sm text-gray-500">ID: {{ student.sid }}</span>
                   <span
-                    class="student-status"
-                    :class="{ active: student.attendance }"
+                    class="py-1 px-3 rounded-full text-xs font-semibold"
+                    :class="student.attendance ? 'bg-blue-50 text-blue-700' : 'bg-red-50 text-red-700'"
                   >
                     {{ student.attendance ? '在校' : '缺勤' }}
                   </span>
                 </div>
               </div>
-              <div v-else class="no-students">
+              <div v-else class="text-center text-gray-500 italic py-6">
                 暂无学生
               </div>
             </div>
@@ -253,19 +257,19 @@
     </div>
 
     <!-- 删除确认对话框 -->
-    <div v-if="showDeleteDialog" class="modal-overlay" @click.self="showDeleteDialog = false">
-      <div class="modal">
-        <div class="modal-header">
-          <h3>确认删除</h3>
-          <button @click="showDeleteDialog = false" class="close-btn">✖️</button>
+    <div v-if="showDeleteDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="showDeleteDialog = false">
+      <div class="bg-white rounded-2xl w-[90%] max-w-md max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200">
+          <h3 class="m-0 text-xl font-bold text-gray-800">确认删除</h3>
+          <button @click="showDeleteDialog = false" class="bg-none border-none text-lg cursor-pointer p-1 rounded transition-colors hover:bg-gray-100">✖️</button>
         </div>
-        <div class="modal-content">
+        <div class="p-6">
           <p>确定要删除班级 "{{ selectedClass?.class_name }}" 吗？</p>
-          <p class="warning-text">此操作不可撤销，请谨慎操作！</p>
+          <p class="text-red-600 text-sm mt-2">此操作不可撤销，请谨慎操作！</p>
         </div>
-        <div class="modal-actions">
-          <button @click="showDeleteDialog = false" class="cancel-btn">取消</button>
-          <button @click="deleteClass" :disabled="deleting" class="delete-btn">
+        <div class="flex gap-3 justify-end p-6 border-t border-gray-200">
+          <button @click="showDeleteDialog = false" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-gray-100 text-gray-700 border-none hover:bg-gray-200">取消</button>
+          <button @click="deleteClass" :disabled="deleting" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-red-600 text-white border-none hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed">
             {{ deleting ? '删除中...' : '确认删除' }}
           </button>
         </div>
@@ -592,234 +596,13 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* 重置和基础样式 */
-* {
-  box-sizing: border-box;
+/* 动画 */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.class-admin {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  min-height: 100vh;
-  padding: 24px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* 头部样式 */
-.header {
-  margin-bottom: 32px;
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 24px;
-}
-
-.title-section {
-  flex: 1;
-  min-width: 300px;
-}
-
-.title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  margin: 0 0 8px 0;
-}
-
-.subtitle {
-  color: #6b7280;
-  font-size: 1.125rem;
-  margin: 0;
-  font-weight: 400;
-}
-
-.header-actions {
-  display: flex;
-  gap: 16px;
-}
-
-.create-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-}
-
-.create-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
-}
-
-.btn-icon {
-  font-size: 1rem;
-}
-
-/* 搜索区域 */
-.search-section {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.search-controls {
-  display: flex;
-  gap: 24px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.search-input-wrapper {
-  position: relative;
-  flex: 1;
-  min-width: 300px;
-}
-
-.search-input {
-  width: 100%;
-  padding: 12px 16px 12px 48px;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #2563eb;
-}
-
-.search-icon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.2rem;
-  color: #6b7280;
-}
-
-/* 排序控制器已移除，保留作为备用 */
-
-.page-size-controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* 自定义下拉框样式 */
-.custom-select {
-  position: relative;
-  min-width: 160px;
-}
-
-.select-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
-  background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.select-trigger:hover {
-  border-color: #2563eb;
-  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.1);
-}
-
-.select-value {
-  flex: 1;
-  text-align: left;
-}
-
-.select-arrow {
-  margin-left: 12px;
-  font-size: 0.75rem;
-  color: #6b7280;
-  transition: transform 0.3s ease;
-}
-
-.select-arrow.active {
-  transform: rotate(180deg);
-}
-
-.select-dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  overflow: hidden;
-  animation: dropdownSlide 0.2s ease;
-}
-
-.select-option {
-  padding: 12px 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.875rem;
-  color: #374151;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.select-option:last-child {
-  border-bottom: none;
-}
-
-.select-option:hover {
-  background: #f8fafc;
-  color: #2563eb;
-}
-
-.select-option.selected {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  color: #2563eb;
-  font-weight: 600;
-  position: relative;
-}
-
-.select-option.selected::after {
-  content: '✓';
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #2563eb;
-  font-weight: bold;
-}
-
+/* 下拉框动画 */
 @keyframes dropdownSlide {
   from {
     opacity: 0;
@@ -831,653 +614,134 @@ onUnmounted(() => {
   }
 }
 
-/* 旧样式移除，保留作为备用 */
-.sort-select {
-  display: none;
-}
-
-/* 加载和错误状态 */
-.loading-container {
-  text-align: center;
-  padding: 48px;
-}
-
-.loading-spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid #e5e7eb;
-  border-bottom-color: #2563eb;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 16px;
-}
-
-.loading-text {
-  color: #6b7280;
-  font-size: 1rem;
-  margin: 0;
-}
-
-.error-message {
-  background: #fef2f2;
-  border: 1px solid #fca5a5;
-  color: #dc2626;
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  text-align: center;
-}
-
-/* 班级列表 */
-.class-list {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.list-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
-}
-
-.list-stats {
-  color: #6b7280;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-/* 表头样式 */
-.table-header {
-  display: flex;
-  background: #f8fafc;
-  border-bottom: 2px solid #e5e7eb;
-  padding: 16px 24px;
-  font-weight: 600;
-  color: #374151;
-  font-size: 0.875rem;
-}
-
-.header-item {
-  display: flex;
-  align-items: center;
-  padding: 0 8px;
-  min-width: 0;
-}
-
-.header-item.flex-1 {
-  flex: 1;
-}
-
-.header-item.flex-2 {
-  flex: 2;
-}
-
-.header-item.sortable {
-  cursor: pointer;
-  user-select: none;
-  transition: color 0.2s ease;
-  gap: 8px;
-}
-
-.header-item.sortable:hover {
-  color: #2563eb;
-}
-
-.sort-arrows {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  margin-left: 4px;
-}
-
-.arrow {
-  font-size: 0.7rem;
-  color: #d1d5db;
-  transition: color 0.2s ease;
-  line-height: 1;
-}
-
-.arrow.active {
-  color: #2563eb;
-  font-weight: bold;
-}
-
-.arrow.up {
-  margin-bottom: -2px;
-}
-
-.arrow.down {
-  margin-top: -2px;
-}
-
-/* 表格内容样式 */
-.class-table {
-  display: flex;
-  flex-direction: column;
-}
-
-.class-row {
-  display: flex;
-  align-items: center;
-  padding: 16px 24px;
-  border-bottom: 1px solid #f3f4f6;
-  transition: all 0.2s ease;
-}
-
-.class-row:hover {
-  background: #f8fafc;
-}
-
-.class-row:last-child {
-  border-bottom: none;
-}
-
-.row-item {
-  display: flex;
-  align-items: center;
-  padding: 0 8px;
-  min-width: 0;
-}
-
-.row-item.flex-1 {
-  flex: 1;
-}
-
-.row-item.flex-2 {
-  flex: 2;
-}
-
-.class-name {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.class-id {
-  font-size: 0.875rem;
-  color: #6b7280;
-  font-weight: 500;
-  background: #f3f4f6;
-  padding: 4px 8px;
-  border-radius: 6px;
-}
-
-.student-count {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.875rem;
-  color: #374151;
-  font-weight: 500;
-}
-
-.count-icon {
-  font-size: 1rem;
-}
-
-.create-time {
-  font-size: 0.875rem;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 8px;
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.view-btn {
-  background: #eff6ff;
-  color: #2563eb;
-}
-
-.view-btn:hover {
-  background: #dbeafe;
-  transform: scale(1.05);
-}
-
-.delete-btn {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.delete-btn:hover {
-  background: #fee2e2;
-  transform: scale(1.05);
-}
-
-.btn-icon {
-  font-size: 1rem;
-}
-
-/* 分页 */
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  padding: 24px;
-  border-top: 1px solid #e5e7eb;
-}
-
-.page-btn {
-  padding: 8px 16px;
-  border: 2px solid #e5e7eb;
-  background: white;
-  color: #6b7280;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.page-btn:hover:not(:disabled) {
-  border-color: #2563eb;
-  color: #2563eb;
-}
-
-.page-btn.active {
-  background: #2563eb;
-  border-color: #2563eb;
-  color: white;
-}
-
-.page-btn:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-/* 模态框样式 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal {
-  background: white;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
-.modal-large {
-  max-width: 700px;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.modal-header h3 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1f2937;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.close-btn:hover {
-  background: #f3f4f6;
-}
-
-.modal-content {
-  padding: 24px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #374151;
-}
-
-.form-input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #2563eb;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  padding: 24px;
-  border-top: 1px solid #e5e7eb;
-}
-
-.cancel-btn, .confirm-btn, .delete-btn {
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.cancel-btn {
-  background: #f3f4f6;
-  color: #374151;
-  border: none;
-}
-
-.cancel-btn:hover {
-  background: #e5e7eb;
-}
-
-.confirm-btn {
-  background: #2563eb;
-  color: white;
-  border: none;
-}
-
-.confirm-btn:hover:not(:disabled) {
-  background: #1d4ed8;
-}
-
-.confirm-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.delete-btn {
-  background: #dc2626;
-  color: white;
-  border: none;
-}
-
-.delete-btn:hover:not(:disabled) {
-  background: #b91c1c;
-}
-
-.delete-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.warning-text {
-  color: #dc2626;
-  font-size: 0.875rem;
-  margin-top: 8px;
-}
-
-/* 班级详情 */
-.class-detail {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.detail-info {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.detail-item {
-  display: flex;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.detail-label {
-  font-weight: 600;
-  color: #374151;
-  min-width: 100px;
-}
-
-.detail-value {
-  color: #6b7280;
-}
-
-.students-section h4 {
-  color: #1f2937;
-  font-size: 1.125rem;
-  margin: 0 0 16px 0;
-}
-
-.students-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.student-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 12px;
-  background: #f9fafb;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-}
-
-.student-name {
-  font-weight: 600;
-  color: #1f2937;
-  flex: 1;
-}
-
-.student-id {
-  font-size: 0.875rem;
-  color: #6b7280;
-}
-
-.student-status {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.student-status.active {
-  background: #f0f9ff;
-  color: #0369a1;
-}
-
-.no-students {
-  text-align: center;
-  color: #6b7280;
-  font-style: italic;
-  padding: 24px;
-}
-
-/* 动画 */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .class-admin {
+  .p-6 {
     padding: 16px;
   }
 
-  .title {
+  .text-4xl {
     font-size: 2rem;
   }
 
-  .header-content {
+  .flex-wrap {
     flex-direction: column;
     gap: 16px;
   }
 
-  .search-controls {
+  .flex-wrap {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
   }
 
-  .page-size-controls {
+  .justify-between {
     justify-content: space-between;
   }
 
-  .custom-select {
+  .min-w-40 {
     min-width: 140px;
   }
 
-  .select-trigger {
+  .py-2\.5.px-4 {
     padding: 8px 12px;
     font-size: 0.8rem;
   }
 
-  .search-input-wrapper {
+  .min-w-\[300px\] {
     min-width: auto;
   }
 
-  .table-header {
+  .py-4.px-6 {
     padding: 12px 16px;
     font-size: 0.8rem;
   }
 
-  .class-row {
+  .py-4.px-6 {
     padding: 12px 16px;
   }
 
-  .header-item,
-  .row-item {
+  .px-2 {
     padding: 0 4px;
   }
 
-  .class-name {
+  .text-lg {
     font-size: 1rem;
   }
 
-  .sort-arrows {
+  .text-xs {
     gap: 0;
   }
 
-  .arrow {
+  .text-xs {
     font-size: 0.6rem;
   }
 
-  .modal {
+  .w-\[95%\] {
     width: 95%;
     margin: 16px;
   }
 }
 
 @media (max-width: 480px) {
-  .class-admin {
+  .p-6 {
     padding: 12px;
   }
 
-  .title {
+  .text-4xl {
     font-size: 1.75rem;
   }
 
-  .custom-select {
+  .min-w-40 {
     min-width: 120px;
   }
 
-  .select-trigger {
+  .py-2\.5.px-4 {
     padding: 6px 10px;
     font-size: 0.75rem;
   }
 
-  .select-option {
+  .py-3.px-4 {
     padding: 10px 12px;
     font-size: 0.8rem;
   }
 
-  .table-header {
+  .py-4.px-6 {
     padding: 10px 12px;
     font-size: 0.75rem;
   }
 
-  .class-row {
+  .py-4.px-6 {
     padding: 10px 12px;
   }
 
-  .header-item,
-  .row-item {
+  .px-2 {
     padding: 0 2px;
   }
 
-  .class-name {
+  .text-lg {
     font-size: 0.9rem;
   }
 
-  .class-id {
+  .text-sm {
     font-size: 0.75rem;
     padding: 2px 6px;
   }
 
-  .student-count,
-  .create-time {
+  .text-sm {
     font-size: 0.75rem;
   }
 
-  .action-btn {
+  .w-9.h-9 {
     width: 32px;
     height: 32px;
   }
 
-  .btn-icon {
+  .text-base {
     font-size: 0.9rem;
   }
 
-  .modal-actions {
+  .flex {
     flex-direction: column;
   }
 }

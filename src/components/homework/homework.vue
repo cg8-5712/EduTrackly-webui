@@ -1,34 +1,34 @@
 <template>
-  <div class="homework-wrapper">
+  <div class="flex flex-col gap-4">
     <!-- 加载中 -->
-    <div v-if="loading" class="homework-container loading">
+    <div v-if="loading" class="p-4 bg-gray-700 text-gray-200 rounded-xl shadow-lg flex text-3xl font-extrabold text-blue-300">
       加载中...
     </div>
 
     <!-- 错误提示 -->
-    <div v-else-if="error && error !== 'no-homework'" class="homework-container error">
+    <div v-else-if="error && error !== 'no-homework'" class="p-4 bg-gray-700 text-gray-200 rounded-xl shadow-lg flex text-3xl font-extrabold text-red-400">
       {{ error }}
     </div>
 
     <!-- 作业内容展示 -->
     <template v-else>
       <!-- 如果无作业数据 -->
-      <div v-if="error === 'no-homework'" class="homework-container">
+      <div v-if="error === 'no-homework'" class="p-4 bg-gray-700 text-gray-200 rounded-xl shadow-lg flex text-3xl font-extrabold">
         暂无作业
       </div>
       <!-- 显示分科目作业内容 -->
       <template v-else>
-        <div class="homework-lines" :style="gridStyle">
+        <div class="grid gap-4" :style="gridStyle">
           <div v-for="subject in subjectsWithContent"
                :key="subject.key"
-               class="homework-container">
-            <div class="subject-header">
+               class="p-4 bg-gray-700 text-gray-200 rounded-xl shadow-lg flex text-3xl font-extrabold">
+            <div class="text-lg font-bold text-blue-300 min-w-15 flex-shrink-0 text-center py-2 px-2 bg-blue-300/10 rounded-lg border border-blue-300/20">
               {{ subject.name }}
             </div>
-            <div class="subject-content">
+            <div class="flex-1 flex flex-col gap-1 pt-2 pl-3">
               <div v-for="(line, index) in subject.lines"
                    :key="index"
-                   class="content-line">
+                   class="text-xl leading-relaxed text-gray-200 break-words">
                 {{ line }}
               </div>
             </div>
@@ -153,113 +153,42 @@ const gridStyle = computed(() => {
 </script>
 
 <style scoped>
-.homework-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.homework-container {
-  padding: 1rem;
-  background-color: #2d2d2d;
-  color: #e0e0e0;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-  display: flex;
-  //align-items: center;
-
-  font-size: 1.8rem;
-  font-weight: bolder;
-}
-
-.subject-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  padding-top: 0.5rem;
-
-  /* 新增缩进，让内容和标签有间距 */
-  padding-left: 0.8rem;
-}
-
-
-.subject-header {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #9ed2ff;
-  min-width: 60px;
-  flex-shrink: 0;
-  text-align: center;
-  padding: 0.5rem;
-  background-color: rgba(158, 210, 255, 0.1);
-  border-radius: 8px;
-  border: 1px solid rgba(158, 210, 255, 0.2);
-}
-
-.subject-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  padding-top: 0.5rem;
-}
-
-.content-line {
-  font-size: 1.3rem;
-  line-height: 1.6;
-  color: #e0e0e0;
-  word-break: break-word;
-}
-
-.loading {
-  font-size: 2rem;
-  color: #9ed2ff;
-}
-
-.error {
-  font-size: 2rem;
-  color: #ff6b6b;
-}
-
-.homework-lines {
-  display: grid;
-  gap: 1rem;
-}
-
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .homework-container {
-    font-size: 1.4rem;
-    padding: 0.8rem;
+  .text-3xl {
+    font-size: 1.25rem;
   }
 
-  .subject-container {
+  .p-4 {
+    padding: 0.75rem;
+  }
+
+  .flex {
     flex-direction: column;
     gap: 0.5rem;
   }
 
-  .subject-header {
+  .text-lg {
     font-size: 1rem;
     min-width: auto;
     text-align: center;
   }
 
-  .subject-content {
+  .pt-2 {
     padding-top: 0;
   }
 
-  .content-line {
+  .text-xl {
     font-size: 1.1rem;
   }
 }
 
 /* 当只有一个科目时的特殊样式 */
-.homework-lines:has(.subject-container:only-child) .subject-container {
+.grid:has(.p-4:only-child) .p-4 {
   min-height: 200px;
 }
 
-.homework-lines:has(.subject-container:only-child) .content-line {
+.grid:has(.p-4:only-child) .text-xl {
   font-size: 1.5rem;
   line-height: 1.8;
 }

@@ -1,22 +1,34 @@
 <template>
-  <div class="message-container" aria-live="assertive">
-    <transition name="fade-slide">
+  <div class="fixed top-5 right-5 z-[1000] flex flex-col gap-2.5" aria-live="assertive">
+    <transition
+      enter-active-class="transition-all duration-300 ease-in-out"
+      enter-from-class="opacity-0 -translate-y-2.5"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition-all duration-300 ease-in-out"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 -translate-y-2.5"
+    >
       <div
           v-if="notificationService.state.show"
-          class="message-box"
-          :class="notificationService.state.type"
+          class="flex items-center p-3 rounded-lg min-w-[250px] shadow-lg text-white font-medium relative"
+          :class="{
+            'bg-green-500': notificationService.state.type === 'success',
+            'bg-blue-500': notificationService.state.type === 'info',
+            'bg-red-500': notificationService.state.type === 'error',
+            'bg-gray-700': !['success', 'info', 'error'].includes(notificationService.state.type)
+          }"
       >
-        <div class="message-content">
-          <div class="icon">
+        <div class="flex items-center w-full">
+          <div class="mr-3 w-6 h-6 flex-shrink-0">
             <CheckCircleIcon v-if="notificationService.state.type === 'success'" />
             <InformationCircleIcon v-else-if="notificationService.state.type === 'info'" />
             <XCircleIcon v-else />
           </div>
-          <div class="message-text">
+          <div class="flex-1">
             {{ notificationService.state.message }}
           </div>
-          <button class="close-btn" @click="notificationService.close">
-            <XMarkIcon />
+          <button class="bg-transparent border-0 text-white cursor-pointer flex items-center ml-3" @click="notificationService.close">
+            <XMarkIcon class="w-5 h-5" />
             <span class="sr-only">{{ $t('components.messageInfo.close') }}</span>
           </button>
         </div>
@@ -31,96 +43,5 @@ import { XMarkIcon, InformationCircleIcon } from '@heroicons/vue/20/solid'
 import notificationService from '@/services/common/notification'
 </script>
 
-<style scoped>
-.message-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.message-box {
-  display: flex;
-  padding: 12px 16px;
-  border-radius: 8px;
-  min-width: 250px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  color: #fff;
-  font-weight: 500;
-  align-items: center;
-  position: relative;
-  background-color: #333; /* 默认颜色，后续根据 type 覆盖 */
-}
-
-.message-box.success { background-color: #22c55e; } /* green */
-.message-box.info { background-color: #3b82f6; }    /* blue */
-.message-box.error { background-color: #ef4444; }   /* red */
-
-.message-content {
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.icon {
-  margin-right: 12px;
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
-}
-
-.message-text {
-  flex: 1;
-}
-
-.close-btn {
-  background: transparent;
-  border: none;
-  color: inherit;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  margin-left: 12px;
-}
-
-.close-btn svg {
-  width: 20px;
-  height: 20px;
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0,0,0,0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* 动画 */
-.fade-slide-enter-active, .fade-slide-leave-active {
-  transition: all 0.3s ease;
-}
-.fade-slide-enter-from {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-.fade-slide-enter-to {
-  opacity: 1;
-  transform: translateY(0);
-}
-.fade-slide-leave-from {
-  opacity: 1;
-  transform: translateY(0);
-}
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
+<style>
 </style>

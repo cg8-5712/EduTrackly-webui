@@ -1,48 +1,52 @@
 <template>
-  <div class="admin-dashboard">
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-slate-200 p-5 font-sans">
     <!-- 管理员信息头部 -->
-    <div class="admin-header">
-      <div class="header-content">
-        <div class="admin-info-section">
-          <div class="admin-avatar">
-            <div class="avatar-circle">
-              <span class="avatar-text">管</span>
+    <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-6 mb-5 shadow-2xl border border-white/20">
+      <div class="flex justify-between items-center gap-6 flex-wrap">
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <div class="w-15 h-15 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-600/30">
+              <span>管</span>
             </div>
-            <div class="online-indicator"></div>
+            <div class="absolute bottom-0.5 right-0.5 w-4.5 h-4.5 bg-emerald-500 border-3 border-white rounded-full animate-pulse"></div>
           </div>
-          <div class="admin-details">
-            <h1 class="admin-title">管理员控制台</h1>
-            <p class="admin-subtitle">教育管理系统 - 实时监控与管理</p>
+          <div class="flex-1">
+            <h1 class="text-3xl font-bold bg-gradient-to-br from-blue-600 to-purple-600 bg-clip-text text-transparent m-0 mb-1">管理员控制台</h1>
+            <p class="text-gray-500 m-0 text-sm">教育管理系统 - 实时监控与管理</p>
           </div>
         </div>
 
-        <div class="header-actions">
-          <div class="quick-stats">
-            <div class="stat-item">
-              <div class="stat-icon">👥</div>
-              <div class="stat-info">
-                <div class="stat-value">{{ totalStudents || '0' }}</div>
-                <div class="stat-label">学生总数</div>
+        <div class="flex items-center gap-6">
+          <div class="flex gap-4">
+            <div class="flex items-center gap-3 bg-gradient-to-br from-gray-50 to-slate-200 py-4 px-5 rounded-xl border border-slate-300/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+              <div class="text-3xl w-10 h-10 flex items-center justify-center bg-blue-600/10 rounded-lg">
+                👥
+              </div>
+              <div class="flex flex-col gap-0.5">
+                <div class="text-xl font-bold text-gray-800 leading-none">{{ totalStudents || '0' }}</div>
+                <div class="text-xs text-gray-500 font-medium">学生总数</div>
               </div>
             </div>
-            <div class="stat-item">
-              <div class="stat-icon">📚</div>
-              <div class="stat-info">
-                <div class="stat-value">{{ totalHomework || '0' }}</div>
-                <div class="stat-label">作业任务</div>
+            <div class="flex items-center gap-3 bg-gradient-to-br from-gray-50 to-slate-200 py-4 px-5 rounded-xl border border-slate-300/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+              <div class="text-3xl w-10 h-10 flex items-center justify-center bg-blue-600/10 rounded-lg">
+                📚
+              </div>
+              <div class="flex flex-col gap-0.5">
+                <div class="text-xl font-bold text-gray-800 leading-none">{{ totalHomework || '0' }}</div>
+                <div class="text-xs text-gray-500 font-medium">作业任务</div>
               </div>
             </div>
           </div>
 
-          <div class="header-controls">
-            <button class="refresh-btn" @click="refreshPage" title="刷新页面">
-              <span class="refresh-icon">🔄</span>
-              <span class="refresh-text">刷新</span>
+          <div class="flex items-center gap-4">
+            <button class="flex items-center gap-2 py-3 px-4.5 bg-gradient-to-br from-blue-600 to-purple-600 text-white border-none rounded-2xl text-sm font-semibold cursor-pointer transition-all duration-300 shadow-md shadow-blue-600/30 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/40 active:translate-y-0 active:shadow-sm active:shadow-blue-600/30" @click="refreshPage" title="刷新页面">
+              <span class="text-base animate-spin-on-hover">🔄</span>
+              <span class="text-sm">刷新</span>
             </button>
 
-            <div class="time-display">
-              <div class="current-time">{{ currentTime }}</div>
-              <div class="current-date">{{ currentDate }}</div>
+            <div class="bg-gradient-to-br from-blue-600 to-purple-600 text-white py-4 px-5 rounded-xl text-center shadow-lg shadow-blue-600/30 min-w-40">
+              <div class="text-lg font-bold mb-1 font-mono">{{ currentTime }}</div>
+              <div class="text-xs opacity-90">{{ currentDate }}</div>
             </div>
           </div>
         </div>
@@ -50,57 +54,57 @@
     </div>
 
     <!-- 主要内容区域 -->
-    <div class="main-content">
+    <div class="flex flex-col gap-5">
       <!-- 上半部分：Home页面和控制面板 -->
-      <div class="top-section">
+      <div class="flex gap-5 h-[45vh] min-h-96">
         <!-- 左侧 Views/Home 页面内容 -->
-        <div class="home-content">
-          <div class="content-header">
-            <h2 class="content-title">
-              <span class="title-icon">🏠</span>
+        <div class="flex-2 bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-2xl flex flex-col overflow-hidden">
+          <div class="py-5 px-5 pb-0 border-b border-slate-300/20 mb-5">
+            <h2 class="text-xl font-semibold text-gray-800 m-0 flex items-center gap-2 pb-4">
+              <span class="text-lg">🏠</span>
               主面板
             </h2>
           </div>
-          <div class="home-wrapper">
+          <div class="flex-1 overflow-auto px-5 pb-5">
             <Home />
           </div>
         </div>
 
         <!-- 右侧控制面板 -->
-        <div class="control-panel">
+        <div class="flex-1 min-w-80 flex flex-col gap-4">
           <!-- 班级切换器 -->
-          <div class="class-control-card">
-            <div class="card-header">
-              <h3 class="card-title">
-                <span class="title-icon">🏫</span>
+          <div class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-2xl overflow-hidden flex-1">
+            <div class="p-5 border-b border-slate-300/20">
+              <h3 class="text-lg font-semibold text-gray-800 m-0 flex items-center gap-2">
+                <span class="text-lg">🏫</span>
                 班级管理
               </h3>
             </div>
-            <div class="class-switch-container">
+            <div class="p-5">
               <ClassSwitch @update:cid="handleClassChange" />
             </div>
           </div>
 
           <!-- 系统状态卡片 -->
-          <div class="system-status-card">
-            <div class="card-header">
-              <h3 class="card-title">
-                <span class="title-icon">⚡</span>
+          <div class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-2xl overflow-hidden flex-1">
+            <div class="p-5 border-b border-slate-300/20">
+              <h3 class="text-lg font-semibold text-gray-800 m-0 flex items-center gap-2">
+                <span class="text-lg">⚡</span>
                 系统状态
               </h3>
             </div>
-            <div class="status-grid">
-              <div class="status-item">
-                <div class="status-indicator active"></div>
-                <span class="status-text">服务运行中</span>
+            <div class="p-5 flex flex-col gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-sm text-gray-600 font-medium">服务运行中</span>
               </div>
-              <div class="status-item">
-                <div class="status-indicator active"></div>
-                <span class="status-text">数据库连接</span>
+              <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-sm text-gray-600 font-medium">数据库连接</span>
               </div>
-              <div class="status-item">
-                <div class="status-indicator active"></div>
-                <span class="status-text">实时同步</span>
+              <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-sm text-gray-600 font-medium">实时同步</span>
               </div>
             </div>
           </div>
@@ -108,32 +112,32 @@
       </div>
 
       <!-- 底部区域：学生管理和作业提交 -->
-      <div class="bottom-section">
+      <div class="flex gap-5 h-[45vh] min-h-[350px]">
         <!-- 学生列表区域 -->
-        <div class="student-section">
-          <div class="section-header">
-            <h2 class="section-title">
-              <span class="title-icon">👥</span>
+        <div class="flex-1 bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-2xl flex flex-col overflow-hidden">
+          <div class="p-5 border-b border-slate-300/20 flex justify-between items-center flex-wrap gap-3">
+            <h2 class="text-xl font-semibold text-gray-800 m-0 flex items-center gap-2">
+              <span class="text-lg">👥</span>
               学生管理
             </h2>
-            <div class="section-badge" v-if="selectedCid">
+            <div class="bg-gradient-to-br from-blue-600 to-purple-600 text-white py-1 px-3 rounded-full text-xs font-medium" v-if="selectedCid">
               当前班级：{{ selectedCid }}
             </div>
           </div>
-          <div class="student-container">
+          <div class="flex-1 p-5 overflow-auto">
             <StudentList :cid="selectedCid" ref="studentListComponent" />
           </div>
         </div>
 
         <!-- 作业提交区域 -->
-        <div class="homework-section">
-          <div class="section-header">
-            <h2 class="section-title">
-              <span class="title-icon">📝</span>
+        <div class="flex-1 bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-2xl flex flex-col overflow-hidden">
+          <div class="p-5 border-b border-slate-300/20">
+            <h2 class="text-xl font-semibold text-gray-800 m-0 flex items-center gap-2">
+              <span class="text-lg">📝</span>
               作业管理
             </h2>
           </div>
-          <div class="homework-container">
+          <div class="flex-1 p-5 overflow-auto">
             <SubmitHomework :cid="selectedCid" />
           </div>
         </div>
@@ -213,73 +217,7 @@ export default {
 </script>
 
 <style scoped>
-/* 重置和基础样式 */
-* {
-  box-sizing: border-box;
-}
-
-.admin-dashboard {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
-
-/* 头部区域样式 */
-.admin-header {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.admin-info-section {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.admin-avatar {
-  position: relative;
-}
-
-.avatar-circle {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 1.2rem;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-}
-
-.online-indicator {
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  width: 18px;
-  height: 18px;
-  background: #10b981;
-  border: 3px solid white;
-  border-radius: 50%;
-  animation: pulse-green 2s infinite;
-}
-
+/* 动画 */
 @keyframes pulse-green {
   0%, 100% {
     opacity: 1;
@@ -291,78 +229,6 @@ export default {
   }
 }
 
-.admin-details {
-  flex: 1;
-}
-
-.admin-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  margin: 0 0 4px 0;
-}
-
-.admin-subtitle {
-  color: #6b7280;
-  margin: 0;
-  font-size: 0.95rem;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.header-controls {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.refresh-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 18px;
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
-}
-
-.refresh-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-}
-
-.refresh-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
-}
-
-.refresh-icon {
-  font-size: 1rem;
-  animation: rotate 0.5s ease-in-out;
-}
-
-.refresh-btn:hover .refresh-icon {
-  animation: rotate 0.8s ease-in-out infinite;
-}
-
-.refresh-text {
-  font-size: 0.875rem;
-}
-
 @keyframes rotate {
   from {
     transform: rotate(0deg);
@@ -372,526 +238,222 @@ export default {
   }
 }
 
-.quick-stats {
-  display: flex;
-  gap: 16px;
-}
-
-.stat-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  padding: 16px 20px;
-  border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  transition: all 0.3s ease;
-}
-
-.stat-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.stat-icon {
-  font-size: 1.8rem;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(37, 99, 235, 0.1);
-  border-radius: 8px;
-}
-
-.stat-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1f2937;
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 0.75rem;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.time-display {
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  color: white;
-  padding: 16px 20px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-  min-width: 160px;
-}
-
-.current-time {
-  font-size: 1.4rem;
-  font-weight: bold;
-  margin-bottom: 4px;
-  font-family: 'Courier New', monospace;
-}
-
-.current-date {
-  font-size: 0.75rem;
-  opacity: 0.9;
-}
-
-/* 主要内容区域 */
-.main-content {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.top-section {
-  display: flex;
-  gap: 20px;
-  height: 45vh;
-  min-height: 400px;
-}
-
-.home-content {
-  flex: 2;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.content-header {
-  padding: 20px 20px 0 20px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-  margin-bottom: 20px;
-}
-
-.content-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-bottom: 16px;
-}
-
-.title-icon {
-  font-size: 1.2rem;
-}
-
-.home-wrapper {
-  flex: 1;
-  overflow: auto;
-  padding: 0 20px 20px 20px;
-}
-
-.control-panel {
-  flex: 1;
-  min-width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.class-control-card,
-.system-status-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.class-control-card {
-  flex: 1;
-}
-
-.system-status-card {
-  flex: 1;
-}
-
-.card-header {
-  padding: 20px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-}
-
-.card-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.class-switch-container {
-  padding: 20px;
-}
-
-.status-grid {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.status-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.status-indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #dc2626;
-  position: relative;
-}
-
-.status-indicator.active {
-  background: #10b981;
-  animation: pulse-green 2s infinite;
-}
-
-.status-text {
-  font-size: 0.875rem;
-  color: #4b5563;
-  font-weight: 500;
-}
-
-/* 底部区域样式 */
-.bottom-section {
-  display: flex;
-  gap: 20px;
-  height: 45vh;
-  min-height: 350px;
-}
-
-.student-section,
-.homework-section {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.section-header {
-  padding: 20px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.section-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.section-badge {
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.action-btn.primary {
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  color: white;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
-}
-
-.action-btn.primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.4);
-}
-
-.btn-icon {
-  font-size: 0.875rem;
-}
-
-.student-container,
-.homework-container {
-  flex: 1;
-  padding: 20px;
-  overflow: auto;
+.animate-spin-on-hover:hover {
+  animation: rotate 0.8s ease-in-out infinite;
 }
 
 /* 滚动条样式 */
-.home-wrapper::-webkit-scrollbar,
-.student-container::-webkit-scrollbar,
-.homework-container::-webkit-scrollbar {
+.overflow-auto::-webkit-scrollbar {
   width: 6px;
 }
 
-.home-wrapper::-webkit-scrollbar-track,
-.student-container::-webkit-scrollbar-track,
-.homework-container::-webkit-scrollbar-track {
+.overflow-auto::-webkit-scrollbar-track {
   background: rgba(148, 163, 184, 0.1);
   border-radius: 3px;
 }
 
-.home-wrapper::-webkit-scrollbar-thumb,
-.student-container::-webkit-scrollbar-thumb,
-.homework-container::-webkit-scrollbar-thumb {
+.overflow-auto::-webkit-scrollbar-thumb {
   background: rgba(148, 163, 184, 0.4);
   border-radius: 3px;
 }
 
-.home-wrapper::-webkit-scrollbar-thumb:hover,
-.student-container::-webkit-scrollbar-thumb:hover,
-.homework-container::-webkit-scrollbar-thumb:hover {
+.overflow-auto::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.6);
 }
 
 /* 响应式设计 */
 @media (max-width: 1200px) {
-  .admin-dashboard {
+  .p-5 {
     padding: 16px;
   }
 
-  .admin-header {
+  .p-6 {
     padding: 20px;
   }
 
-  .header-content {
+  .gap-6 {
     gap: 20px;
   }
 
-  .header-controls {
+  .gap-4 {
     gap: 12px;
   }
 
-  .refresh-btn {
+  .py-3.px-4\.5 {
     padding: 10px 14px;
     font-size: 0.8rem;
   }
 
-  .header-content {
+  .gap-6 {
     gap: 20px;
   }
 
-  .quick-stats {
+  .gap-4 {
     gap: 12px;
   }
 
-  .stat-item {
+  .py-4.px-5 {
     padding: 12px 16px;
   }
 
-  .control-panel {
+  .min-w-80 {
     min-width: 280px;
   }
 }
 
 @media (max-width: 1024px) {
-  .top-section {
+  .h-\[45vh\] {
     height: auto;
     min-height: 350px;
   }
 
-  .bottom-section {
-    height: auto;
+  .min-h-\[350px\] {
     min-height: 300px;
   }
 
-  .control-panel {
+  .min-w-80 {
     min-width: 250px;
   }
 
-  .admin-title {
+  .text-3xl {
     font-size: 1.6rem;
   }
 
-  .current-time {
+  .text-lg {
     font-size: 1.2rem;
   }
 }
 
 @media (max-width: 768px) {
-  .admin-dashboard {
+  .p-5 {
     padding: 12px;
   }
 
-  .admin-header {
+  .p-6 {
     padding: 16px;
   }
 
-  .header-content {
+  .flex-wrap {
     flex-direction: column;
     gap: 16px;
     align-items: stretch;
   }
 
-  .admin-info-section {
+  .justify-center {
     justify-content: center;
   }
 
-  .header-actions {
+  .flex-direction-column {
     flex-direction: column;
     gap: 16px;
     align-items: stretch;
   }
 
-  .header-controls {
+  .flex-direction-column-reverse {
     flex-direction: column-reverse;
     gap: 12px;
     align-items: center;
   }
 
-  .refresh-btn {
+  .self-center {
     align-self: center;
     min-width: 120px;
   }
 
-  .quick-stats {
+  .justify-center {
     justify-content: center;
     flex-wrap: wrap;
   }
 
-  .time-display {
+  .self-center {
     align-self: center;
   }
 
-  .top-section {
+  .flex {
     flex-direction: column;
     gap: 16px;
     height: auto;
     min-height: 300px;
   }
 
-  .control-panel {
+  .flex-col.gap-4 {
     flex-direction: row;
     min-width: auto;
     gap: 12px;
   }
 
-  .class-control-card,
-  .system-status-card {
+  .flex-1 {
     flex: 1;
   }
 
-  .bottom-section {
+  .flex {
     flex-direction: column;
     gap: 16px;
     height: auto;
     min-height: 400px;
   }
 
-  .admin-title {
+  .text-3xl {
     font-size: 1.5rem;
     text-align: center;
   }
 
-  .admin-subtitle {
+  .text-sm {
     text-align: center;
   }
 
-  .current-time {
+  .text-lg {
     font-size: 1.1rem;
   }
 
-  .current-date {
+  .text-xs {
     font-size: 0.7rem;
   }
 }
 
 @media (max-width: 480px) {
-  .admin-dashboard {
+  .p-5 {
     padding: 8px;
   }
 
-  .admin-header {
+  .p-6 {
     padding: 12px;
   }
 
-  .admin-avatar .avatar-circle {
+  .w-15.h-15 {
     width: 50px;
     height: 50px;
     font-size: 1rem;
   }
 
-  .admin-title {
+  .text-3xl {
     font-size: 1.3rem;
   }
 
-  .quick-stats {
+  .flex-col.gap-4 {
     flex-direction: column;
     gap: 8px;
   }
 
-  .stat-item {
+  .py-4.px-5 {
     padding: 10px 12px;
     justify-content: center;
   }
 
-  .control-panel {
+  .flex-col.gap-4 {
     flex-direction: column;
     gap: 8px;
   }
 
-  .content-header,
-  .card-header,
-  .section-header {
+  .p-5 {
     padding: 12px;
   }
 
-  .home-wrapper,
-  .class-switch-container,
-  .status-grid,
-  .student-container,
-  .homework-container {
-    padding: 12px;
-  }
-
-  .current-time {
+  .text-lg {
     font-size: 1rem;
   }
 
-  .time-display {
+  .py-4.px-5 {
     padding: 12px 16px;
     min-width: 120px;
   }

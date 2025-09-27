@@ -1,26 +1,30 @@
 <template>
-  <div class="system-monitor">
-    <div class="container">
+  <div class="bg-gradient-to-br from-gray-50 to-slate-200 p-6 font-sans">
+    <div class="max-w-6xl mx-auto">
       <!-- 标题和状态栏 -->
-      <div class="header">
-        <div class="header-content">
-          <div class="title-section">
-            <h1 class="title">系统监控面板</h1>
-            <p class="subtitle">实时监控系统性能指标</p>
+      <div class="mb-8">
+        <div class="flex justify-between items-start flex-wrap gap-6">
+          <div class="flex-1 min-w-[300px]">
+            <h1 class="text-4xl font-bold bg-gradient-to-br from-blue-600 to-purple-600 bg-clip-text text-transparent m-0 mb-2 p-0">系统监控面板</h1>
+            <p class="text-gray-500 text-lg m-0 font-normal">实时监控系统性能指标</p>
           </div>
 
-          <div class="status-section">
-            <div class="status-card" :class="getStatusClass(connectionStatus)">
-              <div class="status-indicator">
-                <div class="status-dot" :style="{ backgroundColor: getStatusColor(connectionStatus) }"></div>
-                <span class="status-label">{{ connectionStatus }}</span>
+          <div class="flex gap-4 flex-wrap items-start">
+            <div class="bg-white rounded-xl py-3 px-4 shadow-sm border-2 border-transparent transition-all duration-300 min-w-[120px]" :class="{
+              'border-green-300 bg-gradient-to-br from-green-50 to-green-100': connectionStatus === '已连接',
+              'border-orange-300 bg-gradient-to-br from-orange-50 to-yellow-100': connectionStatus === '连接中...',
+              'border-red-300 bg-gradient-to-br from-red-50 to-red-100': connectionStatus === '连接失败'
+            }">
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full animate-pulse" :style="{ backgroundColor: getStatusColor(connectionStatus) }"></div>
+                <span class="font-semibold text-sm text-gray-800">{{ connectionStatus }}</span>
               </div>
             </div>
 
-            <div class="uptime-card">
-              <div class="uptime-content">
-                <span class="uptime-label">系统运行时长</span>
-                <span class="uptime-value">{{ systemInfo.data.os?.uptime ? formatUptime(systemInfo.data.os.uptime) : '0分' }}</span>
+            <div class="bg-white rounded-xl py-3 px-4 shadow-sm border-2 border-gray-200 min-w-[160px]">
+              <div class="flex flex-col gap-1">
+                <span class="text-xs text-gray-500 font-medium">系统运行时长</span>
+                <span class="font-semibold text-sm text-gray-800">{{ systemInfo.data.os?.uptime ? formatUptime(systemInfo.data.os.uptime) : '0分' }}</span>
               </div>
             </div>
           </div>
@@ -28,7 +32,7 @@
       </div>
 
       <!-- 错误提示 -->
-      <div v-if="error" class="error-message">
+      <div v-if="error" class="bg-red-50 border border-red-300 text-red-700 p-4 rounded-lg mb-6">
         {{ error }}
       </div>
 
@@ -41,54 +45,54 @@
 
       <template v-else>
         <!-- 主要内容区域 - 使用两栏布局 -->
-        <div class="main-content">
+        <div class="grid grid-cols-2 gap-6 mb-6 lg:grid-cols-1">
           <!-- 左栏 -->
-          <div class="left-column">
+          <div class="flex flex-col gap-4">
             <!-- 系统基本信息 - 紧凑版 -->
-            <div v-if="systemInfo.data.os" class="card compact-card">
-              <h2 class="card-title">
-                <span class="title-icon">🖥️</span>
+            <div v-if="systemInfo.data.os" class="bg-white rounded-2xl shadow-lg shadow-gray-100 p-6 mb-0">
+              <h2 class="text-xl font-semibold text-gray-800 m-0 mb-4 flex items-center gap-2">
+                <span class="text-xl">🖥️</span>
                 系统信息
               </h2>
-              <div class="system-grid-compact">
-                <div class="info-item-compact">
-                  <span class="info-label-compact">系统</span>
-                  <span class="info-value-compact">{{ systemInfo.data.os.type }} {{ systemInfo.data.os.arch }}</span>
+              <div class="flex flex-col gap-2">
+                <div class="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md text-sm">
+                  <span class="text-gray-500 font-medium min-w-[60px]">系统</span>
+                  <span class="text-gray-800 font-semibold text-right">{{ systemInfo.data.os.type }} {{ systemInfo.data.os.arch }}</span>
                 </div>
-                <div class="info-item-compact">
-                  <span class="info-label-compact">版本</span>
-                  <span class="info-value-compact">{{ systemInfo.data.os.release }}</span>
+                <div class="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md text-sm">
+                  <span class="text-gray-500 font-medium min-w-[60px]">版本</span>
+                  <span class="text-gray-800 font-semibold text-right">{{ systemInfo.data.os.release }}</span>
                 </div>
-                <div class="info-item-compact">
-                  <span class="info-label-compact">主机</span>
-                  <span class="info-value-compact">{{ systemInfo.data.os.hostname }}</span>
+                <div class="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md text-sm">
+                  <span class="text-gray-500 font-medium min-w-[60px]">主机</span>
+                  <span class="text-gray-800 font-semibold text-right">{{ systemInfo.data.os.hostname }}</span>
                 </div>
-                <div class="info-item-compact">
-                  <span class="info-label-compact">负载</span>
-                  <span class="info-value-compact">{{ systemInfo.data.load ? systemInfo.data.load.join(' / ') : 'N/A' }}</span>
+                <div class="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md text-sm">
+                  <span class="text-gray-500 font-medium min-w-[60px]">负载</span>
+                  <span class="text-gray-800 font-semibold text-right">{{ systemInfo.data.load ? systemInfo.data.load.join(' / ') : 'N/A' }}</span>
                 </div>
-                <div class="info-item-compact">
-                  <span class="info-label-compact">运行时间</span>
-                  <span class="info-value-compact">{{ formatUptime(systemInfo.data.os.uptime || 0) }}</span>
+                <div class="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md text-sm">
+                  <span class="text-gray-500 font-medium min-w-[60px]">运行时间</span>
+                  <span class="text-gray-800 font-semibold text-right">{{ formatUptime(systemInfo.data.os.uptime || 0) }}</span>
                 </div>
               </div>
             </div>
 
             <!-- 网络信息 - 紧凑版 -->
-            <div v-if="systemInfo.data.network && systemInfo.data.network.length > 0" class="card compact-card">
-              <h2 class="card-title">
-                <span class="title-icon">🌐</span>
+            <div v-if="systemInfo.data.network && systemInfo.data.network.length > 0" class="bg-white rounded-2xl shadow-lg shadow-gray-100 p-6 mb-0">
+              <h2 class="text-xl font-semibold text-gray-800 m-0 mb-4 flex items-center gap-2">
+                <span class="text-xl">🌐</span>
                 网络接口
               </h2>
-              <div class="network-compact">
+              <div class="flex flex-col gap-2">
                 <div
                     v-for="(net, index) in systemInfo.data.network.slice(0, 2)"
                     :key="index"
-                    class="network-item-compact"
+                    class="bg-gray-50 rounded-md py-2 px-3 text-sm"
                 >
-                  <div class="network-name-compact">{{ net.interface }}</div>
+                  <div class="font-semibold text-gray-800 mb-1">{{ net.interface }}</div>
                   <div v-for="(addr, addrIndex) in net.addresses.slice(0, 1)" :key="addrIndex">
-                    <div class="network-detail-compact">{{ addr.address }}</div>
+                    <div class="text-gray-500 text-xs">{{ addr.address }}</div>
                   </div>
                 </div>
               </div>
@@ -96,17 +100,17 @@
           </div>
 
           <!-- 右栏 -->
-          <div class="right-column">
+          <div class="flex flex-col">
             <!-- 实时监控图表 - 调整高度 -->
-            <div class="card">
-              <h2 class="card-title">
-                <span class="title-icon">📈</span>
+            <div class="bg-white rounded-2xl shadow-lg shadow-gray-100 p-6 mb-6">
+              <h2 class="text-xl font-semibold text-gray-800 m-0 mb-4 flex items-center gap-2">
+                <span class="text-xl">📈</span>
                 实时性能监控
               </h2>
-              <div class="chart-container-compact">
-                <canvas ref="chartCanvas"></canvas>
-                <div v-if="historyData.length === 0" class="chart-placeholder">
-                  <div class="placeholder-text">等待数据加载中...</div>
+              <div class="h-96 relative w-full">
+                <canvas ref="chartCanvas" class="w-full h-full block"></canvas>
+                <div v-if="historyData.length === 0" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                  <div class="text-gray-500 text-base text-center">等待数据加载中...</div>
                 </div>
               </div>
             </div>
@@ -114,69 +118,69 @@
         </div>
 
         <!-- 性能指标卡片 - 水平排列 -->
-        <div class="metrics-row">
+        <div class="grid grid-cols-3 gap-4 mb-6 md:grid-cols-2 sm:grid-cols-1">
           <!-- CPU 卡片 -->
-          <div v-if="systemInfo.data.cpu && systemInfo.data.avgCpuUsage !== undefined" class="metric-card-horizontal">
-            <div class="metric-header">
-              <h3 class="metric-title-small">
-                <span class="metric-icon cpu">⚡</span>
+          <div v-if="systemInfo.data.cpu && systemInfo.data.avgCpuUsage !== undefined" class="bg-white rounded-xl shadow-sm p-4 transition-shadow duration-300 hover:shadow-md">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="text-base font-semibold text-gray-800 m-0 flex items-center gap-1.5">
+                <span class="text-red-500">⚡</span>
                 CPU ({{ systemInfo.data.cpu.length }}核)
               </h3>
-              <span class="usage-value-large" :style="{ color: getUsageColor(parseFloat(systemInfo.data.avgCpuUsage || 0)) }">
+              <span class="text-xl font-bold" :style="{ color: getUsageColor(parseFloat(systemInfo.data.avgCpuUsage || 0)) }">
                 {{ systemInfo.data.avgCpuUsage || '0' }}%
               </span>
             </div>
-            <div class="progress-bar">
-              <div class="progress-fill" :style="{
+            <div class="w-full h-3 bg-gray-200 rounded-md overflow-hidden">
+              <div class="h-full rounded-md transition-all duration-300" :style="{
                 width: `${systemInfo.data.avgCpuUsage || 0}%`,
                 backgroundColor: getUsageColor(parseFloat(systemInfo.data.avgCpuUsage || 0))
               }"></div>
             </div>
-            <div class="metric-details-small">
+            <div class="text-xs text-gray-500 mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
               {{ systemInfo.data.cpu?.[0]?.model?.split(' ').slice(0, 3).join(' ') || 'N/A' }}
             </div>
           </div>
 
           <!-- 内存卡片 -->
-          <div v-if="systemInfo.data.memory" class="metric-card-horizontal">
-            <div class="metric-header">
-              <h3 class="metric-title-small">
-                <span class="metric-icon memory">💾</span>
+          <div v-if="systemInfo.data.memory" class="bg-white rounded-xl shadow-sm p-4 transition-shadow duration-300 hover:shadow-md">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="text-base font-semibold text-gray-800 m-0 flex items-center gap-1.5">
+                <span class="text-blue-500">💾</span>
                 内存
               </h3>
-              <span class="usage-value-large" :style="{ color: getUsageColor(parseFloat(systemInfo.data.memory?.usage_percent || 0)) }">
+              <span class="text-xl font-bold" :style="{ color: getUsageColor(parseFloat(systemInfo.data.memory?.usage_percent || 0)) }">
                 {{ systemInfo.data.memory?.usage_percent || '0' }}%
               </span>
             </div>
-            <div class="progress-bar">
-              <div class="progress-fill" :style="{
+            <div class="w-full h-3 bg-gray-200 rounded-md overflow-hidden">
+              <div class="h-full rounded-md transition-all duration-300" :style="{
                 width: `${systemInfo.data.memory?.usage_percent || 0}%`,
                 backgroundColor: getUsageColor(parseFloat(systemInfo.data.memory?.usage_percent || 0))
               }"></div>
             </div>
-            <div class="metric-details-small">
+            <div class="text-xs text-gray-500 mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
               {{ formatBytes((systemInfo.data.memory?.total || 0) - (systemInfo.data.memory?.free || 0)) }} / {{ formatBytes(systemInfo.data.memory?.total || 0) }}
             </div>
           </div>
 
           <!-- 磁盘卡片 -->
-          <div v-if="systemInfo.data.totalDisk" class="metric-card-horizontal">
-            <div class="metric-header">
-              <h3 class="metric-title-small">
-                <span class="metric-icon disk">💿</span>
+          <div v-if="systemInfo.data.totalDisk" class="bg-white rounded-xl shadow-sm p-4 transition-shadow duration-300 hover:shadow-md">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="text-base font-semibold text-gray-800 m-0 flex items-center gap-1.5">
+                <span class="text-purple-500">💿</span>
                 磁盘 ({{ systemInfo.data.disk?.length || 0 }}个)
               </h3>
-              <span class="usage-value-large" :style="{ color: getUsageColor(parseFloat(systemInfo.data.totalDisk.used_percent || 0)) }">
+              <span class="text-xl font-bold" :style="{ color: getUsageColor(parseFloat(systemInfo.data.totalDisk.used_percent || 0)) }">
                 {{ systemInfo.data.totalDisk.used_percent || '0' }}%
               </span>
             </div>
-            <div class="progress-bar">
-              <div class="progress-fill" :style="{
+            <div class="w-full h-3 bg-gray-200 rounded-md overflow-hidden">
+              <div class="h-full rounded-md transition-all duration-300" :style="{
                 width: `${systemInfo.data.totalDisk.used_percent || 0}%`,
                 backgroundColor: getUsageColor(parseFloat(systemInfo.data.totalDisk.used_percent || 0))
               }"></div>
             </div>
-            <div class="metric-details-small">
+            <div class="text-xs text-gray-500 mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
               {{ formatBytes(systemInfo.data.totalDisk.used || 0) }} / {{ formatBytes(systemInfo.data.totalDisk.size || 0) }}
             </div>
           </div>
@@ -746,527 +750,6 @@ export default {
 </script>
 
 <style scoped>
-/* 重置和基础样式 */
-* {
-  box-sizing: border-box;
-}
-
-.system-monitor {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  padding: 24px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* 头部样式 */
-.header {
-  margin-bottom: 32px;
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 24px;
-}
-
-.title-section {
-  flex: 1;
-  min-width: 300px;
-}
-
-.title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  margin: 0 0 8px 0;
-  padding: 0;
-}
-
-.subtitle {
-  color: #6b7280;
-  font-size: 1.125rem;
-  margin: 0;
-  font-weight: 400;
-}
-
-.status-section {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  align-items: flex-start;
-}
-
-.status-card {
-  background: white;
-  border-radius: 12px;
-  padding: 12px 16px;
-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-  border: 2px solid transparent;
-  transition: all 0.3s ease;
-  min-width: 120px;
-}
-
-.status-card.status-connected {
-  border-color: #d1fae5;
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-}
-
-.status-card.status-connecting {
-  border-color: #fed7aa;
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-}
-
-.status-card.status-error {
-  border-color: #fecaca;
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-}
-
-.status-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.status-label {
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #1f2937;
-}
-
-.uptime-card {
-  background: white;
-  border-radius: 12px;
-  padding: 12px 16px;
-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-  border: 2px solid #e5e7eb;
-  min-width: 160px;
-}
-
-.uptime-content {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.uptime-label {
-  font-size: 0.75rem;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.uptime-value {
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #1f2937;
-}
-
-.status-bar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 24px;
-  font-size: 0.875rem;
-  flex-wrap: wrap;
-}
-
-.status-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.status-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  animation: pulse 2s infinite;
-}
-
-.status-text {
-  color: #6b7280;
-  margin: 0;
-}
-
-/* 消息和加载样式 */
-.error-message {
-  background-color: #fef2f2;
-  border: 1px solid #fca5a5;
-  color: #dc2626;
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 24px;
-}
-
-.loading {
-  text-align: center;
-  padding: 48px;
-}
-
-.loading-spinner {
-  width: 64px;
-  height: 64px;
-  border: 2px solid #e5e7eb;
-  border-bottom-color: #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 16px;
-}
-
-.loading-text {
-  color: #6b7280;
-  margin: 0;
-}
-
-/* 卡片样式 */
-.card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  padding: 24px;
-  margin-bottom: 24px;
-}
-
-.card-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 16px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.title-icon {
-  font-size: 1.5rem;
-}
-
-/* 系统信息网格 */
-.system-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
-}
-
-.info-item {
-  background: #f9fafb;
-  border-radius: 8px;
-  padding: 16px;
-}
-
-.info-label {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-bottom: 4px;
-}
-
-.info-value {
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0;
-}
-
-/* 主要布局 */
-.main-content {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 24px;
-  margin-bottom: 24px;
-}
-
-.left-column {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.right-column {
-  display: flex;
-  flex-direction: column;
-}
-
-/* 紧凑卡片样式 */
-.compact-card {
-  margin-bottom: 0;
-}
-
-.system-grid-compact {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.info-item-compact {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  background: #f9fafb;
-  border-radius: 6px;
-  font-size: 0.875rem;
-}
-
-.info-label-compact {
-  color: #6b7280;
-  font-weight: 500;
-  min-width: 60px;
-}
-
-.info-value-compact {
-  color: #1f2937;
-  font-weight: 600;
-  text-align: right;
-}
-
-/* 网络信息紧凑样式 */
-.network-compact {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.network-item-compact {
-  background: #f9fafb;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 0.875rem;
-}
-
-.network-name-compact {
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 4px;
-}
-
-.network-detail-compact {
-  color: #6b7280;
-  font-size: 0.8rem;
-}
-
-/* 图表样式 */
-.chart-container {
-  height: 320px;
-  position: relative;
-  width: 100%;
-}
-
-.chart-container-compact {
-  height: 400px;
-  position: relative;
-  width: 100%;
-}
-
-.chart-container canvas,
-.chart-container-compact canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.chart-placeholder {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1;
-}
-
-.placeholder-text {
-  color: #6b7280;
-  font-size: 1rem;
-  text-align: center;
-}
-
-/* 水平指标行 */
-.metrics-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.metric-card-horizontal {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-  padding: 16px;
-  transition: box-shadow 0.3s ease;
-}
-
-.metric-card-horizontal:hover {
-  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.15);
-}
-
-.metric-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.metric-title-small {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.usage-value-large {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.metric-details-small {
-  font-size: 0.75rem;
-  color: #6b7280;
-  margin-top: 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* 指标网格 - 备用（保留原有） */
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 24px;
-  margin-bottom: 24px;
-}
-
-.metric-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  padding: 24px;
-  transition: box-shadow 0.3s ease;
-}
-
-.metric-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.metric-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 16px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.metric-icon {
-  font-size: 1.25rem;
-}
-
-.metric-icon.cpu {
-  color: #ef4444;
-}
-
-.metric-icon.memory {
-  color: #3b82f6;
-}
-
-.metric-icon.disk {
-  color: #8b5cf6;
-}
-
-.metric-content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.usage-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.usage-label {
-  color: #6b7280;
-  margin: 0;
-}
-
-.usage-value {
-  font-size: 2rem;
-  font-weight: bold;
-  margin: 0;
-}
-
-.progress-bar {
-  width: 100%;
-  height: 12px;
-  background-color: #e5e7eb;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-}
-
-.metric-details {
-  font-size: 0.875rem;
-  color: #6b7280;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.metric-details div {
-  margin: 0;
-}
-
-/* 网络信息样式 */
-.network-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
-}
-
-.network-item {
-  background: #f9fafb;
-  border-radius: 8px;
-  padding: 16px;
-}
-
-.network-name {
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 8px 0;
-}
-
-.network-details {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 0.875rem;
-}
-
-.network-detail {
-  color: #6b7280;
-  margin: 0;
-}
-
-.detail-label {
-  font-weight: 500;
-}
-
 /* 动画 */
 @keyframes pulse {
   0%, 100% {
@@ -1288,121 +771,92 @@ export default {
 
 /* 响应式设计 */
 @media (max-width: 1024px) {
-  .main-content {
+  .grid-cols-2 {
     grid-template-columns: 1fr;
-    gap: 16px;
   }
 
-  .chart-container-compact {
+  .h-96 {
     height: 350px;
   }
 
-  .metrics-row {
+  .grid-cols-3 {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
-  .system-monitor {
+  .p-6 {
     padding: 16px;
   }
 
-  .title {
+  .text-4xl {
     font-size: 2rem;
   }
 
-  .subtitle {
+  .text-lg {
     font-size: 1rem;
   }
 
-  .header-content {
+  .flex-wrap {
     flex-direction: column;
     gap: 16px;
   }
 
-  .status-section {
-    justify-content: center;
+  .justify-center {
     width: 100%;
   }
 
-  .status-card, .uptime-card {
+  .min-w-[140px] {
     flex: 1;
     min-width: 140px;
   }
 
-  .status-bar {
-    gap: 16px;
-  }
-
-  .main-content {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .metrics-row {
+  .grid-cols-3 {
     grid-template-columns: 1fr;
     gap: 12px;
   }
 
-  .metric-card-horizontal {
+  .p-4 {
     padding: 12px;
   }
 
-  .usage-value-large {
+  .text-xl {
     font-size: 1.25rem;
   }
 
-  .system-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .metrics-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .network-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .chart-container,
-  .chart-container-compact {
+  .h-96,
+  .h-80 {
     height: 200px;
   }
 }
 
 @media (max-width: 480px) {
-  .system-monitor {
+  .p-6 {
     padding: 12px;
   }
 
-  .title {
+  .text-4xl {
     font-size: 1.75rem;
   }
 
-  .card,
-  .compact-card {
+  .p-6.mb-6 {
     padding: 16px;
   }
 
-  .metric-card,
-  .metric-card-horizontal {
+  .p-4 {
     padding: 12px;
   }
 
-  .usage-value {
-    font-size: 1.5rem;
-  }
-
-  .usage-value-large {
+  .text-xl {
     font-size: 1.125rem;
   }
 
-  .info-item-compact {
+  .py-2.px-3 {
     padding: 6px 10px;
     font-size: 0.8rem;
   }
 
-  .metric-details-small {
+  .text-xs {
     font-size: 0.7rem;
   }
 }

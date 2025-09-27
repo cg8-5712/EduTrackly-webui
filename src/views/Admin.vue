@@ -1,29 +1,30 @@
 <template>
-  <div class="admin-container">
-    <div class="admin-sidebar">
-      <div class="sidebar-header">
-        <h3>管理后台</h3>
+  <div class="flex h-screen overflow-hidden">
+    <div class="w-60 min-w-60 bg-slate-700 text-white flex flex-col shadow-lg">
+      <div class="p-5 border-b border-slate-600 bg-slate-800">
+        <h3 class="m-0 text-lg font-semibold text-center">管理后台</h3>
       </div>
-      <div class="sidebar-content">
-        <ul class="menu">
+      <div class="flex-1 overflow-y-auto pt-2">
+        <ul class="list-none p-0 m-0">
           <li
               v-for="(item, index) in navigation"
               :key="index"
               @click="changeComponent(item)"
-              :class="{'active': item.current}"
+              :class="{'bg-slate-600 border-l-cyan-400 font-semibold': item.current}"
+              class="py-4 px-5 cursor-pointer flex items-center transition-all duration-300 border-l-4 border-l-transparent hover:bg-slate-600 hover:border-l-cyan-400"
           >
-            <component :is="item.icon" class="menu-icon" />
+            <component :is="item.icon" class="w-5 h-5 mr-3 flex-shrink-0" />
             {{ item.name }}
           </li>
         </ul>
       </div>
     </div>
 
-    <div class="admin-content">
-      <div class="content-header">
-        <h2>{{ currentMenuName }}</h2>
+    <div class="flex-1 flex flex-col bg-gray-50 overflow-hidden">
+      <div class="bg-white py-5 px-8 border-b border-gray-200 shadow-sm z-10">
+        <h2 class="m-0 text-2xl font-semibold text-slate-700">{{ currentMenuName }}</h2>
       </div>
-      <div class="content-body">
+      <div class="flex-1 p-8 overflow-y-auto overflow-x-hidden">
         <component :is="currentComponent" />
       </div>
     </div>
@@ -81,169 +82,70 @@ const changeComponent = (item) => {
 </script>
 
 <style scoped>
-.admin-container {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.admin-sidebar {
-  width: 240px;
-  min-width: 240px;
-  background-color: #2f4050;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar-header {
-  padding: 20px 15px;
-  border-bottom: 1px solid #3a5062;
-  background-color: #1e2832;
-}
-
-.sidebar-header h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  text-align: center;
-}
-
-.sidebar-content {
-  flex: 1;
-  overflow-y: auto;
-  padding-top: 10px;
-}
-
-.menu {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.menu li {
-  padding: 15px 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: all 0.3s ease;
-  border-left: 4px solid transparent;
-}
-
-.menu li:hover {
-  background-color: #3a5062;
-  border-left-color: #5cb3cc;
-}
-
-.menu .active {
-  background-color: #3a5062;
-  border-left-color: #5cb3cc;
-  font-weight: 600;
-}
-
-.menu-icon {
-  width: 20px;
-  height: 20px;
-  margin-right: 12px;
-  flex-shrink: 0;
-}
-
-.admin-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background-color: #f8f9fa;
-  overflow: hidden;
-}
-
-.content-header {
-  background-color: white;
-  padding: 20px 30px;
-  border-bottom: 1px solid #e9ecef;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-}
-
-.content-header h2 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.content-body {
-  flex: 1;
-  padding: 30px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
 /* 自定义滚动条样式 */
-.sidebar-content::-webkit-scrollbar,
-.content-body::-webkit-scrollbar {
+.overflow-y-auto::-webkit-scrollbar {
   width: 6px;
 }
 
-.sidebar-content::-webkit-scrollbar-track {
-  background: #2f4050;
+.bg-slate-700 .overflow-y-auto::-webkit-scrollbar-track {
+  background: #334155;
 }
 
-.sidebar-content::-webkit-scrollbar-thumb {
-  background: #5cb3cc;
+.bg-slate-700 .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #06b6d4;
   border-radius: 3px;
 }
 
-.sidebar-content::-webkit-scrollbar-thumb:hover {
-  background: #4a9fb8;
+.bg-slate-700 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #0891b2;
 }
 
-.content-body::-webkit-scrollbar-track {
+.bg-gray-50 .overflow-y-auto::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
 
-.content-body::-webkit-scrollbar-thumb {
+.bg-gray-50 .overflow-y-auto::-webkit-scrollbar-thumb {
   background: #c1c1c1;
   border-radius: 3px;
 }
 
-.content-body::-webkit-scrollbar-thumb:hover {
+.bg-gray-50 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .admin-container {
+  .flex {
     flex-direction: column;
   }
 
-  .admin-sidebar {
+  .w-60 {
     width: 100%;
     height: auto;
     max-height: 200px;
   }
 
-  .sidebar-content {
+  .flex-1.overflow-y-auto {
     overflow-x: auto;
   }
 
-  .menu {
+  .list-none {
     display: flex;
     flex-direction: row;
   }
 
-  .menu li {
+  .py-4.px-5 {
     white-space: nowrap;
     min-width: 120px;
   }
 
-  .content-body {
+  .p-8 {
     padding: 20px 15px;
   }
 }
 
 /* 确保子组件能够正确滚动 */
-.admin-content >>> * {
+div >>> * {
   max-width: 100%;
 }
 </style>

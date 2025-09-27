@@ -1,5 +1,5 @@
 <template>
-  <div class="submit-container">
+  <div class="flex flex-col gap-4 p-4">
     <ClassSwitch @update:cid="handleClassChange" />
     <StudentList :cid="selectedCid" ref="studentListComponent" />
     <!-- 引入作业提交组件 -->
@@ -39,16 +39,4 @@ watch(
 </script>
 
 <style scoped>
-.submit-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
-}
-
-.submit-button-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-}
 </style>

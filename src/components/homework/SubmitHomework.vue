@@ -1,22 +1,23 @@
 <template>
-  <div class="submit-homework">
-    <h2>提交作业</h2>
-    <div class="subjects-grid">
+  <div class="w-[85%] p-5 bg-gray-800 rounded-xl text-gray-100 shadow-2xl mt-8 mx-auto text-xl">
+    <h2 class="text-center mb-5 text-white">提交作业</h2>
+    <div class="grid grid-cols-3 gap-4 md:grid-cols-1 md:gap-2">
       <div
           v-for="subject in subjectsConfig"
           :key="subject.key"
-          class="subject-item"
+          class="flex flex-col"
       >
-        <label>{{ subject.name }}</label>
+        <label class="mb-1 font-bold text-blue-300">{{ subject.name }}</label>
         <textarea
             v-model="homeworkContent[subject.key]"
             @input="resizeTextarea($event)"
             :placeholder="`请输入${subject.name}作业内容`"
             rows="1"
+            class="resize-none overflow-hidden p-2 text-lg rounded-md border-none bg-gray-700 text-gray-100 outline-none transition-all duration-200 ease-in-out min-h-10 focus:shadow-blue-500 focus:shadow-md focus:bg-gray-600 placeholder-gray-400"
         ></textarea>
       </div>
     </div>
-    <button @click="submitHomework">提交</button>
+    <button @click="submitHomework" class="mt-5 px-8 py-3 text-lg cursor-pointer border-none rounded-lg bg-blue-500 text-white transition-colors duration-200 ease-in-out block mx-auto hover:bg-blue-600 active:translate-y-px">提交</button>
   </div>
 </template>
 
@@ -154,103 +155,4 @@ async function submitHomework() {
 </script>
 
 <style scoped>
-.submit-homework {
-  width: 85%;
-  padding: 20px;
-  background-color: #1f1f2e; /* 深色背景 */
-  border-radius: 12px;
-  color: #f0f0f0; /* 字体颜色亮一点 */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  margin-top: 30px;
-  margin-left: auto;
-  margin-right: auto;
-  font-size: 22px;
-}
-
-.submit-homework h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #fff;
-}
-
-.subjects-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-}
-
-.subject-item {
-  display: flex;
-  flex-direction: column;
-}
-
-.subject-item label {
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #9ed2ff;
-}
-
-.subject-item textarea {
-  resize: none;
-  overflow: hidden;
-  padding: 8px;
-  font-size: 20px;
-  border-radius: 6px;
-  border: none;
-  background-color: #2b2b3b; /* 深色输入框 */
-  color: #f0f0f0;
-  outline: none;
-  transition: all 0.2s ease-in-out;
-  min-height: 40px;
-}
-
-.subject-item textarea:focus {
-  box-shadow: 0 0 5px #4f91ff;
-  background-color: #3a3a50;
-}
-
-.subject-item textarea::placeholder {
-  color: #888;
-}
-
-button {
-  margin-top: 20px;
-  padding: 12px 30px;
-  font-size: 18px;
-  cursor: pointer;
-  border: none;
-  border-radius: 8px;
-  background-color: #4f91ff;
-  color: #fff;
-  transition: background-color 0.2s ease-in-out;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-button:hover {
-  background-color: #3570d1;
-}
-
-button:active {
-  transform: translateY(1px);
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .subjects-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .submit-homework {
-    width: 95%;
-    padding: 15px;
-    font-size: 18px;
-  }
-
-  .subject-item textarea {
-    font-size: 16px;
-  }
-}
 </style>

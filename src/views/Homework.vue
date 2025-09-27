@@ -1,18 +1,18 @@
 <template>
-  <div class="home-container" @click="handleGlobalClick">
+  <div class="h-screen w-full bg-gray-900 text-gray-200 flex flex-col p-4 box-border overflow-hidden" @click="handleGlobalClick">
     <!-- 顶部栏 -->
-    <div class="top-bar">
-      <div class="date-info">
-        <div class="date-display">
-          <span class="current-date">今日：{{ todayDate }}</span>
-          <span v-if="selectedDate && selectedDate !== todayDateInt" class="selected-date-top">
+    <div class="flex justify-between items-center p-4 pt-8 bg-gray-700 rounded-xl shadow-lg">
+      <div class="relative flex items-center gap-4 text-4xl font-semibold text-blue-200">
+        <div class="flex flex-col gap-2">
+          <span class="text-5xl font-bold">今日：{{ todayDate }}</span>
+          <span v-if="selectedDate && selectedDate !== todayDateInt" class="text-blue-400">
             选中：{{ formattedSelectedDate }}
           </span>
         </div>
-        <button @click="showCalendar = !showCalendar" class="calendar-btn">
+        <button @click="showCalendar = !showCalendar" class="bg-transparent border-none text-5xl cursor-pointer p-1 rounded transition-transform duration-200 hover:scale-110">
           📅
         </button>
-        <div v-if="showCalendar" class="calendar-popup">
+        <div v-if="showCalendar" class="absolute top-full left-0 mt-2 z-50">
           <Calendar mode="single" @select-date="onDateSelect" />
         </div>
       </div>
@@ -20,21 +20,21 @@
       <!-- 替换原有班级选择为新组件 -->
       <ClassSwitch v-model:cid="selectedCid" />
 
-      <div class="controls">
-        <div class="current-time">{{ currentTime }}</div>
-        <button @click.stop="toggleFullscreen" class="fullscreen-btn">
+      <div class="flex items-center gap-6">
+        <div class="text-6xl font-black text-blue-200 font-inherit">{{ currentTime }}</div>
+        <button @click.stop="toggleFullscreen" class="bg-gray-600 text-blue-200 border-none p-4 px-8 rounded-lg text-3xl cursor-pointer transition-colors duration-200 hover:bg-gray-500">
           {{ isFullscreen ? '退出全屏' : '全屏' }}
         </button>
       </div>
     </div>
 
     <!-- 主要内容区域 -->
-    <div class="main-content">
+    <div class="flex-1 grid grid-cols-1 gap-4 min-h-0 py-2 mt-2">
       <!-- 右侧作业信息 -->
-      <div class="right-panel">
-        <div class="homework-header">
-          <h2 class="homework-title">作业内容</h2>
-          <span class="selected-date">{{ selectedDateText }}</span>
+      <div class="bg-gray-700 rounded-xl p-6 shadow-lg overflow-y-auto overflow-x-hidden min-h-0">
+        <div class="flex justify-between items-center m-0 py-1">
+          <h2 class="text-6xl font-bold text-blue-200 m-0">作业内容</h2>
+          <span class="text-5xl text-blue-400">{{ selectedDateText }}</span>
         </div>
         <Homework
             :selected-date="selectedDate"
@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <footer v-if="!isFullscreen" class="footer">
+    <footer v-if="!isFullscreen" class="text-center bg-gray-700 text-gray-500 py-1 px-2 text-xl mt-auto">
       <p>© 2024 Edutrackly. All rights reserved.</p>
     </footer>
   </div>
@@ -137,194 +137,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 基础样式重置 */
-html, body {
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  background-color: #1a1a1a;
-  overflow: hidden;
-}
-
-.home-container {
-  height: 100vh;
-  width: 100%;
-  background-color: #1a1a1a;
-  color: #e0e0e0;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-/* -------- 原有样式保持不变 -------- */
-.date-display {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.date-info {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.current-date, .selected-date-top {
-  font-size: 2.5rem;
-  font-weight: 700;
-}
-
-.selected-date-top {
-  color: #7eb3db;
-}
-
-.calendar-popup {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 0.5rem;
-  z-index: 1000;
-  background: #2d2d2d;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-@media (max-width: 768px) {
-  .date-display {
-    flex-direction: row;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .current-date, .selected-date-top {
-    font-size: 1.25rem;
-  }
-}
-
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: #2d2d2d;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-.date-info {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #9ed2ff;
-}
-
-.calendar-btn {
-  background: none;
-  border: none;
-  font-size: 2.5rem;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 4px;
-  transition: transform 0.2s;
-}
-
-.calendar-btn:hover {
-  transform: scale(1.1);
-}
-
-.calendar-popup {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 0.5rem;
-  z-index: 1000;
-}
-
-.current-time {
-  font-size: 3.7rem;
-  font-weight: bolder;
-  color: #9ed2ff;
-  font-family: inherit;
-}
-
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.fullscreen-btn {
-  background: #3a3a3a;
-  color: #9ed2ff;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  font-size: 1.8rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.fullscreen-btn:hover {
-  background: #4a4a4a;
-}
-
-.main-content {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  min-height: 0; /* 关键：允许内容收缩 */
-  padding: 0.5rem 0 0.5rem 0; /* 添加上边距 */
-  margin-top: 0.5rem; /* 增加与顶部的距离 */
-}
-
-.right-panel {
-  background-color: #2d2d2d;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  overflow-y: auto;
-  overflow-x: hidden;
-  min-height: 0; /* 关键：允许内容收缩 */
-}
-
-.homework-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0;          /* 清掉外边距 */
-  padding: 0.25rem 0; /* 缩小上下内边距 */
-}
-
-.homework-header > * {
-  margin: 0;          /* 去掉子元素的默认 margin（尤其是 h1、h2、p） */
-}
-
-.homework-title {
-  font-size: 3rem;
-  font-weight: 700;
-  color: #9ed2ff;
-}
-
-.selected-date {
-  font-size: 2.5rem;
-  color: #7eb3db;
-}
-
-.footer {
-  text-align: center;
-  background: #2d2d2d;
-  color: #666;
-  padding: 0.25rem 0.5rem;
-  font-size: 1.2rem;
-  margin-top: auto;
-}
-
 /* 自定义滚动条样式 */
 ::-webkit-scrollbar {
   width: 10px;

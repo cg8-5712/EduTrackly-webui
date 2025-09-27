@@ -19,11 +19,11 @@ class AdminClassService extends ApiPrefix {
 
       // page 和 size 作为 body 内容发送
       const bodyData = { page, size };
-      const response = await this.adminPost(url, bodyData);
+      const response = await this.get(url, bodyData);
       console.log('获取班级列表成功:', response.message);
 
       if (response.code !== 0) {
-        throw new Error(response.message);
+        Error(response.message);
       }
 
       return response;
@@ -41,7 +41,7 @@ class AdminClassService extends ApiPrefix {
   async getClassDetail(cid = null, className = null) {
     try {
       if (!cid && !className) {
-        throw new Error('班级ID或班级名称不能同时为空');
+        Error('班级ID或班级名称不能同时为空');
       }
 
       let url = '/class/get?';

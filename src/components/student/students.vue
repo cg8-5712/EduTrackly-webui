@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 dark-theme">
+  <div class="p-4 bg-gray-700 text-gray-200 min-h-full rounded-xl">
     <!-- 加载中 -->
     <div v-if="loading" class="flex justify-center items-center h-40">
       <LoadingSpinner />
@@ -13,27 +13,27 @@
     <!-- 展示出勤数据 -->
     <div v-else-if="attendance.class_name" class="space-y-6">
       <!-- 出勤统计 -->
-      <div class="attendance-stats">
-        <div class="stat">
+      <div class="flex flex-col gap-4">
+        <div class="bg-gray-800 p-4 rounded-lg text-gray-100 text-3xl">
           <span class="font-bold">应到：</span>{{ attendance.expected_attend }}人
         </div>
-        <div class="stat">
+        <div class="bg-gray-800 p-4 rounded-lg text-gray-100 text-3xl">
           <span class="font-bold">实到：</span>{{ attendance.actual_attend }}人
         </div>
       </div>
 
       <!-- 请假名单 -->
-      <div v-if="hasAbsentStudents" class="attendance-details">
-        <h3 class="section-title">请假名单</h3>
-        <ul>
+      <div v-if="hasAbsentStudents" class="">
+        <h3 class="text-4xl font-semibold mb-4 text-blue-300">请假名单</h3>
+        <ul class="list-none pl-0">
           <li v-for="(event, index) in absentStudents"
               :key="index"
-              class="event-item">
-            <span class="student-name"
+              class="p-4 bg-gray-800 rounded-lg mb-3 flex justify-between text-gray-200 text-2xl">
+            <span class="cursor-pointer text-blue-400 relative"
                   @mouseover="showReason(event, index)"
                   @mouseleave="hideReason">
               {{ event.student_name }}
-              <span v-if="showTooltip && currentEventId === index" class="tooltip">
+              <span v-if="showTooltip && currentEventId === index" class="absolute left-full ml-3 bg-gray-900 bg-opacity-90 text-white py-2 px-4 rounded-lg text-sm whitespace-nowrap shadow-lg">
                 {{ getEventTypeText(event.event_type) }}
               </span>
             </span>
@@ -42,10 +42,10 @@
       </div>
 
       <!-- 临时参加名单 -->
-      <div v-if="tempStudents.length > 0" class="attendance-details">
-        <h3 class="section-title">临时参加名单</h3>
-        <ul>
-          <li v-for="(event, index) in tempStudents" :key="index" class="event-item">
+      <div v-if="tempStudents.length > 0" class="">
+        <h3 class="text-4xl font-semibold mb-4 text-blue-300">临时参加名单</h3>
+        <ul class="list-none pl-0">
+          <li v-for="(event, index) in tempStudents" :key="index" class="p-4 bg-gray-800 rounded-lg mb-3 flex justify-between text-gray-200 text-2xl">
             {{ event.student_name }}
           </li>
         </ul>
@@ -168,66 +168,4 @@ const hideReason = () => {
 </script>
 
 <style scoped>
-.dark-theme {
-  background-color: #2d2d2d;
-  color: #e0e0e0;
-  min-height: 100%;
-  border-radius: 12px;
-}
-
-.attendance-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.stat {
-  background-color: #2b2b3d;
-  padding: 16px;
-  border-radius: 8px;
-  color: #f0f0f0;
-  font-size: 1.8rem;
-}
-
-.section-title {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #90caf9;
-}
-
-.attendance-details ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-.event-item {
-  padding: 16px;
-  background-color: #2b2b3d;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  color: #e0e0e0;
-  font-size: 1.6rem;
-}
-
-.student-name {
-  cursor: pointer;
-  color: #64b5f6;
-  position: relative;
-}
-
-.tooltip {
-  position: absolute;
-  left: 100%;
-  margin-left: 12px;
-  background-color: rgba(30, 30, 30, 0.9);
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 1.4rem;
-  white-space: nowrap;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-}
 </style>

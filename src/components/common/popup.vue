@@ -1,5 +1,5 @@
 <template>
-  <div class="popup-wrapper">
+  <div class="inline-block">
     <slot name="reference" :open="open"></slot>
 
     <teleport to="body">
@@ -7,7 +7,7 @@
         <div
           v-if="isOpen"
           ref="popupRef"
-          class="popup-content"
+          class="bg-gray-600 border border-gray-500 rounded-lg p-2 min-w-30 text-center text-white shadow-lg"
           :style="positionStyle"
         >
           <slot />
@@ -91,35 +91,18 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-
-.popup-wrapper { 
-    display: inline-block;
-}
-
-.popup-content {
-  background-color: #363636;
-  border: 1px solid #4c4c4c;
-  border-radius: 8px;
-  padding: 8px;
-  min-width: 120px;
-  text-align: center;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-}
-
 .fade-slide-enter-active,
-
 .fade-slide-leave-active {
-    transition: all 0.2s ease; 
+  transition: all 0.2s ease;
 }
 
-.fade-slide-enter-from { 
-  opacity: 0; 
-  transform: translateY(-4px); 
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(-4px);
 }
 
-.fade-slide-enter-to { 
-  opacity: 1; 
+.fade-slide-enter-to {
+  opacity: 1;
   transform: translateY(0);
 }
 
@@ -128,9 +111,8 @@ onBeforeUnmount(() => {
   transform: translateY(0);
 }
 
-.fade-slide-leave-to { 
+.fade-slide-leave-to {
   opacity: 0;
   transform: translateY(-4px);
 }
-
 </style>

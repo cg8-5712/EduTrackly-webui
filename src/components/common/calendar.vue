@@ -1,16 +1,16 @@
 <template>
-  <div class="calendar-container">
-    <div class="calendar-header">
-      <button @click="prevMonth" class="nav-btn">&#8249;</button>
-      <span class="month-text">{{ currentMonth }}</span>
-      <button @click="nextMonth" class="nav-btn">&#8250;</button>
+  <div class="w-70 p-4 bg-gray-700 rounded-xl shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <button @click="prevMonth" class="bg-transparent border-none text-gray-400 text-2xl cursor-pointer p-2 transition-colors duration-200 rounded-lg hover:text-white hover:bg-gray-600">&#8249;</button>
+      <span class="text-gray-200 text-xl font-medium">{{ currentMonth }}</span>
+      <button @click="nextMonth" class="bg-transparent border-none text-gray-400 text-2xl cursor-pointer p-2 transition-colors duration-200 rounded-lg hover:text-white hover:bg-gray-600">&#8250;</button>
     </div>
-    <div class="calendar-days">
-      <div 
-        v-for="(day, index) in daysInMonth" 
-        :key="index" 
+    <div class="grid grid-cols-7 gap-2">
+      <div
+        v-for="(day, index) in daysInMonth"
+        :key="index"
         @click="selectDate(day)"
-        :class="['day', { 'selected': isSelected(day) }]"
+        :class="['flex items-center justify-center h-10 text-gray-200 cursor-pointer rounded-lg transition-all duration-200 text-lg hover:bg-gray-600', { 'bg-gray-500 text-white font-medium': isSelected(day) }]"
       >
         {{ day }}
       </div>
@@ -122,68 +122,4 @@ const isSelected = (day) => {
 </script>
 
 <style scoped>
-.calendar-container {
-  width: 280px;
-  padding: 1rem;
-  background-color: #2d2d2d;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-.calendar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.nav-btn {
-  background: none;
-  border: none;
-  color: #a8a8a8;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  transition: color 0.2s;
-  border-radius: 8px;
-}
-
-.nav-btn:hover {
-  color: #ffffff;
-  background-color: #3d3d3d;
-}
-
-.month-text {
-  color: #e0e0e0;
-  font-size: 1.2rem;
-  font-weight: 500;
-}
-
-.calendar-days {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.5rem;
-}
-
-.day {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 2.5rem;
-  color: #e0e0e0;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.2s;
-  font-size: 1.1rem;
-}
-
-.day:hover {
-  background-color: #3d3d3d;
-}
-
-.day.selected {
-  background-color: #808080;
-  color: #ffffff;
-  font-weight: 500;
-}
 </style>

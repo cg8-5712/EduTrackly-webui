@@ -1,18 +1,18 @@
 <template>
-  <div class="student-list-container">
-    <div class="students-background">
-      <div class="students-row">
+  <div class="flex flex-col items-center">
+    <div class="w-full max-w-[85%] p-4 rounded-xl bg-gray-900 min-h-[30vh] shadow-2xl max-h-[60vh] h-auto overflow-x-auto overflow-y-auto">
+      <div class="flex gap-4 flex-nowrap pb-2">
         <div
           v-for="student in students"
           :key="student.sid"
-          class="student-wrapper"
+          class="relative flex-none"
         >
           <Popup v-if="student.attendance">
             <!-- 触发元素 -->
             <template #reference="{ open }">
               <div
-                class="student-card"
-                :class="{ selected: selectedEvents[student.sid] }"
+                class="py-3 px-4 min-w-20 text-center rounded-lg bg-gray-700 text-gray-200 cursor-pointer transition-all duration-200 select-none shadow-md hover:scale-105 hover:shadow-lg"
+                :class="{ 'border-2 border-blue-300': selectedEvents[student.sid] }"
                 @click="handleStudentClick(student)"
                 @mouseenter="open"
               >
@@ -21,21 +21,21 @@
             </template>
 
             <!-- 弹窗内容 -->
-            <div class="popover-content">
+            <div class="flex flex-col gap-2 min-w-30">
               <button
-                class="event-btn personal"
+                class="py-1.5 px-0 border-none rounded bg-blue-500 text-white cursor-pointer"
                 @click="setEvent(student.sid, 'personal')"
               >
                 事假
               </button>
               <button
-                class="event-btn sick"
+                class="py-1.5 px-0 border-none rounded bg-green-500 text-white cursor-pointer"
                 @click="setEvent(student.sid, 'sick')"
               >
                 病假
               </button>
               <button
-                class="event-btn official"
+                class="py-1.5 px-0 border-none rounded bg-amber-500 text-white cursor-pointer"
                 @click="setEvent(student.sid, 'official')"
               >
                 公假
@@ -44,8 +44,8 @@
           </Popup>
 
           <div v-else
-            class="student-card absent"
-            :class="{ selected: selectedEvents[student.sid] }"
+            class="py-3 px-4 min-w-20 text-center rounded-lg bg-gray-600 text-gray-400 cursor-pointer transition-all duration-200 select-none shadow-md hover:scale-105 hover:shadow-lg"
+            :class="{ 'border-2 border-blue-300': selectedEvents[student.sid] }"
             @click="handleStudentClick(student)"
           >
             {{ student.student_name }}
@@ -54,8 +54,8 @@
       </div>
     </div>
 
-    <div class="submit-container">
-      <button class="submit-btn" @click="submitEvents" :disabled="loading">
+    <div class="flex justify-center mt-3">
+      <button class="py-2 px-4 border-none rounded-md bg-blue-500 text-white font-medium cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed" @click="submitEvents" :disabled="loading">
         {{ loading ? '提交中...' : '提交' }}
       </button>
     </div>
@@ -136,124 +136,4 @@ defineExpose({ fetchStudents })
 </script>
 
 <style scoped>
-.student-list-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.students-background {
-  width: 100%;
-  max-width: 85%;
-  padding: 16px;
-  border-radius: 12px;
-  background-color: #1e1e1e;
-  min-height: 30vh;
-  //background-image: repeating-linear-gradient(
-  //  45deg,
-  //  rgba(255, 255, 255, 0.05),
-  //  rgba(255, 255, 255, 0.05) 4px,
-  //  transparent 4px,
-  //  transparent 8px
-  //);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
-  /* 高度控制 */
-  max-height: 60vh;        /* 最大高度为页面高度的60% */
-  height: auto;             /* 内容少时自动缩小 */
-  overflow-x: auto;         /* 横向滚动 */
-  overflow-y: auto;         /* 超过高度时纵向滚动 */
-}
-
-/* 学生水平排列 */
-.students-row {
-  display: flex;
-  gap: 16px;
-  flex-wrap: nowrap;
-  padding-bottom: 8px;
-}
-
-/* 学生卡片容器 */
-.student-wrapper {
-  position: relative;
-  flex: 0 0 auto; /* 不缩放 */
-}
-
-/* 学生卡片 */
-.student-card {
-  padding: 12px 16px;
-  min-width: 80px;
-  text-align: center;
-  border-radius: 8px;
-  background-color: #2d2d2d;
-  color: #e0e0e0;
-  cursor: pointer;
-  transition: all 0.2s;
-  user-select: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-.student-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-}
-
-.student-card.absent {
-  background-color: #555;
-  color: #aaa;
-}
-
-.student-card.selected {
-  border: 2px solid #9ed2ff;
-}
-
-/* 弹窗内容 */
-.popover-content {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 120px;
-}
-
-.event-btn {
-  padding: 6px 0;
-  border: none;
-  border-radius: 4px;
-  color: #fff;
-  cursor: pointer;
-}
-.event-btn.personal { 
-  background-color: #3b82f6; 
-}
-
-.event-btn.sick { 
-  background-color: #22c55e; 
-}
-
-.event-btn.official { 
-  background-color: #f59e0b; 
-}
-
-/* 提交按钮 */
-.submit-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 12px;
-}
-
-.submit-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  background-color: #3b82f6;
-  color: #fff;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.submit-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 </style>
