@@ -3,10 +3,15 @@ import { ref, reactive } from 'vue'
 const state = reactive({
     message: '',
     type: 'info',
-    show: false
+    show: false,
+    progress: 100,
+    isPaused: false
 })
 
 let hideTimeout = null
+let progressInterval = null
+const NOTIFICATION_DURATION = 3000 // 3秒
+const PROGRESS_UPDATE_INTERVAL = 50 // 每50ms更新一次进度条
 
 const VALID_TYPES = ['info', 'success', 'error', 'warn']
 
@@ -22,34 +27,77 @@ const notify = (message, type = 'info') => {
     }
 
     // 清除已有定时器
-    if (hideTimeout) {
-        clearTimeout(hideTimeout)
-        hideTimeout = null
-    }
+    clearTimers()
 
     // 更新状态
     state.message = message
     state.type = type
     state.show = true
+    state.progress = 100
+    state.isPaused = false
 
-    // 自动隐藏
-    hideTimeout = setTimeout(() => {
-        state.show = false
-        hideTimeout = null
-    }, 3000)
+    // 启动进度条动画
+    startProgressAnimation()
 }
 
-const close = () => {
-    if (hideTimeout !== null) {
+const startProgressAnimation = () => {
+    let startTime = Date.now()
+    let pausedTime = 0
+
+    progressInterval = setInterval(() => {
+        if (state.isPaused) {
+            if (pausedTime === 0) {
+                pausedTime = Date.now()
+            }
+            return // 暂停时不更新进度
+        }
+
+        // 如果从暂停状态恢复，调整开始时间
+        if (pausedTime > 0) {
+            startTime += Date.now() - pausedTime
+            pausedTime = 0
+        }
+
+        const elapsed = Date.now() - startTime
+        const remaining = Math.max(0, NOTIFICATION_DURATION - elapsed)
+        state.progress = (remaining / NOTIFICATION_DURATION) * 100
+
+        if (remaining <= 0) {
+            close()
+        }
+    }, PROGRESS_UPDATE_INTERVAL)
+}
+
+const pause = () => {
+    state.isPaused = true
+}
+
+const resume = () => {
+    state.isPaused = false
+}
+
+const clearTimers = () => {
+    if (hideTimeout) {
         clearTimeout(hideTimeout)
         hideTimeout = null
     }
+    if (progressInterval) {
+        clearInterval(progressInterval)
+        progressInterval = null
+    }
+}
 
+const close = () => {
+    clearTimers()
     state.show = false
+    state.progress = 100
+    state.isPaused = false
 }
 
 export default {
     state,
     notify,
-    close
+    close,
+    pause,
+    resume
 }

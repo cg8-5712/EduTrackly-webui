@@ -31,15 +31,13 @@
       </button>
     </div>
 
-    <!-- 错误提示 -->
-    <div v-if="!loading && classes.length === 0" class="absolute top-full left-0 mt-2 text-red-400 text-sm">
-      暂无班级数据
-    </div>
+    <!-- 错误提示通过 MessageInfo 显示 -->
   </div>
 </template>
 
 <script>
 import ClassService from "@/services/basic/class";
+import notificationService from '@/services/common/notification';
 
 export default {
   name: "ClassSwitch",
@@ -80,6 +78,7 @@ export default {
       } catch (error) {
         console.error("加载班级列表失败:", error);
         this.classes = [];
+        notificationService.notify('暂无班级数据，请检查网络连接', 'error');
       } finally {
         this.loading = false;
       }

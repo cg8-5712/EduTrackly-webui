@@ -39,15 +39,17 @@
 
       <!-- 右侧作业信息 -->
       <div class="bg-gray-800 rounded-xl p-1 px-2.5 pb-4 shadow-lg overflow-y-auto overflow-x-hidden min-h-0">
-        <div class="flex justify-between items-center m-0 py-0.5">
+        <div class="flex justify-between items-center m-0 py-0.5 mb-4 mt-4.5 ml-4">
           <h2 class="text-4xl md:text-5xl font-bold text-blue-300 m-0">作业内容</h2>
-          <span class="text-3xl md:text-4xl text-blue-400">{{ selectedDateText }}</span>
+          <span class="text-3xl md:text-4xl text-blue-400 mr-5">{{ selectedDateText }}</span>
         </div>
-        <Homework :selected-date="selectedDate" :selected-cid="selectedCid" ref="homeworkComponent" :columns="1"/>
+        <div class="mt-6">
+          <Homework :selected-date="selectedDate" :selected-cid="selectedCid" ref="homeworkComponent" :columns="1"/>
+        </div>
       </div>
     </div>
 
-    <footer v-if="!isFullscreen" class="text-center bg-gray-800 text-gray-500 py-1 px-2 text-lg mt-auto">
+    <footer v-if="!isFullscreen" class="text-center bg-gray-800 text-gray-500 py-3 px-2 text-lg mt-auto">
       <p>© 2024 Edutrackly. All rights reserved.</p>
     </footer>
   </div>

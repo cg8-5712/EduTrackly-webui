@@ -10,27 +10,38 @@
     >
       <div
           v-if="notificationService.state.show"
-          class="flex items-center p-3 rounded-lg min-w-[250px] shadow-lg text-white font-medium relative"
+          class="flex flex-col min-w-[400px] max-w-[600px] shadow-2xl text-white font-normal relative border-2 rounded-xl overflow-hidden"
           :class="{
-            'bg-green-500': notificationService.state.type === 'success',
-            'bg-blue-500': notificationService.state.type === 'info',
-            'bg-red-500': notificationService.state.type === 'error',
-            'bg-gray-700': !['success', 'info', 'error'].includes(notificationService.state.type)
+            'bg-green-600 border-green-500': notificationService.state.type === 'success',
+            'bg-blue-600 border-blue-500': notificationService.state.type === 'info',
+            'bg-red-600 border-red-500': notificationService.state.type === 'error',
+            'bg-gray-700 border-gray-600': !['success', 'info', 'error'].includes(notificationService.state.type)
           }"
+          @mouseenter="handleMouseEnter"
+          @mouseleave="handleMouseLeave"
       >
-        <div class="flex items-center w-full">
-          <div class="mr-3 w-6 h-6 flex-shrink-0">
+        <!-- 主要内容区域 -->
+        <div class="flex items-center p-5">
+          <div class="mr-4 w-8 h-8 flex-shrink-0">
             <CheckCircleIcon v-if="notificationService.state.type === 'success'" />
             <InformationCircleIcon v-else-if="notificationService.state.type === 'info'" />
             <XCircleIcon v-else />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 text-xl leading-relaxed">
             {{ notificationService.state.message }}
           </div>
-          <button class="bg-transparent border-0 text-white cursor-pointer flex items-center ml-3" @click="notificationService.close">
-            <XMarkIcon class="w-5 h-5" />
+          <button class="bg-transparent border-0 text-white cursor-pointer flex items-center ml-4 hover:bg-white/20 rounded-lg p-1 transition-colors" @click="notificationService.close">
+            <XMarkIcon class="w-6 h-6" />
             <span class="sr-only">{{ $t('components.messageInfo.close') }}</span>
           </button>
+        </div>
+
+        <!-- 进度条 -->
+        <div class="h-1 bg-black/20 relative">
+          <div
+            class="h-full bg-white/80 transition-all duration-100 ease-linear"
+            :style="{ width: notificationService.state.progress + '%' }"
+          ></div>
         </div>
       </div>
     </transition>
@@ -41,6 +52,15 @@
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/outline'
 import { XMarkIcon, InformationCircleIcon } from '@heroicons/vue/20/solid'
 import notificationService from '@/services/common/notification'
+
+// 鼠标悬停事件处理
+const handleMouseEnter = () => {
+  notificationService.pause()
+}
+
+const handleMouseLeave = () => {
+  notificationService.resume()
+}
 </script>
 
 <style>

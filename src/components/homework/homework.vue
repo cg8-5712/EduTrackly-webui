@@ -5,16 +5,19 @@
       加载中...
     </div>
 
-    <!-- 错误提示 -->
-    <div v-else-if="error && error !== 'no-homework'" class="p-4 bg-gray-700 text-gray-200 rounded-xl shadow-lg flex text-3xl font-extrabold text-red-400">
-      {{ error }}
-    </div>
+    <!-- 错误提示通过 MessageInfo 显示 -->
 
     <!-- 作业内容展示 -->
     <template v-else>
       <!-- 如果无作业数据 -->
-      <div v-if="error === 'no-homework'" class="p-4 bg-gray-700 text-gray-200 rounded-xl shadow-lg flex text-3xl font-extrabold">
-        暂无作业
+      <div v-if="error === 'no-homework'" class="p-4 bg-gray-700 text-gray-200 rounded-xl shadow-lg flex text-3xl font-extrabold text-blue-300">
+        <div class="flex items-center justify-center w-full">
+          <div class="text-center">
+            <div class="text-6xl mb-4">📝</div>
+            <div class="text-2xl">暂无作业</div>
+            <div class="text-lg text-gray-400 mt-2">今天没有布置作业哦～</div>
+          </div>
+        </div>
       </div>
       <!-- 显示分科目作业内容 -->
       <template v-else>
@@ -42,6 +45,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import HomeworkService from '@/services/basic/homework'
+import notificationService from '@/services/common/notification'
 
 // Props：选中日期 + 选中班级 + 列数（默认值为 1）
 const props = defineProps({
@@ -105,6 +109,7 @@ const fetchHomework = async () => {
   } catch (err) {
     console.error('获取作业失败:', err)
     error.value = '获取作业失败，请稍后重试'
+    notificationService.notify('获取作业失败，请稍后重试', 'error')
   } finally {
     loading.value = false
   }
