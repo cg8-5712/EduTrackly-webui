@@ -1,23 +1,37 @@
 <template>
-  <div class="w-[85%] p-5 bg-gray-800 rounded-xl text-gray-100 shadow-2xl mt-8 mx-auto text-xl">
-    <h2 class="text-center mb-5 text-white">提交作业</h2>
-    <div class="grid grid-cols-3 gap-4 md:grid-cols-1 md:gap-2">
+  <div class="w-[90%] max-w-6xl p-6 bg-gray-800 rounded-xl text-gray-100 shadow-2xl mt-8 mx-auto">
+    <h2 class="text-center mb-6 text-white text-2xl font-bold">提交作业</h2>
+    <div class="grid grid-cols-3 gap-6 mb-6">
       <div
-          v-for="subject in subjectsConfig"
+          v-for="subject in mainSubjects"
           :key="subject.key"
           class="flex flex-col"
       >
-        <label class="mb-1 font-bold text-blue-300">{{ subject.name }}</label>
+        <label class="mb-2 font-bold text-blue-300 text-center">{{ subject.name }}</label>
         <textarea
             v-model="homeworkContent[subject.key]"
             @input="resizeTextarea($event)"
             :placeholder="`请输入${subject.name}作业内容`"
-            rows="1"
-            class="resize-none overflow-hidden p-2 text-lg rounded-md border-none bg-gray-700 text-gray-100 outline-none transition-all duration-200 ease-in-out min-h-10 focus:shadow-blue-500 focus:shadow-md focus:bg-gray-600 placeholder-gray-400"
+            rows="2"
+            class="resize-none overflow-y-auto p-3 text-base rounded-lg border-none bg-gray-700 text-gray-100 outline-none transition-all duration-200 ease-in-out max-h-16 focus:shadow-blue-500 focus:shadow-lg focus:bg-gray-600 placeholder-gray-400"
         ></textarea>
       </div>
     </div>
-    <button @click="submitHomework" class="mt-5 px-8 py-3 text-lg cursor-pointer border-none rounded-lg bg-blue-500 text-white transition-colors duration-200 ease-in-out block mx-auto hover:bg-blue-600 active:translate-y-px">提交</button>
+
+    <!-- 单独的"其他"科目 -->
+    <div class="mb-6">
+      <div class="flex flex-col w-1/3">
+        <label class="mb-2 font-bold text-blue-300 text-center">{{ otherSubject.name }}</label>
+        <textarea
+            v-model="homeworkContent[otherSubject.key]"
+            @input="resizeTextarea($event)"
+            :placeholder="`请输入${otherSubject.name}作业内容`"
+            rows="2"
+            class="resize-none overflow-y-auto p-3 text-base rounded-lg border-none bg-gray-700 text-gray-100 outline-none transition-all duration-200 ease-in-out max-h-16 focus:shadow-blue-500 focus:shadow-lg focus:bg-gray-600 placeholder-gray-400"
+        ></textarea>
+      </div>
+    </div>
+    <button @click="submitHomework" class="mt-8 px-10 py-4 text-xl font-medium cursor-pointer border-none rounded-lg bg-blue-500 text-white transition-colors duration-200 ease-in-out block mx-auto hover:bg-blue-600 active:translate-y-px shadow-lg">提交作业</button>
   </div>
 </template>
 
@@ -33,8 +47,8 @@ const props = defineProps({
   }
 });
 
-// 科目配置 - 与API字段对应
-const subjectsConfig = [
+// 主要科目配置 - 3×3布局
+const mainSubjects = [
   { key: 'chinese', name: '语文' },
   { key: 'maths', name: '数学' },
   { key: 'english', name: '英语' },
@@ -43,14 +57,19 @@ const subjectsConfig = [
   { key: 'biology', name: '生物' },
   { key: 'history', name: '历史' },
   { key: 'geography', name: '地理' },
-  { key: 'politics', name: '政治' },
-  { key: 'others', name: '其他' }
+  { key: 'politics', name: '政治' }
 ];
+
+// 其他科目配置
+const otherSubject = { key: 'others', name: '其他' };
+
+// 所有科目配置（用于循环操作）
+const allSubjects = [...mainSubjects, otherSubject];
 
 const homeworkContent = reactive({});
 
 function resetHomework() {
-  subjectsConfig.forEach(subject => {
+  allSubjects.forEach(subject => {
     homeworkContent[subject.key] = '';
   });
 }
@@ -72,7 +91,7 @@ async function fetchTodayHomework(cid) {
       const apiHomeworkContent = res.data.data.homework_content;
 
       // 将API返回的内容填充到表单中
-      subjectsConfig.forEach(subject => {
+      allSubjects.forEach(subject => {
         if (apiHomeworkContent[subject.key]) {
           homeworkContent[subject.key] = apiHomeworkContent[subject.key];
         }
@@ -102,14 +121,26 @@ onMounted(() => {
 
 function resizeTextarea(event) {
   const textarea = event.target;
+
+  // 临时设置高度为auto以获取实际需要的高度
   textarea.style.height = 'auto';
-  textarea.style.height = textarea.scrollHeight + 'px';
+
+  // 计算两行文本的高度（64px是max-h-16对应的高度）
+  const maxHeight = 64;
+
+  if (textarea.scrollHeight <= maxHeight) {
+    // 如果内容不超过两行，设置为实际高度
+    textarea.style.height = textarea.scrollHeight + 'px';
+  } else {
+    // 如果内容超过两行，固定高度并启用滚动
+    textarea.style.height = maxHeight + 'px';
+  }
 }
 
 async function submitHomework() {
   try {
     // 检查是否至少填写了一个科目
-    const hasContent = subjectsConfig.some(subject =>
+    const hasContent = allSubjects.some(subject =>
         homeworkContent[subject.key] && homeworkContent[subject.key].trim()
     );
 
@@ -120,7 +151,7 @@ async function submitHomework() {
 
     // 构造新API格式的homework_content对象
     const homework_content = {};
-    subjectsConfig.forEach(subject => {
+    allSubjects.forEach(subject => {
       // 只传递有内容的科目，空的传空字符串
       homework_content[subject.key] = homeworkContent[subject.key]?.trim() || "";
     });
