@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 p-4">
+  <div class="min-h-screen h-screen w-full bg-gray-900 text-gray-200 flex flex-col gap-4 p-4 box-border overflow-hidden">
     <ClassSwitch @update:cid="handleClassChange" />
     <StudentList :cid="selectedCid" ref="studentListComponent" />
     <!-- 引入作业提交组件 -->
