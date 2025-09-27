@@ -174,7 +174,7 @@
     </div>
 
     <!-- 创建班级对话框 -->
-    <div v-if="showCreateDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="showCreateDialog = false">
+    <div v-if="showCreateDialog" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showCreateDialog = false">
       <div class="bg-white rounded-2xl w-[90%] max-w-md max-h-[90vh] overflow-y-auto shadow-2xl">
         <div class="flex justify-between items-center p-6 border-b border-gray-200">
           <h3 class="m-0 text-xl font-bold text-gray-800">创建新班级</h3>
@@ -203,7 +203,7 @@
     </div>
 
     <!-- 班级详情对话框 -->
-    <div v-if="showDetailDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="showDetailDialog = false">
+    <div v-if="showDetailDialog" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showDetailDialog = false">
       <div class="bg-white rounded-2xl w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
         <div class="flex justify-between items-center p-6 border-b border-gray-200">
           <h3 class="m-0 text-xl font-bold text-gray-800">班级详情 - {{ selectedClass?.class_name }}</h3>
@@ -257,7 +257,7 @@
     </div>
 
     <!-- 删除确认对话框 -->
-    <div v-if="showDeleteDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click.self="showDeleteDialog = false">
+    <div v-if="showDeleteDialog" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showDeleteDialog = false">
       <div class="bg-white rounded-2xl w-[90%] max-w-md max-h-[90vh] overflow-y-auto shadow-2xl">
         <div class="flex justify-between items-center p-6 border-b border-gray-200">
           <h3 class="m-0 text-xl font-bold text-gray-800">确认删除</h3>
