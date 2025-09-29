@@ -1,5 +1,47 @@
 <template>
-  <div class="flex h-screen overflow-hidden">
+  <!-- 登录表单 -->
+  <div v-if="!isAuthenticated" class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <div>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          管理员登录
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+          请输入管理员密码
+        </p>
+      </div>
+      <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
+        <div>
+          <label for="password" class="sr-only">密码</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+            class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+            placeholder="管理员密码"
+            v-model="password"
+          />
+        </div>
+        <div v-if="loginError" class="text-red-600 text-sm text-center">
+          {{ loginError }}
+        </div>
+        <div>
+          <button
+            type="submit"
+            :disabled="isLogging"
+            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+          >
+            {{ isLogging ? '登录中...' : '登录' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 管理界面 -->
+  <div v-else class="flex h-screen overflow-hidden">
     <div class="w-60 min-w-60 bg-slate-700 text-white flex flex-col shadow-lg">
       <div class="p-5 border-b border-slate-600 bg-slate-800">
         <h3 class="m-0 text-lg font-semibold text-center">管理后台</h3>
@@ -18,6 +60,14 @@
           </li>
         </ul>
       </div>
+      <div class="p-4 border-t border-slate-600">
+        <button
+          @click="handleLogout"
+          class="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white text-sm rounded-md transition-colors"
+        >
+          退出登录
+        </button>
+      </div>
     </div>
 
     <div class="flex-1 flex flex-col bg-gray-50 overflow-hidden">
@@ -32,7 +82,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import AuthService from '@/services/common/auth'
 
 // 引入各个管理组件
 import CurrentAdmin from '@/components/admin/CurrentAdmin.vue'
@@ -43,6 +94,15 @@ import System from '@/components/admin/System.vue'
 
 // 引入图标组件（你需要根据实际使用的图标库调整）
 import { AcademicCapIcon, BookOpenIcon, UsersIcon, Cog8ToothIcon } from '@heroicons/vue/24/outline'
+
+// 登录相关状态
+const isAuthenticated = ref(false)
+const password = ref('')
+const loginError = ref('')
+const isLogging = ref(false)
+
+// 定时器ID，用于定期检查token有效性
+let authCheckInterval = null
 
 // 管理组件映射
 const components = {
@@ -70,6 +130,82 @@ const currentMenuName = computed(() => {
   return navigation.value.find(item => item.current)?.name || ''
 })
 
+// 检查登录状态
+const checkAuthStatus = () => {
+  const authStatus = AuthService.isAdminAuthenticated()
+  if (isAuthenticated.value !== authStatus) {
+    isAuthenticated.value = authStatus
+
+    // 如果未认证，清空敏感信息
+    if (!authStatus) {
+      password.value = ''
+      loginError.value = ''
+    }
+  }
+  return authStatus
+}
+
+// 启动定期检查认证状态
+const startAuthCheck = () => {
+  // 立即检查一次
+  checkAuthStatus()
+
+  // 每30秒检查一次认证状态
+  authCheckInterval = setInterval(() => {
+    if (!checkAuthStatus()) {
+      // 如果认证失败，停止定时器
+      stopAuthCheck()
+    }
+  }, 30000)
+}
+
+// 停止定期检查认证状态
+const stopAuthCheck = () => {
+  if (authCheckInterval) {
+    clearInterval(authCheckInterval)
+    authCheckInterval = null
+  }
+}
+
+// 处理登录
+const handleLogin = async () => {
+  if (!password.value.trim()) {
+    loginError.value = '请输入密码'
+    return
+  }
+
+  isLogging.value = true
+  loginError.value = ''
+
+  try {
+    const response = await AuthService.adminLogin(password.value)
+
+    if (response.code === 0) {
+      isAuthenticated.value = true
+      password.value = ''
+      // 登录成功后启动定期检查
+      startAuthCheck()
+    } else {
+      loginError.value = response.message || '登录失败'
+    }
+  } catch (error) {
+    console.error('Login error:', error)
+    loginError.value = error.response?.data?.message || '登录失败，请重试'
+  } finally {
+    isLogging.value = false
+  }
+}
+
+// 处理登出
+const handleLogout = () => {
+  AuthService.logout()
+  isAuthenticated.value = false
+  password.value = ''
+  loginError.value = ''
+  // 停止定期检查
+  stopAuthCheck()
+}
+
 // 处理菜单项选择
 const changeComponent = (item) => {
   // 设置当前选中项
@@ -79,6 +215,23 @@ const changeComponent = (item) => {
   // 切换显示的组件
   currentComponent.value = components[item.componentName]
 }
+
+// 组件挂载时检查登录状态
+onMounted(() => {
+  startAuthCheck()
+})
+
+// 组件卸载时清理定时器
+onBeforeUnmount(() => {
+  stopAuthCheck()
+})
+
+// 监听页面可见性变化，当页面重新可见时检查认证状态
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && isAuthenticated.value) {
+    checkAuthStatus()
+  }
+})
 </script>
 
 <style scoped>
