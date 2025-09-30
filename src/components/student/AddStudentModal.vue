@@ -14,11 +14,70 @@
         </button>
       </div>
 
+      <!-- 模式选择控制条 -->
+      <div class="px-6 pt-4 pb-2">
+        <div class="flex justify-center">
+          <div class="mode-switch-group flex bg-gray-200 dark:bg-gray-700 rounded-lg p-1">
+            <button
+              @click="batchMode = false"
+              :class="[
+                'mode-switch-btn flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200',
+                !batchMode
+                  ? 'active bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md'
+                  : 'text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white'
+              ]"
+              :title="'手动模式'"
+            >
+              <UserIcon class="w-4 h-4 mr-2" />
+              <span>手动</span>
+            </button>
+            <button
+              @click="batchMode = true"
+              :class="[
+                'mode-switch-btn flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-200',
+                batchMode
+                  ? 'active bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md'
+                  : 'text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white'
+              ]"
+              :title="'批量模式'"
+            >
+              <UsersIcon class="w-4 h-4 mr-2" />
+              <span>批量</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- 模态框主体 -->
-      <div class="p-6">
+      <div class="p-6 pt-4">
         <form @submit.prevent="handleSubmit" class="space-y-4">
-          <!-- 学生姓名 -->
+          <!-- 目标班级选择 -->
           <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              目标班级 <span class="text-red-400">*</span>
+            </label>
+            <select
+              v-model="selectedClassId"
+              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+              :class="{ 'border-red-500': errors.class_id }"
+              required
+            >
+              <option value="">请选择班级</option>
+              <option
+                v-for="classItem in props.classList"
+                :key="classItem.cid"
+                :value="classItem.cid"
+              >
+                {{ classItem.class_name }}
+              </option>
+            </select>
+            <p v-if="errors.class_id" class="text-red-400 text-sm mt-1">
+              {{ errors.class_id }}
+            </p>
+          </div>
+
+          <!-- 学生姓名 -->
+          <div v-if="!batchMode">
             <label class="block text-sm font-medium text-gray-300 mb-2">
               学生姓名 <span class="text-red-400">*</span>
             </label>
@@ -30,6 +89,26 @@
               :class="{ 'border-red-500': errors.student_name }"
               required
             />
+            <p v-if="errors.student_name" class="text-red-400 text-sm mt-1">
+              {{ errors.student_name }}
+            </p>
+          </div>
+
+          <!-- 批量添加文本框 -->
+          <div v-if="batchMode">
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              批量输入学生姓名
+            </label>
+            <textarea
+              v-model="batchNames"
+              placeholder="每行输入一个学生姓名，例如：&#10;张三&#10;李四&#10;王五"
+              rows="5"
+              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none resize-none"
+              :class="{ 'border-red-500': errors.student_name }"
+            ></textarea>
+            <p class="text-sm text-gray-400 mt-1">
+              每行一个姓名
+            </p>
             <p v-if="errors.student_name" class="text-red-400 text-sm mt-1">
               {{ errors.student_name }}
             </p>
@@ -62,34 +141,18 @@
             </div>
           </div>
 
-          <!-- 批量添加选项 -->
-          <div>
+          <!-- 批量模式设置 -->
+          <div v-if="batchMode">
             <label class="flex items-center">
               <input
-                v-model="batchMode"
+                v-model="keepOpen"
                 type="checkbox"
                 class="mr-2"
               />
-              <span class="text-gray-300">批量添加模式</span>
+              <span class="text-gray-300">添加后保持窗口打开</span>
             </label>
-            <p v-if="batchMode" class="text-sm text-gray-400 mt-1">
-              启用后，添加完成后不会关闭窗口，可以连续添加多个学生
-            </p>
-          </div>
-
-          <!-- 批量添加文本框 -->
-          <div v-if="batchMode">
-            <label class="block text-sm font-medium text-gray-300 mb-2">
-              批量输入学生姓名
-            </label>
-            <textarea
-              v-model="batchNames"
-              placeholder="每行输入一个学生姓名，例如：&#10;张三&#10;李四&#10;王五"
-              rows="5"
-              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none resize-none"
-            ></textarea>
             <p class="text-sm text-gray-400 mt-1">
-              每行一个姓名，将忽略单个学生姓名输入
+              启用后，添加完成后不会关闭窗口，可以连续添加多个学生
             </p>
           </div>
         </form>
@@ -119,6 +182,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { UserIcon, UsersIcon } from '@heroicons/vue/24/outline'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import StudentService from '@/services/basic/student'
 import notificationService from '@/services/common/notification'
@@ -127,7 +191,11 @@ import notificationService from '@/services/common/notification'
 const props = defineProps({
   cid: {
     type: Number,
-    required: true
+    required: false
+  },
+  classList: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -138,6 +206,8 @@ const emit = defineEmits(['close', 'success'])
 const submitting = ref(false)
 const batchMode = ref(false)
 const batchNames = ref('')
+const keepOpen = ref(false)
+const selectedClassId = ref(props.cid || '')
 
 // 表单数据
 const formData = reactive({
@@ -147,12 +217,19 @@ const formData = reactive({
 
 // 错误信息
 const errors = reactive({
-  student_name: ''
+  student_name: '',
+  class_id: ''
 })
 
 // 验证表单
 const validateForm = () => {
   errors.student_name = ''
+  errors.class_id = ''
+
+  if (!selectedClassId.value) {
+    errors.class_id = '请选择目标班级'
+    return false
+  }
 
   if (batchMode.value) {
     if (!batchNames.value.trim()) {
@@ -216,7 +293,7 @@ const handleSubmit = async () => {
     }
 
     // 调用API添加学生
-    await StudentService.addStudents(props.cid, validation.validStudents)
+    await StudentService.addStudents(selectedClassId.value, validation.validStudents)
 
     // 成功提示
     const message = batchMode.value
@@ -233,8 +310,8 @@ const handleSubmit = async () => {
       formData.attendance = true
     }
 
-    // 如果不是批量模式，关闭模态框
-    if (!batchMode.value) {
+    // 如果不是批量模式或者没有设置保持打开，关闭模态框
+    if (!batchMode.value || !keepOpen.value) {
       emit('success')
     } else {
       emit('success')
@@ -258,3 +335,44 @@ const handleBackdropClick = () => {
   }
 }
 </script>
+
+<style scoped>
+.mode-switch-group {
+  background: rgb(229 231 235); /* gray-200 */
+}
+
+.dark .mode-switch-group {
+  background: rgb(55 65 81); /* gray-700 */
+}
+
+.mode-switch-btn {
+  position: relative;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  min-width: 80px;
+  white-space: nowrap;
+}
+
+.mode-switch-btn.active {
+  background: linear-gradient(to right, rgb(59 130 246), rgb(147 51 234)); /* blue-500 to purple-600 */
+  color: white;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.mode-switch-btn:not(.active) {
+  color: rgb(75 85 99); /* gray-600 */
+}
+
+.mode-switch-btn:not(.active):hover {
+  color: rgb(31 41 55); /* gray-800 */
+}
+
+.dark .mode-switch-btn:not(.active) {
+  color: rgb(209 213 219); /* gray-300 */
+}
+
+.dark .mode-switch-btn:not(.active):hover {
+  color: white;
+}
+</style>

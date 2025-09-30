@@ -102,8 +102,7 @@
           <div class="flex items-center gap-3">
             <button
               @click="showAddModal = true"
-              :disabled="selectedClassIds.length === 0"
-              class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
+              class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
             >
               <span>➕</span>
               添加学生
@@ -375,141 +374,12 @@
       </div>
 
       <!-- 添加学生模态框 -->
-      <div v-if="showAddModal" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click="handleBackdropClick">
-        <div class="bg-gray-800 rounded-xl shadow-2xl w-full max-w-md mx-4" @click.stop>
-          <!-- 模态框头部 -->
-          <div class="flex items-center justify-between p-6 border-b border-gray-700">
-            <h2 class="text-xl font-bold text-white">添加学生</h2>
-            <button
-              @click="showAddModal = false"
-              class="text-gray-400 hover:text-white transition-colors duration-200"
-            >
-              <span class="text-2xl">&times;</span>
-            </button>
-          </div>
-
-          <!-- 模态框主体 -->
-          <div class="p-6">
-            <form @submit.prevent="handleAddStudent" class="space-y-4">
-              <!-- 目标班级选择 -->
-              <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">
-                  目标班级 <span class="text-red-400">*</span>
-                </label>
-                <select
-                  v-model="addForm.target_cid"
-                  class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
-                  required
-                >
-                  <option value="">请选择班级</option>
-                  <option
-                    v-for="classId in selectedClassIds"
-                    :key="classId"
-                    :value="classId"
-                  >
-                    {{ getClassName(classId) }}
-                  </option>
-                </select>
-              </div>
-
-              <!-- 学生姓名 -->
-              <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">
-                  学生姓名 <span class="text-red-400">*</span>
-                </label>
-                <input
-                  v-model="addForm.student_name"
-                  type="text"
-                  placeholder="请输入学生姓名"
-                  class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
-                  :class="{ 'border-red-500': addErrors.student_name }"
-                  required
-                />
-                <p v-if="addErrors.student_name" class="text-red-400 text-sm mt-1">
-                  {{ addErrors.student_name }}
-                </p>
-              </div>
-
-              <!-- 初始出勤状态 -->
-              <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">
-                  初始状态
-                </label>
-                <div class="flex gap-4">
-                  <label class="flex items-center">
-                    <input
-                      v-model="addForm.attendance"
-                      type="radio"
-                      :value="true"
-                      class="mr-2 text-green-500"
-                    />
-                    <span class="text-green-400">在校</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input
-                      v-model="addForm.attendance"
-                      type="radio"
-                      :value="false"
-                      class="mr-2 text-red-500"
-                    />
-                    <span class="text-red-400">离校</span>
-                  </label>
-                </div>
-              </div>
-
-              <!-- 批量添加选项 -->
-              <div>
-                <label class="flex items-center">
-                  <input
-                    v-model="batchMode"
-                    type="checkbox"
-                    class="mr-2"
-                  />
-                  <span class="text-gray-300">批量添加模式</span>
-                </label>
-                <p v-if="batchMode" class="text-sm text-gray-400 mt-1">
-                  启用后，添加完成后不会关闭窗口，可以连续添加多个学生
-                </p>
-              </div>
-
-              <!-- 批量添加文本框 -->
-              <div v-if="batchMode">
-                <label class="block text-sm font-medium text-gray-300 mb-2">
-                  批量输入学生姓名
-                </label>
-                <textarea
-                  v-model="batchNames"
-                  placeholder="每行输入一个学生姓名，例如：&#10;张三&#10;李四&#10;王五"
-                  rows="5"
-                  class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none resize-none"
-                ></textarea>
-                <p class="text-sm text-gray-400 mt-1">
-                  每行一个姓名，将忽略单个学生姓名输入
-                </p>
-              </div>
-            </form>
-          </div>
-
-          <!-- 模态框底部 -->
-          <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-700">
-            <button
-              @click="showAddModal = false"
-              type="button"
-              class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors duration-200"
-            >
-              取消
-            </button>
-            <button
-              @click="handleAddStudent"
-              :disabled="addSubmitting"
-              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
-            >
-              <LoadingSpinner v-if="addSubmitting" size="small" />
-              {{ addSubmitting ? '添加中...' : '确认添加' }}
-            </button>
-          </div>
-        </div>
-      </div>
+      <AddStudentModal
+        v-if="showAddModal"
+        :classList="classList"
+        @close="showAddModal = false"
+        @success="handleAddStudentSuccess"
+      />
 
       <!-- 学生详情模态框 -->
       <div v-if="showDetailModal" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click="showDetailModal = false">
@@ -578,6 +448,7 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import AddStudentModal from '@/components/student/AddStudentModal.vue'
 import StudentService from '@/services/basic/student.js'
 import ClassService from '@/services/basic/class.js'
 import notificationService from '@/services/common/notification.js'
@@ -600,19 +471,6 @@ const showClassDropdown = ref(false)
 const showAddModal = ref(false)
 const showDetailModal = ref(false)
 const selectedStudent = ref(null)
-
-// 添加学生表单
-const addSubmitting = ref(false)
-const batchMode = ref(false)
-const batchNames = ref('')
-const addForm = reactive({
-  target_cid: '',
-  student_name: '',
-  attendance: true
-})
-const addErrors = reactive({
-  student_name: ''
-})
 
 // 班级选择相关计算属性
 const isAllSelected = computed(() => {
@@ -750,8 +608,8 @@ const fetchStudents = async () => {
     const promises = selectedClassIds.value.map(async (cid) => {
       try {
         const response = await StudentService.getStudentList(cid)
-        if (response.data && response.data.data) {
-          return response.data.data.map(student => ({
+        if (response && response.data) {
+          return response.data.map(student => ({
             ...student,
             cid // 添加班级ID
           }))
@@ -826,117 +684,10 @@ const showStudentDetail = (student) => {
   showDetailModal.value = true
 }
 
-// 验证添加表单
-const validateAddForm = () => {
-  addErrors.student_name = ''
-
-  if (!addForm.target_cid) {
-    addErrors.student_name = '请选择目标班级'
-    return false
-  }
-
-  if (batchMode.value) {
-    if (!batchNames.value.trim()) {
-      addErrors.student_name = '请输入至少一个学生姓名'
-      return false
-    }
-  } else {
-    if (!addForm.student_name.trim()) {
-      addErrors.student_name = '学生姓名不能为空'
-      return false
-    }
-
-    if (addForm.student_name.trim().length > 50) {
-      addErrors.student_name = '学生姓名不能超过50个字符'
-      return false
-    }
-  }
-
-  return true
-}
-
-// 处理添加学生
-const handleAddStudent = async () => {
-  if (!validateAddForm()) return
-
-  try {
-    addSubmitting.value = true
-
-    let studentsToAdd = []
-
-    if (batchMode.value) {
-      // 批量模式
-      const names = batchNames.value
-        .split('\n')
-        .map(name => name.trim())
-        .filter(name => name.length > 0)
-
-      if (names.length === 0) {
-        addErrors.student_name = '请输入至少一个学生姓名'
-        return
-      }
-
-      studentsToAdd = names.map(name => ({
-        student_name: name,
-        attendance: addForm.attendance
-      }))
-    } else {
-      // 单个模式
-      studentsToAdd = [{
-        student_name: addForm.student_name.trim(),
-        attendance: addForm.attendance
-      }]
-    }
-
-    // 验证学生数据
-    const validation = StudentService.validateStudentData(studentsToAdd)
-
-    if (!validation.isValid) {
-      addErrors.student_name = validation.errors.join('; ')
-      return
-    }
-
-    // 调用API添加学生
-    await StudentService.addStudents(addForm.target_cid, validation.validStudents)
-
-    // 成功提示
-    const message = batchMode.value
-      ? `成功添加 ${validation.validStudents.length} 个学生到 ${getClassName(addForm.target_cid)}`
-      : `成功添加学生到 ${getClassName(addForm.target_cid)}`
-
-    notificationService.notify(message, 'success')
-
-    // 重置表单
-    if (batchMode.value) {
-      batchNames.value = ''
-    } else {
-      addForm.student_name = ''
-      addForm.attendance = true
-    }
-
-    // 刷新学生列表
-    await fetchStudents()
-
-    // 如果不是批量模式，关闭模态框
-    if (!batchMode.value) {
-      showAddModal.value = false
-    }
-
-  } catch (error) {
-    console.error('添加学生失败:', error)
-    const errorMessage = error.message || '添加学生失败，请稍后重试'
-    notificationService.notify(errorMessage, 'error')
-    addErrors.student_name = errorMessage
-  } finally {
-    addSubmitting.value = false
-  }
-}
-
-// 处理背景点击
-const handleBackdropClick = () => {
-  if (!addSubmitting.value) {
-    showAddModal.value = false
-  }
+// 处理添加学生成功
+const handleAddStudentSuccess = () => {
+  showAddModal.value = false
+  fetchStudents()
 }
 
 // 清除搜索
@@ -977,8 +728,6 @@ watch(currentPage, (newPage) => {
 // 监听班级选择变化
 watch(selectedClassIds, () => {
   currentPage.value = 1
-  // 重置添加表单的目标班级
-  addForm.target_cid = ''
 }, { deep: true })
 
 // 点击外部关闭下拉框

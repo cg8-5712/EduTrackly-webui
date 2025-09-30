@@ -8,38 +8,40 @@ class StudentService extends ApiPrefix {
   // 获取指定班级的完整学生列表
   async getStudentList(cid) {
     try {
-      if (!cid) throw new Error('班级ID必填');
+      if (!cid) Error('班级ID必填');
 
       // 第一步：获取总数
-      const first = await this.api.get('/student/list',
-        { page: 1, size: 1 },
-        { params: { cid } }
-      );
+      const first = await this.get('/student/list', {
+        cid: cid,
+        page: 1,
+        size: 1
+      });
 
-      console.log('获取学生列表第一步:', first.data.message);
+      console.log('获取学生列表第一步响应:', first);
 
-      if (first.data.code !== 0) {
-        throw new Error(first.data.message);
+      if (first.code !== 0) {
+        Error(first.message || '获取  学生列表失败');
       }
 
-      const total = first.data.pagination?.total || 0;
-      if (total === 0) return { data: [], total: 0 };
+      const total = first.pagination?.total || 0;
+      if (total === 0) return { data: { data: [] }, total: 0 };
 
       // 第二步：获取完整列表
-      const second = await this.api.get('/student/list',
-        { page: 1, size: total },
-        { params: { cid } }
-      );
+      const second = await this.get('/student/list', {
+        cid: cid,
+        page: 1,
+        size: total
+      });
 
-      console.log('获取学生列表第二步:', second.data.message);
+      console.log('获取学生列表第二步响应:', second);
 
-      if (second.data.code !== 0) {
-        throw new Error(second.data.message);
+      if (second.code !== 0) {
+        Error(second.message || '获取学生列表失败');
       }
 
       return second;
     } catch (error) {
-      console.error(error);
+      console.error('获取学生列表错误:', error);
       throw error;
     }
   }
@@ -47,20 +49,21 @@ class StudentService extends ApiPrefix {
   // 获取分页学生列表
   async getStudentListPaged(cid, page = 1, size = 20) {
     try {
-      if (!cid) throw new Error('班级ID必填');
+      if (!cid) Error('班级ID必填');
 
-      const data = await this.api.post('/student/list',
-        { page, size },
-        { params: { cid } }
-      );
+      const data = await this.get('/student/list', {
+        cid: cid,
+        page: page,
+        size: size
+      });
 
-      console.log('获取分页学生列表:', data.data.message);
+      console.log('获取分页学生列表响应:', data);
 
-      if (data.data.code !== 0) {
-        throw new Error(data.data.message);
+      if (data.code !== 0) {
+        Error(data.message || '获取分页学生列表失败');
       }
 
-      return data.data;
+      return data;
     } catch (error) {
       console.error('获取分页学生列表失败:', error);
       throw error;

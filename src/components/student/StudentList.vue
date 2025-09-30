@@ -99,12 +99,12 @@ const fetchStudents = async () => {
 
     if (analysis.data?.data.event_list) {
       analysis.data.data.event_list.forEach(e => {
-        const student = res.data.data.find(s => s.student_name === e.student_name)
+        const student = res.data?.find(s => s.student_name === e.student_name)
         if (student) existingEvents[student.sid] = e.event_type
       })
     }
 
-    students.value = res.data.data.map(s => ({ ...s }))
+    students.value = (res.data || []).map(s => ({ ...s }))
     selectedEvents.value = { ...existingEvents }
   } catch (err) {
     console.error(err)

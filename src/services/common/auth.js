@@ -6,7 +6,7 @@ class AuthService {
     login(username, password, rememberMe) {
 
         return axios
-            .post(`${import.meta.env.VITE_APP_API_URL}/auth/login`, {
+            .post(`${import.meta.env.VITE_API_URL}/auth`, {
                 username,
                 password,
                 rememberMe
@@ -21,7 +21,7 @@ class AuthService {
 
     adminLogin(password) {
         return axios
-            .post(`${import.meta.env.VITE_APP_API_URL}/admin/login`, {
+            .post(`${import.meta.env.VITE_API_URL}/auth`, {
                 password
             })
             .then(response => {
