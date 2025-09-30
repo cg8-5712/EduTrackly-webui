@@ -51,8 +51,8 @@
       <!-- 模态框主体 -->
       <div class="p-6 pt-4">
         <form @submit.prevent="handleSubmit" class="space-y-4">
-          <!-- 目标班级选择 -->
-          <div>
+          <!-- 目标班级选择（仅手动模式显示） -->
+          <div v-if="!batchMode">
             <label class="block text-sm font-medium text-gray-300 mb-2">
               目标班级 <span class="text-red-400">*</span>
             </label>
@@ -76,7 +76,7 @@
             </p>
           </div>
 
-          <!-- 学生姓名 -->
+          <!-- 学生姓名（仅手动模式显示） -->
           <div v-if="!batchMode">
             <label class="block text-sm font-medium text-gray-300 mb-2">
               学生姓名 <span class="text-red-400">*</span>
@@ -94,28 +94,8 @@
             </p>
           </div>
 
-          <!-- 批量添加文本框 -->
-          <div v-if="batchMode">
-            <label class="block text-sm font-medium text-gray-300 mb-2">
-              批量输入学生姓名
-            </label>
-            <textarea
-              v-model="batchNames"
-              placeholder="每行输入一个学生姓名，例如：&#10;张三&#10;李四&#10;王五"
-              rows="5"
-              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none resize-none"
-              :class="{ 'border-red-500': errors.student_name }"
-            ></textarea>
-            <p class="text-sm text-gray-400 mt-1">
-              每行一个姓名
-            </p>
-            <p v-if="errors.student_name" class="text-red-400 text-sm mt-1">
-              {{ errors.student_name }}
-            </p>
-          </div>
-
-          <!-- 初始出勤状态 -->
-          <div>
+          <!-- 初始出勤状态（仅手动模式显示） -->
+          <div v-if="!batchMode">
             <label class="block text-sm font-medium text-gray-300 mb-2">
               初始状态
             </label>
@@ -141,18 +121,23 @@
             </div>
           </div>
 
-          <!-- 批量模式设置 -->
+          <!-- 批量添加文本框（仅批量模式显示） -->
           <div v-if="batchMode">
-            <label class="flex items-center">
-              <input
-                v-model="keepOpen"
-                type="checkbox"
-                class="mr-2"
-              />
-              <span class="text-gray-300">添加后保持窗口打开</span>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              批量输入学生信息 <span class="text-red-400">*</span>
             </label>
+            <textarea
+              v-model="batchNames"
+              placeholder="CSV格式，每行一个学生，格式：班级ID,姓名,出勤状态&#10;例如：&#10;1,张三,1&#10;1,李四,0&#10;2,王五,1&#10;&#10;出勤状态：1=在校，0=离校"
+              rows="10"
+              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none resize-none font-mono"
+              :class="{ 'border-red-500': errors.student_name }"
+            ></textarea>
             <p class="text-sm text-gray-400 mt-1">
-              启用后，添加完成后不会关闭窗口，可以连续添加多个学生
+              CSV格式：班级ID,姓名,出勤状态（1=在校，0=离校）
+            </p>
+            <p v-if="errors.student_name" class="text-red-400 text-sm mt-1">
+              {{ errors.student_name }}
             </p>
           </div>
         </form>
@@ -206,7 +191,6 @@ const emit = defineEmits(['close', 'success'])
 const submitting = ref(false)
 const batchMode = ref(false)
 const batchNames = ref('')
-const keepOpen = ref(false)
 const selectedClassId = ref(props.cid || '')
 
 // 表单数据
@@ -226,14 +210,16 @@ const validateForm = () => {
   errors.student_name = ''
   errors.class_id = ''
 
-  if (!selectedClassId.value) {
+  // 手动模式需要验证班级
+  if (!batchMode.value && !selectedClassId.value) {
     errors.class_id = '请选择目标班级'
     return false
   }
 
+  // 批量模式需要验证输入
   if (batchMode.value) {
     if (!batchNames.value.trim()) {
-      errors.student_name = '请输入至少一个学生姓名'
+      errors.student_name = '请输入学生信息'
       return false
     }
   } else {
@@ -259,32 +245,140 @@ const handleSubmit = async () => {
     submitting.value = true
 
     let studentsToAdd = []
+    let targetCid = null
 
     if (batchMode.value) {
-      // 批量模式
-      const names = batchNames.value
+      // 批量模式：解析 CSV 格式
+      const lines = batchNames.value
         .split('\n')
-        .map(name => name.trim())
-        .filter(name => name.length > 0)
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
 
-      if (names.length === 0) {
-        errors.student_name = '请输入至少一个学生姓名'
+      if (lines.length === 0) {
+        errors.student_name = '请输入至少一个学生信息'
         return
       }
 
-      studentsToAdd = names.map(name => ({
-        student_name: name,
-        attendance: formData.attendance
-      }))
+      // 解析每一行
+      const parsedStudents = []
+      const parseErrors = []
+
+      lines.forEach((line, index) => {
+        // 使用逗号分割，并去除每个部分的空格
+        const parts = line.split(',').map(p => p.trim())
+
+        console.log(`第${index + 1}行原始内容:`, line)
+        console.log(`第${index + 1}行分割结果:`, parts)
+
+        if (parts.length !== 3) {
+          parseErrors.push(`第${index + 1}行格式错误：应为"班级ID,姓名,出勤状态"，当前有${parts.length}个字段`)
+          return
+        }
+
+        const [cidStr, name, attendanceStr] = parts
+
+        // 验证班级ID
+        const cid = parseInt(cidStr)
+        if (isNaN(cid) || cid <= 0) {
+          parseErrors.push(`第${index + 1}行：班级ID"${cidStr}"必须是正整数`)
+          return
+        }
+
+        // 验证姓名
+        if (!name || name.length === 0) {
+          parseErrors.push(`第${index + 1}行：学生姓名不能为空`)
+          return
+        }
+
+        if (name.length > 50) {
+          parseErrors.push(`第${index + 1}行：学生姓名"${name}"不能超过50个字符`)
+          return
+        }
+
+        // 验证出勤状态
+        if (attendanceStr !== '0' && attendanceStr !== '1') {
+          parseErrors.push(`第${index + 1}行：出勤状态"${attendanceStr}"必须是0或1`)
+          return
+        }
+
+        parsedStudents.push({
+          cid: cid,
+          student_name: name,
+          attendance: attendanceStr === '1'
+        })
+
+        console.log(`第${index + 1}行解析成功:`, { cid, name, attendance: attendanceStr === '1' })
+      })
+
+      console.log('解析结果:', parsedStudents)
+      console.log('解析错误:', parseErrors)
+
+      if (parseErrors.length > 0) {
+        errors.student_name = parseErrors.join('\n')
+        return
+      }
+
+      if (parsedStudents.length === 0) {
+        errors.student_name = '没有有效的学生信息'
+        return
+      }
+
+      // 按班级分组
+      const studentsByClass = {}
+      parsedStudents.forEach(student => {
+        if (!studentsByClass[student.cid]) {
+          studentsByClass[student.cid] = []
+        }
+        studentsByClass[student.cid].push({
+          student_name: student.student_name,
+          attendance: student.attendance
+        })
+      })
+
+      console.log('按班级分组:', studentsByClass)
+
+      // 为每个班级调用 API
+      let successCount = 0
+      const addErrors = []
+
+      for (const [cid, students] of Object.entries(studentsByClass)) {
+        try {
+          console.log(`为班级${cid}添加学生:`, students)
+          await StudentAdminService.addStudents(parseInt(cid), students)
+          successCount += students.length
+        } catch (error) {
+          console.error(`班级${cid}添加失败:`, error)
+          addErrors.push(`班级${cid}：${error.message}`)
+        }
+      }
+
+      if (addErrors.length > 0) {
+        notificationService.notify(
+          `部分添加失败：成功${successCount}个\n${addErrors.join('\n')}`,
+          'warning'
+        )
+      } else {
+        notificationService.notify(`成功添加 ${successCount} 个学生`, 'success')
+      }
+
+      // 重置表单
+      batchNames.value = ''
+
+      // 触发成功事件并关闭模态框
+      emit('success')
+      return
+
     } else {
-      // 单个模式
+      // 手动模式：使用选择的班级
+      targetCid = selectedClassId.value
+
       studentsToAdd = [{
         student_name: formData.student_name.trim(),
         attendance: formData.attendance
       }]
     }
 
-    // 验证学生数据
+    // 验证学生数据（手动模式）
     const validation = StudentAdminService.validateStudentData(studentsToAdd)
 
     if (!validation.isValid) {
@@ -292,31 +386,17 @@ const handleSubmit = async () => {
       return
     }
 
-    // 调用API添加学生
-    await StudentAdminService.addStudents(selectedClassId.value, validation.validStudents)
+    // 调用API添加学生（手动模式）
+    await StudentAdminService.addStudents(targetCid, validation.validStudents)
 
-    // 成功提示
-    const message = batchMode.value
-      ? `成功添加 ${validation.validStudents.length} 个学生`
-      : '添加学生成功'
-
-    notificationService.notify(message, 'success')
+    notificationService.notify('添加学生成功', 'success')
 
     // 重置表单
-    if (batchMode.value) {
-      batchNames.value = ''
-    } else {
-      formData.student_name = ''
-      formData.attendance = true
-    }
+    formData.student_name = ''
+    formData.attendance = true
 
-    // 如果不是批量模式或者没有设置保持打开，关闭模态框
-    if (!batchMode.value || !keepOpen.value) {
-      emit('success')
-    } else {
-      emit('success')
-      // 批量模式下保持窗口打开，允许继续添加
-    }
+    // 触发成功事件并关闭模态框
+    emit('success')
 
   } catch (error) {
     console.error('添加学生失败:', error)

@@ -376,6 +376,7 @@
       <!-- 添加学生模态框 -->
       <AddStudentModal
         v-if="showAddModal"
+        :cid="selectedClassIds.length > 0 ? selectedClassIds[0] : null"
         :classList="classList"
         @close="showAddModal = false"
         @success="handleAddStudentSuccess"
