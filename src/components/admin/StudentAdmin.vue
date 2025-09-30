@@ -415,15 +415,27 @@
                     <p class="text-white">{{ selectedStudent.student_name }}</p>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1">当前状态</label>
-                    <span
-                      class="px-2 py-1 rounded-full text-sm font-medium"
-                      :class="selectedStudent.attendance
-                        ? 'bg-green-600 text-white'
-                        : 'bg-red-600 text-white'"
-                    >
-                      {{ selectedStudent.attendance ? '在校' : '离校' }}
-                    </span>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">出勤状态</label>
+                    <div class="flex items-center gap-2">
+                      <button
+                        @click="updateDetailAttendance(true)"
+                        class="px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200"
+                        :class="selectedStudent.attendance
+                          ? 'bg-green-600 text-white'
+                          : 'bg-gray-600 text-gray-300 hover:bg-green-600 hover:text-white'"
+                      >
+                        在校
+                      </button>
+                      <button
+                        @click="updateDetailAttendance(false)"
+                        class="px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200"
+                        :class="!selectedStudent.attendance
+                          ? 'bg-red-600 text-white'
+                          : 'bg-gray-600 text-gray-300 hover:bg-red-600 hover:text-white'"
+                      >
+                        离校
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -683,6 +695,35 @@ const deleteStudent = async (student) => {
 const showStudentDetail = (student) => {
   selectedStudent.value = student
   showDetailModal.value = true
+}
+
+// 在详情模态框中更新出勤状态
+const updateDetailAttendance = async (attendance) => {
+  if (!selectedStudent.value) return
+
+  // 如果状态相同，不需要更新
+  if (selectedStudent.value.attendance === attendance) return
+
+  try {
+    await StudentAdminService.changeAttendance(selectedStudent.value.sid, attendance)
+
+    // 更新详情模态框中的状态
+    selectedStudent.value.attendance = attendance
+
+    // 同时更新列表中的学生状态
+    const studentInList = students.value.find(s => s.sid === selectedStudent.value.sid)
+    if (studentInList) {
+      studentInList.attendance = attendance
+    }
+
+    notificationService.notify(
+      `${selectedStudent.value.student_name} 状态已更改为 ${attendance ? '在校' : '离校'}`,
+      'success'
+    )
+  } catch (error) {
+    console.error('更改出勤状态失败:', error)
+    notificationService.notify(error.message || '更改出勤状态失败', 'error')
+  }
 }
 
 // 处理添加学生成功
