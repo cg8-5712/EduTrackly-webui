@@ -28,7 +28,8 @@ class AuthService {
                 if (response.data.data && response.data.data.access_token) {
                     const { access_token, aid, expires_in, last_login_time, last_login_ip } = response.data.data;
 
-                    localStorage.setItem('admin_token', access_token);
+                    // 统一使用 access_token
+                    localStorage.setItem('access_token', access_token);
                     localStorage.setItem('admin_aid', aid);
                     localStorage.setItem('admin_last_login_time', last_login_time);
                     localStorage.setItem('admin_last_login_ip', last_login_ip);
@@ -48,7 +49,6 @@ class AuthService {
 
     logout() {
         localStorage.removeItem('access_token');
-        localStorage.removeItem('admin_token');
         localStorage.removeItem('admin_aid');
         localStorage.removeItem('admin_expires_in');
         localStorage.removeItem('admin_last_login_time');
@@ -59,14 +59,10 @@ class AuthService {
         return localStorage.getItem('access_token');
     }
 
-    getAdminToken() {
-        return localStorage.getItem('admin_token');
-    }
-
     getAdminInfo() {
         return {
             aid: localStorage.getItem('admin_aid'),
-            token: localStorage.getItem('admin_token'),
+            token: localStorage.getItem('access_token'),
             expiresIn: localStorage.getItem('admin_expires_in'),
             lastLoginTime: localStorage.getItem('admin_last_login_time'),
             lastLoginIp: localStorage.getItem('admin_last_login_ip')
@@ -94,7 +90,7 @@ class AuthService {
     }
 
     isAdminAuthenticated() {
-        const token = this.getAdminToken();
+        const token = this.getToken();
         if (!token) {
             return false;
         }

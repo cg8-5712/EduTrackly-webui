@@ -184,7 +184,7 @@
 import { ref, reactive } from 'vue'
 import { UserIcon, UsersIcon } from '@heroicons/vue/24/outline'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import StudentService from '@/services/basic/student'
+import StudentAdminService from '@/services/admin/student'
 import notificationService from '@/services/common/notification'
 
 // Props
@@ -285,7 +285,7 @@ const handleSubmit = async () => {
     }
 
     // 验证学生数据
-    const validation = StudentService.validateStudentData(studentsToAdd)
+    const validation = StudentAdminService.validateStudentData(studentsToAdd)
 
     if (!validation.isValid) {
       errors.student_name = validation.errors.join('; ')
@@ -293,7 +293,7 @@ const handleSubmit = async () => {
     }
 
     // 调用API添加学生
-    await StudentService.addStudents(selectedClassId.value, validation.validStudents)
+    await StudentAdminService.addStudents(selectedClassId.value, validation.validStudents)
 
     // 成功提示
     const message = batchMode.value

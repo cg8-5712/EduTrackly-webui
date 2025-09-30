@@ -450,6 +450,7 @@ import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import AddStudentModal from '@/components/student/AddStudentModal.vue'
 import StudentService from '@/services/basic/student.js'
+import StudentAdminService from '@/services/admin/student.js'
 import ClassService from '@/services/basic/class.js'
 import notificationService from '@/services/common/notification.js'
 
@@ -641,7 +642,7 @@ const fetchStudents = async () => {
 const toggleAttendance = async (student) => {
   try {
     const newAttendance = !student.attendance
-    await StudentService.changeAttendance(student.sid, newAttendance)
+    await StudentAdminService.changeAttendance(student.sid, newAttendance)
 
     // 更新本地状态
     student.attendance = newAttendance
@@ -663,7 +664,7 @@ const deleteStudent = async (student) => {
   }
 
   try {
-    await StudentService.deleteStudent(student.sid)
+    await StudentAdminService.deleteStudent(student.sid)
 
     // 从本地列表中移除
     const index = students.value.findIndex(s => s.sid === student.sid)

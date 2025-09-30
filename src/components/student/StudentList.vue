@@ -66,6 +66,7 @@
 import { ref, watch } from 'vue'
 import Popup from '@/components/common/popup.vue'
 import StudentService from '@/services/basic/student'
+import StudentAdminService from '@/services/admin/student'
 import AnalysisService from '@/services/basic/analysis'
 import notificationService from '@/services/common/notification'
 
@@ -121,7 +122,7 @@ const submitEvents = async () => {
   }))
   try {
     loading.value = true
-    await StudentService.submitStudentEvents(eventsArray)
+    await StudentAdminService.submitStudentEvents(eventsArray)
     notificationService.notify('提交成功', 'success')
     await fetchStudents()
   } catch {
