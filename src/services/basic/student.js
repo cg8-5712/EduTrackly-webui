@@ -5,10 +5,10 @@ class StudentService extends ApiPrefix {
     super();
   }
 
-  // 获取指定班级的完整学生列表
-  async getStudentList(cid) {
+  // 获取指定班级的完整学生列表（不分页，返回所有学生）
+  async getStudentListAll(cid) {
     try {
-      if (!cid) Error('班级ID必填');
+      if (!cid) throw new Error('班级ID必填');
 
       // 第一步：获取总数
       const first = await this.get('/student/list', {
@@ -17,14 +17,14 @@ class StudentService extends ApiPrefix {
         size: 1
       });
 
-      console.log('获取学生列表第一步响应:', first);
+      console.log('获取完整学生列表第一步响应:', first);
 
       if (first.code !== 0) {
-        Error(first.message || '获取  学生列表失败');
+        throw new Error(first.message || '获取学生列表失败');
       }
 
       const total = first.pagination?.total || 0;
-      if (total === 0) return { data: { data: [] }, total: 0 };
+      if (total === 0) return { data: [], total: 0 };
 
       // 第二步：获取完整列表
       const second = await this.get('/student/list', {
@@ -33,23 +33,23 @@ class StudentService extends ApiPrefix {
         size: total
       });
 
-      console.log('获取学生列表第二步响应:', second);
+      console.log('获取完整学生列表第二步响应:', second);
 
       if (second.code !== 0) {
-        Error(second.message || '获取学生列表失败');
+        throw new Error(second.message || '获取学生列表失败');
       }
 
       return second;
     } catch (error) {
-      console.error('获取学生列表错误:', error);
+      console.error('获取完整学生列表错误:', error);
       throw error;
     }
   }
 
   // 获取分页学生列表
-  async getStudentListPaged(cid, page = 1, size = 20) {
+  async getStudentList(cid, page = 1, size = 20) {
     try {
-      if (!cid) Error('班级ID必填');
+      if (!cid) throw new Error('班级ID必填');
 
       const data = await this.get('/student/list', {
         cid: cid,
@@ -60,7 +60,7 @@ class StudentService extends ApiPrefix {
       console.log('获取分页学生列表响应:', data);
 
       if (data.code !== 0) {
-        Error(data.message || '获取分页学生列表失败');
+        throw new Error(data.message || '获取分页学生列表失败');
       }
 
       return data;

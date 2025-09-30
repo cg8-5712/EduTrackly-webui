@@ -607,7 +607,7 @@ const fetchStudents = async () => {
     // 并行获取所有选中班级的学生
     const promises = selectedClassIds.value.map(async (cid) => {
       try {
-        const response = await StudentService.getStudentList(cid)
+        const response = await StudentService.getStudentListAll(cid)
         if (response && response.data) {
           return response.data.map(student => ({
             ...student,

@@ -93,7 +93,7 @@ const fetchStudents = async () => {
   if (!props.cid) return
   try {
     loading.value = true
-    const res = await StudentService.getStudentList(props.cid)
+    const res = await StudentService.getStudentListAll(props.cid)
     const analysis = await AnalysisService.getTodayAnalysis(props.cid)
     const existingEvents = {}
 
