@@ -126,6 +126,34 @@
             <label class="block text-sm font-medium text-gray-300 mb-2">
               批量输入学生信息 <span class="text-red-400">*</span>
             </label>
+
+            <!-- 文件上传区域 -->
+            <div class="mb-3">
+              <div class="flex items-center gap-2">
+                <label
+                  class="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg cursor-pointer transition-colors duration-200 border border-gray-600"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  <span>选择文件</span>
+                  <input
+                    ref="fileInput"
+                    type="file"
+                    accept=".txt,.csv"
+                    @change="handleFileUpload"
+                    class="hidden"
+                  />
+                </label>
+                <span v-if="uploadedFileName" class="text-sm text-gray-400">
+                  {{ uploadedFileName }}
+                </span>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">
+                支持上传 .txt 或 .csv 文件（每行格式：班级ID,姓名,出勤状态）
+              </p>
+            </div>
+
             <textarea
               v-model="batchNames"
               placeholder="CSV格式，每行一个学生，格式：班级ID,姓名,出勤状态&#10;例如：&#10;1,张三,1&#10;1,李四,0&#10;2,王五,1&#10;&#10;出勤状态：1=在校，0=离校"
@@ -192,6 +220,8 @@ const submitting = ref(false)
 const batchMode = ref(false)
 const batchNames = ref('')
 const selectedClassId = ref(props.cid || '')
+const fileInput = ref(null)
+const uploadedFileName = ref('')
 
 // 表单数据
 const formData = reactive({
@@ -204,6 +234,96 @@ const errors = reactive({
   student_name: '',
   class_id: ''
 })
+
+// 处理文件上传
+const handleFileUpload = async (event) => {
+  const file = event.target.files[0]
+  if (!file) {
+    return
+  }
+
+  // 检查文件类型
+  const fileName = file.name.toLowerCase()
+  if (!fileName.endsWith('.txt') && !fileName.endsWith('.csv')) {
+    notificationService.notify('仅支持上传 .txt 或 .csv 文件', 'error')
+    // 清空文件输入
+    if (fileInput.value) {
+      fileInput.value.value = ''
+    }
+    return
+  }
+
+  // 检查文件大小（限制为 5MB）
+  const maxSize = 5 * 1024 * 1024 // 5MB
+  if (file.size > maxSize) {
+    notificationService.notify('文件大小不能超过 5MB', 'error')
+    if (fileInput.value) {
+      fileInput.value.value = ''
+    }
+    return
+  }
+
+  try {
+    uploadedFileName.value = file.name
+
+    // 读取文件内容
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const content = e.target.result
+
+      // 处理文件内容
+      let processedContent = content
+
+      // 如果是 CSV 文件，尝试智能处理常见格式
+      if (fileName.endsWith('.csv')) {
+        // 移除 BOM 标记（如果有）
+        processedContent = processedContent.replace(/^\uFEFF/, '')
+
+        // 尝试检测并转换常见的错误分隔符
+        const lines = processedContent.split('\n')
+        const processedLines = lines.map(line => {
+          line = line.trim()
+          if (!line) return line
+
+          // 如果已经使用英文逗号且格式正确，直接返回
+          if (line.split(',').length === 3) {
+            return line
+          }
+
+          // 尝试转换中文逗号
+          if (line.includes('，')) {
+            return line.replace(/，/g, ',')
+          }
+
+          return line
+        })
+
+        processedContent = processedLines.join('\n')
+      }
+
+      // 将内容填充到文本框
+      batchNames.value = processedContent.trim()
+
+      notificationService.notify(`成功加载文件: ${file.name}`, 'success')
+
+      // 清空错误信息
+      errors.student_name = ''
+    }
+
+    reader.onerror = () => {
+      notificationService.notify('读取文件失败', 'error')
+      uploadedFileName.value = ''
+    }
+
+    // 以文本形式读取文件
+    reader.readAsText(file, 'UTF-8')
+
+  } catch (error) {
+    console.error('文件上传错误:', error)
+    notificationService.notify('文件上传失败', 'error')
+    uploadedFileName.value = ''
+  }
+}
 
 // 验证表单
 const validateForm = () => {
@@ -271,7 +391,37 @@ const handleSubmit = async () => {
         console.log(`第${index + 1}行分割结果:`, parts)
 
         if (parts.length !== 3) {
-          parseErrors.push(`第${index + 1}行格式错误：应为"班级ID,姓名,出勤状态"，当前有${parts.length}个字段`)
+          // 检测常见的分隔符错误
+          let errorDetail = `第${index + 1}行格式错误：应为"班级ID,姓名,出勤状态"，当前有${parts.length}个字段`
+
+          // 检测是否使用了中文逗号
+          if (line.includes('，')) {
+            errorDetail += '（检测到中文逗号"，"，请使用英文逗号","）'
+          }
+          // 检测是否使用了空格作为分隔符
+          else if (line.includes(' ') || line.includes('\t')) {
+            const spaceCount = (line.match(/ /g) || []).length
+            const tabCount = (line.match(/\t/g) || []).length
+            if (spaceCount > 0) {
+              errorDetail += '（检测到空格分隔符，请使用英文逗号","）'
+            } else if (tabCount > 0) {
+              errorDetail += '（检测到制表符Tab分隔符，请使用英文逗号","）'
+            }
+          }
+          // 检测是否使用了分号
+          else if (line.includes(';') || line.includes('；')) {
+            if (line.includes('；')) {
+              errorDetail += '（检测到中文分号"；"，请使用英文逗号","）'
+            } else {
+              errorDetail += '（检测到分号";"，请使用英文逗号","）'
+            }
+          }
+          // 检测是否使用了竖线
+          else if (line.includes('|')) {
+            errorDetail += '（检测到竖线"|"，请使用英文逗号","）'
+          }
+
+          parseErrors.push(errorDetail)
           return
         }
 
