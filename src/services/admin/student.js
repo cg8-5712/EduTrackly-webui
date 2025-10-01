@@ -83,9 +83,15 @@ class StudentAdminService extends ApiPrefix {
   }
 
   // 提交学生事件
-  async submitStudentEvents(events) {
+  async submitStudentEvents(events, date) {
     try {
-      const data = await this.adminPut('/student/event', events);
+      if (!date) throw new Error('日期必填');
+      if (!Array.isArray(events) || events.length === 0) {
+        throw new Error('事件数据不能为空');
+      }
+
+      const url = `/student/event?date=${date}`;
+      const data = await this.adminPut(url, events);
       console.log('提交学生事件:', data.message);
 
       if (data.code !== 0) {
