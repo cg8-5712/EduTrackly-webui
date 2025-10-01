@@ -140,7 +140,7 @@
                   <input
                     ref="fileInput"
                     type="file"
-                    accept=".txt,.csv"
+                    accept=".txt,.csv,.xlsx,.xls"
                     @change="handleFileUpload"
                     class="hidden"
                   />
@@ -150,7 +150,7 @@
                 </span>
               </div>
               <p class="text-xs text-gray-500 mt-1">
-                支持上传 .txt 或 .csv 文件（每行格式：班级ID,姓名,出勤状态）
+                支持上传 .txt、.csv 或 .xlsx/.xls 文件（每行格式：班级ID,姓名,出勤状态）
               </p>
             </div>
 
@@ -196,6 +196,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { UserIcon, UsersIcon } from '@heroicons/vue/24/outline'
+import * as XLSX from 'xlsx'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import StudentAdminService from '@/services/admin/student'
 import notificationService from '@/services/common/notification'
@@ -244,8 +245,11 @@ const handleFileUpload = async (event) => {
 
   // 检查文件类型
   const fileName = file.name.toLowerCase()
-  if (!fileName.endsWith('.txt') && !fileName.endsWith('.csv')) {
-    notificationService.notify('仅支持上传 .txt 或 .csv 文件', 'error')
+  const isExcel = fileName.endsWith('.xlsx') || fileName.endsWith('.xls')
+  const isTextOrCsv = fileName.endsWith('.txt') || fileName.endsWith('.csv')
+
+  if (!isExcel && !isTextOrCsv) {
+    notificationService.notify('仅支持上传 .txt、.csv、.xlsx 或 .xls 文件', 'error')
     // 清空文件输入
     if (fileInput.value) {
       fileInput.value.value = ''
@@ -266,57 +270,113 @@ const handleFileUpload = async (event) => {
   try {
     uploadedFileName.value = file.name
 
-    // 读取文件内容
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const content = e.target.result
+    if (isExcel) {
+      // 处理 Excel 文件
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        try {
+          const data = new Uint8Array(e.target.result)
+          const workbook = XLSX.read(data, { type: 'array' })
 
-      // 处理文件内容
-      let processedContent = content
+          // 获取第一个工作表
+          const firstSheetName = workbook.SheetNames[0]
+          const worksheet = workbook.Sheets[firstSheetName]
 
-      // 如果是 CSV 文件，尝试智能处理常见格式
-      if (fileName.endsWith('.csv')) {
-        // 移除 BOM 标记（如果有）
-        processedContent = processedContent.replace(/^\uFEFF/, '')
+          // 将工作表转换为 CSV 格式
+          const csvData = XLSX.utils.sheet_to_csv(worksheet, { FS: ',', RS: '\n' })
 
-        // 尝试检测并转换常见的错误分隔符
-        const lines = processedContent.split('\n')
-        const processedLines = lines.map(line => {
-          line = line.trim()
-          if (!line) return line
+          // 处理 CSV 数据，移除可能的表头行
+          const lines = csvData.split('\n').filter(line => line.trim())
 
-          // 如果已经使用英文逗号且格式正确，直接返回
-          if (line.split(',').length === 3) {
-            return line
+          // 检测是否有表头（第一行包含中文字符或"班级"、"姓名"等关键字）
+          let startIndex = 0
+          if (lines.length > 0) {
+            const firstLine = lines[0].toLowerCase()
+            if (firstLine.includes('班级') || firstLine.includes('姓名') || firstLine.includes('出勤') ||
+                firstLine.includes('class') || firstLine.includes('name') || firstLine.includes('attendance')) {
+              startIndex = 1 // 跳过表头
+              notificationService.notify('检测到表头行，已自动跳过', 'info')
+            }
           }
 
-          // 尝试转换中文逗号
-          if (line.includes('，')) {
-            return line.replace(/，/g, ',')
-          }
+          // 获取数据行
+          const dataLines = lines.slice(startIndex)
 
-          return line
-        })
+          // 填充到文本框
+          batchNames.value = dataLines.join('\n')
 
-        processedContent = processedLines.join('\n')
+          notificationService.notify(`成功加载 Excel 文件: ${file.name}，共 ${dataLines.length} 行数据`, 'success')
+
+          // 清空错误信息
+          errors.student_name = ''
+        } catch (error) {
+          console.error('解析 Excel 文件错误:', error)
+          notificationService.notify('解析 Excel 文件失败，请检查文件格式', 'error')
+          uploadedFileName.value = ''
+        }
       }
 
-      // 将内容填充到文本框
-      batchNames.value = processedContent.trim()
+      reader.onerror = () => {
+        notificationService.notify('读取 Excel 文件失败', 'error')
+        uploadedFileName.value = ''
+      }
 
-      notificationService.notify(`成功加载文件: ${file.name}`, 'success')
+      // 以 ArrayBuffer 形式读取文件
+      reader.readAsArrayBuffer(file)
 
-      // 清空错误信息
-      errors.student_name = ''
+    } else {
+      // 处理文本文件（.txt 或 .csv）
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const content = e.target.result
+
+        // 处理文件内容
+        let processedContent = content
+
+        // 如果是 CSV 文件，尝试智能处理常见格式
+        if (fileName.endsWith('.csv')) {
+          // 移除 BOM 标记（如果有）
+          processedContent = processedContent.replace(/^\uFEFF/, '')
+
+          // 尝试检测并转换常见的错误分隔符
+          const lines = processedContent.split('\n')
+          const processedLines = lines.map(line => {
+            line = line.trim()
+            if (!line) return line
+
+            // 如果已经使用英文逗号且格式正确，直接返回
+            if (line.split(',').length === 3) {
+              return line
+            }
+
+            // 尝试转换中文逗号
+            if (line.includes('，')) {
+              return line.replace(/，/g, ',')
+            }
+
+            return line
+          })
+
+          processedContent = processedLines.join('\n')
+        }
+
+        // 将内容填充到文本框
+        batchNames.value = processedContent.trim()
+
+        notificationService.notify(`成功加载文件: ${file.name}`, 'success')
+
+        // 清空错误信息
+        errors.student_name = ''
+      }
+
+      reader.onerror = () => {
+        notificationService.notify('读取文件失败', 'error')
+        uploadedFileName.value = ''
+      }
+
+      // 以文本形式读取文件
+      reader.readAsText(file, 'UTF-8')
     }
-
-    reader.onerror = () => {
-      notificationService.notify('读取文件失败', 'error')
-      uploadedFileName.value = ''
-    }
-
-    // 以文本形式读取文件
-    reader.readAsText(file, 'UTF-8')
 
   } catch (error) {
     console.error('文件上传错误:', error)

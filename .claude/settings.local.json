@@ -3,7 +3,8 @@
     "allow": [
       "Bash(npm run build:*)",
       "Bash(yarn dev)",
-      "Bash(yarn install)"
+      "Bash(yarn install)",
+      "Bash(yarn add:*)"
     ],
     "deny": [],
     "ask": []
