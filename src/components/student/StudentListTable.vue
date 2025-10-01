@@ -94,12 +94,20 @@
         </tr>
       </tbody>
     </table>
+
+    <!-- 学生详情模态框 -->
+    <StudentDetailModal
+      v-if="showDetailModal"
+      :student="selectedStudent"
+      @close="closeDetailModal"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import StudentDetailModal from './StudentDetailModal.vue'
 
 // Props
 const props = defineProps({
@@ -139,5 +147,11 @@ const getAvatarColor = (name) => {
 const showStudentDetail = (student) => {
   selectedStudent.value = student
   showDetailModal.value = true
+}
+
+// 关闭学生详情
+const closeDetailModal = () => {
+  showDetailModal.value = false
+  selectedStudent.value = null
 }
 </script>

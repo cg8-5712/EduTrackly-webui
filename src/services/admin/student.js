@@ -99,6 +99,29 @@ class StudentAdminService extends ApiPrefix {
     }
   }
 
+  // 获取学生分析数据
+  async getStudentAnalysis(sid, startDate = null, endDate = null) {
+    try {
+      if (!sid) throw new Error('学生ID必填');
+
+      let url = `/analysis/student?sid=${sid}`;
+      if (startDate) url += `&startDate=${startDate}`;
+      if (endDate) url += `&endDate=${endDate}`;
+
+      const data = await this.adminGet(url);
+      console.log('获取学生分析数据:', data.message);
+
+      if (data.code !== 0) {
+        throw new Error(data.message || '获取学生分析数据失败');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('获取学生分析数据失败:', error);
+      throw new Error(error.message || '获取学生分析数据失败');
+    }
+  }
+
   // 验证学生数据
   validateStudentData(students) {
     const validStudents = [];

@@ -383,77 +383,11 @@
       />
 
       <!-- 学生详情模态框 -->
-      <div v-if="showDetailModal" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click="showDetailModal = false">
-        <div class="bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg mx-4" @click.stop>
-          <!-- 模态框头部 -->
-          <div class="flex items-center justify-between p-6 border-b border-gray-700">
-            <h2 class="text-xl font-bold text-white">学生详情</h2>
-            <button
-              @click="showDetailModal = false"
-              class="text-gray-400 hover:text-white transition-colors duration-200"
-            >
-              <span class="text-2xl">&times;</span>
-            </button>
-          </div>
-
-          <!-- 模态框主体 -->
-          <div class="p-6" v-if="selectedStudent">
-            <div class="space-y-4">
-              <!-- 基本信息 -->
-              <div class="bg-gray-700 rounded-lg p-4">
-                <h3 class="text-lg font-semibold text-white mb-3">基本信息</h3>
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1">班级</label>
-                    <p class="text-white">{{ getClassName(selectedStudent.cid) }}</p>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1">学号</label>
-                    <p class="text-white">{{ selectedStudent.sid }}</p>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1">姓名</label>
-                    <p class="text-white">{{ selectedStudent.student_name }}</p>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1">出勤状态</label>
-                    <div class="flex items-center gap-2">
-                      <button
-                        @click="updateDetailAttendance(true)"
-                        class="px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200"
-                        :class="selectedStudent.attendance
-                          ? 'bg-green-600 text-white'
-                          : 'bg-gray-600 text-gray-300 hover:bg-green-600 hover:text-white'"
-                      >
-                        在校
-                      </button>
-                      <button
-                        @click="updateDetailAttendance(false)"
-                        class="px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200"
-                        :class="!selectedStudent.attendance
-                          ? 'bg-red-600 text-white'
-                          : 'bg-gray-600 text-gray-300 hover:bg-red-600 hover:text-white'"
-                      >
-                        离校
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 模态框底部 -->
-          <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-700">
-            <button
-              @click="showDetailModal = false"
-              class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors duration-200"
-            >
-              关闭
-            </button>
-          </div>
-        </div>
-      </div>
+      <StudentDetailModal
+        v-if="showDetailModal && selectedStudent"
+        :student="selectedStudent"
+        @close="closeDetailModal"
+      />
     </div>
   </div>
 </template>
@@ -462,6 +396,7 @@
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import AddStudentModal from '@/components/student/AddStudentModal.vue'
+import StudentDetailModal from '@/components/student/StudentDetailModal.vue'
 import StudentService from '@/services/basic/student.js'
 import StudentAdminService from '@/services/admin/student.js'
 import ClassService from '@/services/basic/class.js'
@@ -698,33 +633,12 @@ const showStudentDetail = (student) => {
   showDetailModal.value = true
 }
 
-// 在详情模态框中更新出勤状态
-const updateDetailAttendance = async (attendance) => {
-  if (!selectedStudent.value) return
-
-  // 如果状态相同，不需要更新
-  if (selectedStudent.value.attendance === attendance) return
-
-  try {
-    await StudentAdminService.changeAttendance(selectedStudent.value.sid, attendance)
-
-    // 更新详情模态框中的状态
-    selectedStudent.value.attendance = attendance
-
-    // 同时更新列表中的学生状态
-    const studentInList = students.value.find(s => s.sid === selectedStudent.value.sid)
-    if (studentInList) {
-      studentInList.attendance = attendance
-    }
-
-    notificationService.notify(
-      `${selectedStudent.value.student_name} 状态已更改为 ${attendance ? '在校' : '离校'}`,
-      'success'
-    )
-  } catch (error) {
-    console.error('更改出勤状态失败:', error)
-    notificationService.notify(error.message || '更改出勤状态失败', 'error')
-  }
+// 关闭学生详情
+const closeDetailModal = () => {
+  showDetailModal.value = false
+  selectedStudent.value = null
+  // 刷新学生列表以获取最新数据
+  fetchStudents()
 }
 
 // 处理添加学生成功
