@@ -204,7 +204,7 @@
 
     <!-- 班级详情对话框 -->
     <div v-if="showDetailDialog" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showDetailDialog = false">
-      <div class="bg-white rounded-2xl w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div class="bg-white rounded-2xl w-[90%] max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl">
         <div class="flex justify-between items-center p-6 border-b border-gray-200">
           <h3 class="m-0 text-xl font-bold text-gray-800">班级详情 - {{ selectedClass?.class_name }}</h3>
           <button @click="showDetailDialog = false" class="bg-none border-none text-lg cursor-pointer p-1 rounded transition-colors hover:bg-gray-100">✖️</button>
@@ -215,6 +215,7 @@
             <p>加载详情中...</p>
           </div>
           <div v-else-if="classDetail" class="flex flex-col gap-6">
+            <!-- 班级基本信息 -->
             <div class="flex flex-col gap-3">
               <div class="flex items-center py-2 border-b border-gray-100">
                 <span class="font-semibold text-gray-700 min-w-25">班级ID：</span>
@@ -229,6 +230,41 @@
                 <span class="text-gray-500">{{ formatDate(classDetail.create_time) }}</span>
               </div>
             </div>
+
+            <!-- 班级分析数据 -->
+            <div v-if="classAnalysis" class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6">
+              <h4 class="text-gray-800 text-lg m-0 mb-4 font-bold">班级统计分析</h4>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-lg p-4 shadow-sm">
+                  <div class="text-gray-500 text-sm mb-1">学生总数</div>
+                  <div class="text-2xl font-bold text-blue-600">{{ classAnalysis.student_num }}</div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow-sm">
+                  <div class="text-gray-500 text-sm mb-1">应到人数</div>
+                  <div class="text-2xl font-bold text-purple-600">{{ classAnalysis.expected_attend }}</div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow-sm">
+                  <div class="text-gray-500 text-sm mb-1">今日实到</div>
+                  <div class="text-2xl font-bold text-green-600">{{ classAnalysis.today_actual_attend }}</div>
+                </div>
+                <div class="bg-white rounded-lg p-4 shadow-sm">
+                  <div class="text-gray-500 text-sm mb-1">今日出勤率</div>
+                  <div class="text-2xl font-bold text-orange-600">
+                    {{ classAnalysis.expected_attend > 0 ? (classAnalysis.today_actual_attend / classAnalysis.expected_attend * 100).toFixed(1) : 0 }}%
+                  </div>
+                </div>
+              </div>
+
+              <!-- 出勤率折线图 -->
+              <div v-if="classAnalysis.daily_attendance_rates && classAnalysis.daily_attendance_rates.length > 0" class="bg-white rounded-lg p-4 shadow-sm">
+                <AttendanceChart :data="classAnalysis.daily_attendance_rates" />
+              </div>
+              <div v-else class="bg-white rounded-lg p-6 text-center text-gray-500">
+                暂无历史出勤数据
+              </div>
+            </div>
+
+            <!-- 班级学生列表 -->
             <div>
               <h4 class="text-gray-800 text-lg m-0 mb-4">班级学生 ({{ classDetail.students?.length || 0 }}人)</h4>
               <div v-if="classDetail.students && classDetail.students.length > 0" class="flex flex-col gap-2 max-h-75 overflow-y-auto">
@@ -281,6 +317,8 @@
 <script setup>
 import { ref, reactive, onMounted, computed, onUnmounted } from 'vue'
 import AdminClassService from '@/services/admin/class'
+import AttendanceChart from './AttendanceChart.vue'
+import notificationService from '@/services/common/notification'
 
 // 响应式数据
 const loading = ref(false)
@@ -319,6 +357,7 @@ const loadingDetail = ref(false)
 // 选中的班级和详情
 const selectedClass = ref(null)
 const classDetail = ref(null)
+const classAnalysis = ref(null)
 
 // 学生人数缓存
 const studentCounts = ref({})
@@ -518,8 +557,12 @@ const createClass = async () => {
     pagination.page = 1
     await fetchClasses()
 
+    // 显示成功通知
+    notificationService.notify('班级创建成功', 'success')
+
   } catch (err) {
     error.value = err.message || '创建班级失败'
+    notificationService.notify(err.message || '创建班级失败', 'error')
     console.error('创建班级失败:', err)
   } finally {
     creating.value = false
@@ -530,10 +573,20 @@ const viewClassDetail = async (classItem) => {
   selectedClass.value = classItem
   showDetailDialog.value = true
   loadingDetail.value = true
+  classAnalysis.value = null
 
   try {
-    const response = await AdminClassService.getClassDetail(classItem.cid)
-    classDetail.value = response.data
+    // 并行获取班级详情和分析数据
+    const [detailResponse, analysisResponse] = await Promise.all([
+      AdminClassService.getClassDetail(classItem.cid),
+      AdminClassService.getClassAnalysis(classItem.cid).catch(err => {
+        console.warn('获取班级分析数据失败:', err)
+        return null
+      })
+    ])
+
+    classDetail.value = detailResponse.data
+    classAnalysis.value = analysisResponse?.data || null
   } catch (err) {
     error.value = err.message || '获取班级详情失败'
     console.error('获取班级详情失败:', err)
@@ -562,8 +615,12 @@ const deleteClass = async () => {
     // 刷新列表
     await fetchClasses()
 
+    // 显示成功通知
+    notificationService.notify('班级删除成功', 'success')
+
   } catch (err) {
     error.value = err.message || '删除班级失败'
+    notificationService.notify(err.message || '删除班级失败', 'error')
     console.error('删除班级失败:', err)
   } finally {
     deleting.value = false

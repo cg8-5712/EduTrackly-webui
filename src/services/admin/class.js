@@ -114,6 +114,31 @@ class AdminClassService extends ApiPrefix {
       throw error;
     }
   }
+
+  /**
+   * 获取班级分析数据 - 管理员权限
+   * @param {number} cid - 班级ID
+   */
+  async getClassAnalysis(cid) {
+    try {
+      if (!cid) {
+        throw new Error('班级ID不能为空');
+      }
+
+      const url = `/analysis/class?cid=${cid}`;
+      const response = await this.adminGet(url);
+      console.log('获取班级分析数据成功:', response.message);
+
+      if (response.code !== 0) {
+        throw new Error(response.message);
+      }
+
+      return response;
+    } catch (error) {
+      console.error('获取班级分析数据失败:', error);
+      throw error;
+    }
+  }
 }
 
 export default new AdminClassService();

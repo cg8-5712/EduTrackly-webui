@@ -33,8 +33,8 @@
           {
             'bg-blue-600 text-white font-medium': isSelected(day),
             'bg-gray-500 text-white': isToday(day),
-            'cursor-pointer hover:bg-gray-600': !isFutureDate(day),
-            'cursor-not-allowed opacity-50 text-gray-500': isFutureDate(day)
+            'cursor-pointer hover:bg-gray-600': props.allowFuture || !isFutureDate(day),
+            'cursor-not-allowed opacity-50 text-gray-500': !props.allowFuture && isFutureDate(day)
           }
         ]"
       >
@@ -51,6 +51,10 @@ const props = defineProps({
   mode: {
     type: String,
     default: 'single', // 默认模式为 'single'
+  },
+  allowFuture: {
+    type: Boolean,
+    default: false, // 默认不允许选择未来日期
   }
 })
 
@@ -117,8 +121,8 @@ watch(() => props.mode, (newMode) => {
 })
 
 const selectDate = (day) => {
-  // 禁止选择未来日期
-  if (isFutureDate(day)) {
+  // 如果不允许未来日期，则禁止选择
+  if (!props.allowFuture && isFutureDate(day)) {
     return
   }
 
