@@ -1,31 +1,31 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-white p-6">
+  <div class="min-h-screen bg-gray-50 text-gray-800 p-6">
     <div class="max-w-7xl mx-auto">
       <!-- 标题 -->
       <div class="mb-8">
-        <h1 class="text-3xl font-bold text-white mb-2">学生管理</h1>
-        <p class="text-gray-400">管理班级学生信息、出勤状态和统计数据</p>
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">学生管理</h1>
+        <p class="text-gray-600">管理班级学生信息、出勤状态和统计数据</p>
       </div>
 
       <!-- 班级选择和操作栏 -->
-      <div class="bg-gray-800 rounded-xl p-6 mb-6 shadow-xl">
+      <div class="bg-white rounded-xl p-6 mb-6 shadow-lg border border-gray-200">
         <!-- 班级选择器 -->
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-300 mb-2">选择班级</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">选择班级</label>
           <div class="relative">
             <button
               @click="showClassDropdown = !showClassDropdown"
-              class="w-full max-w-md px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-left focus:border-blue-500 focus:outline-none flex items-center justify-between"
+              class="w-full max-w-md px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 text-left focus:border-blue-500 focus:outline-none flex items-center justify-between shadow-sm hover:border-gray-400"
             >
               <span>{{ getSelectedClassesText() }}</span>
-              <span class="text-gray-400">{{ showClassDropdown ? '▲' : '▼' }}</span>
+              <span class="text-gray-500">{{ showClassDropdown ? '▲' : '▼' }}</span>
             </button>
 
             <!-- 下拉菜单 -->
-            <div v-if="showClassDropdown" class="absolute z-10 w-full max-w-md mt-1 bg-gray-700 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            <div v-if="showClassDropdown" class="absolute z-10 w-full max-w-md mt-1 bg-white border border-gray-300 rounded-lg shadow-xl max-h-60 overflow-y-auto">
               <!-- 全选选项 -->
-              <div class="p-3 border-b border-gray-600">
-                <label class="flex items-center cursor-pointer hover:bg-gray-600 p-2 rounded">
+              <div class="p-3 border-b border-gray-200">
+                <label class="flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded">
                   <input
                     type="checkbox"
                     :checked="isAllSelected"
@@ -33,7 +33,7 @@
                     @change="toggleSelectAll"
                     class="mr-3"
                   />
-                  <span class="font-medium text-blue-400">全选 ({{ classList.length }}个班级)</span>
+                  <span class="font-medium text-blue-600">全选 ({{ classList.length }}个班级)</span>
                 </label>
               </div>
 
@@ -42,7 +42,7 @@
                 <label
                   v-for="classItem in classList"
                   :key="classItem.cid"
-                  class="flex items-center cursor-pointer hover:bg-gray-600 p-3 transition-colors duration-200"
+                  class="flex items-center cursor-pointer hover:bg-gray-50 p-3 transition-colors duration-200"
                 >
                   <input
                     type="checkbox"
@@ -51,14 +51,14 @@
                     class="mr-3"
                   />
                   <div class="flex-1">
-                    <span class="text-white">{{ classItem.class_name }}</span>
-                    <span class="text-sm text-gray-400 ml-2">(ID: {{ classItem.cid }})</span>
+                    <span class="text-gray-800">{{ classItem.class_name }}</span>
+                    <span class="text-sm text-gray-500 ml-2">(ID: {{ classItem.cid }})</span>
                   </div>
                 </label>
               </div>
 
               <!-- 操作按钮 -->
-              <div class="p-3 border-t border-gray-600 flex gap-2">
+              <div class="p-3 border-t border-gray-200 flex gap-2">
                 <button
                   @click="confirmClassSelection"
                   class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors duration-200"
@@ -67,7 +67,7 @@
                 </button>
                 <button
                   @click="showClassDropdown = false"
-                  class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg text-sm transition-colors duration-200"
+                  class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg text-sm transition-colors duration-200"
                 >
                   取消
                 </button>
@@ -85,14 +85,14 @@
                 v-model="searchQuery"
                 type="text"
                 placeholder="搜索学生姓名或学号..."
-                class="w-80 pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
+                class="w-80 pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:border-blue-500 focus:outline-none shadow-sm"
               />
               <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
             </div>
             <button
               @click="clearSearch"
               v-if="searchQuery"
-              class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors duration-200"
+              class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-colors duration-200"
             >
               清除
             </button>
@@ -152,11 +152,11 @@
       </div>
 
       <!-- 学生表格 -->
-      <div class="bg-gray-800 rounded-xl shadow-xl">
-        <div class="p-6 border-b border-gray-700">
+      <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+        <div class="p-6 border-b border-gray-200">
           <div class="flex items-center justify-between">
-            <h2 class="text-xl font-semibold text-white">学生列表</h2>
-            <div class="text-sm text-gray-400">
+            <h2 class="text-xl font-semibold text-gray-800">学生列表</h2>
+            <div class="text-sm text-gray-500">
               已选择 {{ selectedClassIds.length }} 个班级
             </div>
           </div>
@@ -166,17 +166,17 @@
           <!-- 加载中状态 -->
           <div v-if="loading" class="flex items-center justify-center py-12">
             <LoadingSpinner />
-            <span class="ml-3 text-gray-400">加载学生列表中...</span>
+            <span class="ml-3 text-gray-500">加载学生列表中...</span>
           </div>
 
           <!-- 无数据状态 -->
           <div v-else-if="filteredStudents.length === 0" class="flex flex-col items-center justify-center py-12">
             <div class="text-6xl mb-4">👥</div>
-            <div class="text-xl text-gray-400 mb-2">
+            <div class="text-xl text-gray-500 mb-2">
               {{ selectedClassIds.length === 0 ? '请先选择班级' :
                  searchQuery ? '未找到匹配的学生' : '暂无学生数据' }}
             </div>
-            <div class="text-sm text-gray-500">
+            <div class="text-sm text-gray-400">
               {{ selectedClassIds.length === 0 ? '在上方下拉框中选择要查看的班级' :
                  searchQuery ? '请尝试其他搜索关键词' : '请添加学生或切换班级' }}
             </div>
@@ -185,27 +185,27 @@
           <!-- 学生表格 -->
           <table v-else class="w-full">
             <thead>
-              <tr class="bg-gray-700 border-b border-gray-600">
-                <th class="text-left py-3 px-4 font-semibold text-gray-200">班级</th>
-                <th class="text-left py-3 px-4 font-semibold text-gray-200">学号</th>
-                <th class="text-left py-3 px-4 font-semibold text-gray-200">姓名</th>
-                <th class="text-center py-3 px-4 font-semibold text-gray-200">出勤状态</th>
-                <th class="text-center py-3 px-4 font-semibold text-gray-200">操作</th>
+              <tr class="bg-gray-50 border-b border-gray-200">
+                <th class="text-left py-3 px-4 font-semibold text-gray-700">班级</th>
+                <th class="text-left py-3 px-4 font-semibold text-gray-700">学号</th>
+                <th class="text-left py-3 px-4 font-semibold text-gray-700">姓名</th>
+                <th class="text-center py-3 px-4 font-semibold text-gray-700">出勤状态</th>
+                <th class="text-center py-3 px-4 font-semibold text-gray-700">操作</th>
               </tr>
             </thead>
             <tbody>
               <tr
                 v-for="student in paginatedStudents"
                 :key="`${student.cid}-${student.sid}`"
-                class="border-b border-gray-700 hover:bg-gray-700/50 transition-colors duration-200"
+                class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200"
               >
                 <!-- 班级 -->
-                <td class="py-3 px-4 text-gray-300">
+                <td class="py-3 px-4 text-gray-700">
                   {{ getClassName(student.cid) }}
                 </td>
 
                 <!-- 学号 -->
-                <td class="py-3 px-4 text-gray-300">
+                <td class="py-3 px-4 text-gray-700">
                   {{ student.sid }}
                 </td>
 
@@ -218,7 +218,7 @@
                     >
                       {{ getNameInitial(student.student_name) }}
                     </div>
-                    <span class="text-gray-200 font-medium">{{ student.student_name }}</span>
+                    <span class="text-gray-800 font-medium">{{ student.student_name }}</span>
                   </div>
                 </td>
 
@@ -263,26 +263,26 @@
         </div>
 
         <!-- 分页 -->
-        <div v-if="filteredStudents.length > 0" class="p-6 border-t border-gray-700">
+        <div v-if="filteredStudents.length > 0" class="p-6 border-t border-gray-200">
           <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
             <!-- 分页信息和每页大小选择 -->
             <div class="flex items-center gap-4">
-              <div class="text-sm text-gray-400">
+              <div class="text-sm text-gray-600">
                 显示第 {{ startItem }} - {{ endItem }} 条，共 {{ filteredStudents.length }} 条记录
               </div>
               <div class="flex items-center gap-2">
-                <span class="text-sm text-gray-400">每页显示</span>
+                <span class="text-sm text-gray-600">每页显示</span>
                 <select
                   v-model="pageSize"
                   @change="currentPage = 1"
-                  class="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-gray-200 text-sm focus:border-blue-500 focus:outline-none"
+                  class="px-2 py-1 bg-white border border-gray-300 rounded text-gray-800 text-sm focus:border-blue-500 focus:outline-none"
                 >
                   <option value="10">10</option>
                   <option value="20">20</option>
                   <option value="50">50</option>
                   <option value="100">100</option>
                 </select>
-                <span class="text-sm text-gray-400">条</span>
+                <span class="text-sm text-gray-600">条</span>
               </div>
             </div>
 
@@ -294,8 +294,8 @@
                 :disabled="currentPage === 1"
                 class="px-3 py-1 rounded border transition-colors duration-200"
                 :class="currentPage === 1
-                  ? 'border-gray-600 text-gray-500 cursor-not-allowed'
-                  : 'border-gray-600 text-gray-300 hover:bg-gray-700'"
+                  ? 'border-gray-300 text-gray-400 cursor-not-allowed'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
               >
                 首页
               </button>
@@ -306,8 +306,8 @@
                 :disabled="currentPage === 1"
                 class="px-3 py-1 rounded border transition-colors duration-200"
                 :class="currentPage === 1
-                  ? 'border-gray-600 text-gray-500 cursor-not-allowed'
-                  : 'border-gray-600 text-gray-300 hover:bg-gray-700'"
+                  ? 'border-gray-300 text-gray-400 cursor-not-allowed'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
               >
                 上一页
               </button>
@@ -320,7 +320,7 @@
                 class="px-3 py-1 rounded border transition-colors duration-200"
                 :class="page === currentPage
                   ? 'border-blue-500 bg-blue-600 text-white'
-                  : 'border-gray-600 text-gray-300 hover:bg-gray-700'"
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
               >
                 {{ page }}
               </button>
@@ -331,8 +331,8 @@
                 :disabled="currentPage === totalPages"
                 class="px-3 py-1 rounded border transition-colors duration-200"
                 :class="currentPage === totalPages
-                  ? 'border-gray-600 text-gray-500 cursor-not-allowed'
-                  : 'border-gray-600 text-gray-300 hover:bg-gray-700'"
+                  ? 'border-gray-300 text-gray-400 cursor-not-allowed'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
               >
                 下一页
               </button>
@@ -343,24 +343,24 @@
                 :disabled="currentPage === totalPages"
                 class="px-3 py-1 rounded border transition-colors duration-200"
                 :class="currentPage === totalPages
-                  ? 'border-gray-600 text-gray-500 cursor-not-allowed'
-                  : 'border-gray-600 text-gray-300 hover:bg-gray-700'"
+                  ? 'border-gray-300 text-gray-400 cursor-not-allowed'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
               >
                 末页
               </button>
 
               <!-- 页面跳转 -->
               <div class="flex items-center gap-2 ml-4">
-                <span class="text-sm text-gray-400">跳转到</span>
+                <span class="text-sm text-gray-600">跳转到</span>
                 <input
                   v-model="jumpToPage"
                   @keyup.enter="handleJumpToPage"
                   type="number"
                   :min="1"
                   :max="totalPages"
-                  class="w-16 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-gray-200 text-center text-sm focus:border-blue-500 focus:outline-none"
+                  class="w-16 px-2 py-1 bg-white border border-gray-300 rounded text-gray-800 text-center text-sm focus:border-blue-500 focus:outline-none"
                 />
-                <span class="text-sm text-gray-400">页</span>
+                <span class="text-sm text-gray-600">页</span>
                 <button
                   @click="handleJumpToPage"
                   class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors duration-200"

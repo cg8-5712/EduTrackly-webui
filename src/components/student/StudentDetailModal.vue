@@ -2,9 +2,9 @@
   <!-- 模态框背景 -->
   <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click="handleBackdropClick">
     <!-- 模态框内容 -->
-    <div class="bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto" @click.stop="handleModalClick">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto" @click.stop="handleModalClick">
       <!-- 模态框头部 -->
-      <div class="flex items-center justify-between p-6 border-b border-gray-700 sticky top-0 bg-gray-800 z-10">
+      <div class="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
         <div class="flex items-center gap-3">
           <div
             class="w-12 h-12 rounded-full flex items-center justify-center text-white font-medium text-xl"
@@ -13,13 +13,13 @@
             {{ getNameInitial(student.student_name) }}
           </div>
           <div>
-            <h2 class="text-xl font-bold text-white">{{ student.student_name }}</h2>
-            <p class="text-sm text-gray-400">学号: {{ student.sid }}</p>
+            <h2 class="text-xl font-bold text-gray-800">{{ student.student_name }}</h2>
+            <p class="text-sm text-gray-600">学号: {{ student.sid }}</p>
           </div>
         </div>
         <button
           @click="$emit('close')"
-          class="text-gray-400 hover:text-white transition-colors duration-200"
+          class="text-gray-500 hover:text-gray-800 transition-colors duration-200"
         >
           <span class="text-2xl">&times;</span>
         </button>
@@ -30,20 +30,20 @@
         <!-- 加载中状态 -->
         <div v-if="loading" class="flex items-center justify-center py-12">
           <LoadingSpinner />
-          <span class="ml-3 text-gray-400">加载分析数据中...</span>
+          <span class="ml-3 text-gray-600">加载分析数据中...</span>
         </div>
 
         <!-- 错误状态 - 仍显示基本功能 -->
         <div v-else-if="error" class="space-y-6">
           <!-- 错误提示 -->
-          <div class="bg-red-500/10 border border-red-500/50 rounded-lg p-4">
+          <div class="bg-red-50 border border-red-300 rounded-lg p-4">
             <div class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-red-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
               <div class="flex-1">
-                <div class="text-red-400 font-medium mb-1">加载分析数据失败</div>
-                <div class="text-gray-400 text-sm">{{ error }}</div>
+                <div class="text-red-700 font-medium mb-1">加载分析数据失败</div>
+                <div class="text-gray-600 text-sm">{{ error }}</div>
                 <button
                   @click="loadAnalysisData"
                   class="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors duration-200"
@@ -55,8 +55,8 @@
           </div>
 
           <!-- 基本信息（仅使用 props 数据） -->
-          <div class="bg-gray-700/50 rounded-lg p-5">
-            <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <div class="bg-gray-50 rounded-lg p-5 border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -64,11 +64,11 @@
             </h3>
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <span class="text-gray-400 text-sm">姓名</span>
-                <p class="text-white font-medium">{{ student.student_name }}</p>
+                <span class="text-gray-600 text-sm">姓名</span>
+                <p class="text-gray-800 font-medium">{{ student.student_name }}</p>
               </div>
               <div>
-                <span class="text-gray-400 text-sm block mb-2">出勤状态</span>
+                <span class="text-gray-600 text-sm block mb-2">出勤状态</span>
                 <div class="flex items-center gap-2">
                   <button
                     @click="updateAttendance(true)"
@@ -76,7 +76,7 @@
                     class="px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200"
                     :class="student.attendance
                       ? 'bg-green-600 text-white'
-                      : 'bg-gray-600 text-gray-300 hover:bg-green-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed'"
+                      : 'bg-gray-200 text-gray-700 hover:bg-green-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed'"
                   >
                     在校
                   </button>
@@ -86,7 +86,7 @@
                     class="px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200"
                     :class="!student.attendance
                       ? 'bg-red-600 text-white'
-                      : 'bg-gray-600 text-gray-300 hover:bg-red-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed'"
+                      : 'bg-gray-200 text-gray-700 hover:bg-red-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed'"
                   >
                     离校
                   </button>
@@ -96,8 +96,8 @@
           </div>
 
           <!-- 添加历史记录 -->
-          <div class="bg-gray-700/50 rounded-lg p-5">
-            <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <div class="bg-gray-50 rounded-lg p-5 border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
@@ -106,11 +106,11 @@
             <div class="space-y-4">
               <!-- 日期选择 -->
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">选择日期</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">选择日期</label>
                 <div class="relative">
                   <button
                     @click="toggleCalendar"
-                    class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:outline-none text-left flex items-center justify-between"
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 focus:border-blue-500 focus:outline-none text-left flex items-center justify-between"
                   >
                     <span>{{ eventForm.displayDate || '点击选择日期' }}</span>
                     <span class="text-2xl">📅</span>
@@ -127,14 +127,14 @@
 
               <!-- 事件类型选择 -->
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">事件类型</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">事件类型</label>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
                   <button
                     @click="eventForm.eventType = 'official'"
                     class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
                     :class="eventForm.eventType === 'official'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-600 text-gray-300 hover:bg-blue-500 hover:text-white'"
+                      : 'bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white'"
                   >
                     公事
                   </button>
@@ -143,7 +143,7 @@
                     class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
                     :class="eventForm.eventType === 'personal'
                       ? 'bg-purple-600 text-white'
-                      : 'bg-gray-600 text-gray-300 hover:bg-purple-500 hover:text-white'"
+                      : 'bg-gray-200 text-gray-700 hover:bg-purple-500 hover:text-white'"
                   >
                     私事
                   </button>
@@ -152,7 +152,7 @@
                     class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
                     :class="eventForm.eventType === 'sick'
                       ? 'bg-yellow-600 text-white'
-                      : 'bg-gray-600 text-gray-300 hover:bg-yellow-500 hover:text-white'"
+                      : 'bg-gray-200 text-gray-700 hover:bg-yellow-500 hover:text-white'"
                   >
                     病假
                   </button>
@@ -164,13 +164,13 @@
                     :class="eventForm.eventType === 'temp'
                       ? 'bg-orange-600 text-white'
                       : isStudentPresent
-                        ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                        : 'bg-gray-600 text-gray-300 hover:bg-orange-500 hover:text-white'"
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-gray-200 text-gray-700 hover:bg-orange-500 hover:text-white'"
                   >
                     临时外出
                   </button>
                 </div>
-                <p v-if="isStudentPresent" class="text-yellow-400 text-xs mt-2">
+                <p v-if="isStudentPresent" class="text-yellow-600 text-xs mt-2">
                   ⚠️ 当前学生状态为在校，不能选择临时外出
                 </p>
               </div>
@@ -193,8 +193,8 @@
         <!-- 数据展示 -->
         <div v-else-if="analysisData" class="space-y-6">
           <!-- 基本信息卡片 -->
-          <div class="bg-gray-700/50 rounded-lg p-5">
-            <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <div class="bg-gray-50 rounded-lg p-5 border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -202,11 +202,11 @@
             </h3>
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <span class="text-gray-400 text-sm">姓名</span>
-                <p class="text-white font-medium">{{ analysisData.student_name }}</p>
+                <span class="text-gray-600 text-sm">姓名</span>
+                <p class="text-gray-800 font-medium">{{ analysisData.student_name }}</p>
               </div>
               <div>
-                <span class="text-gray-400 text-sm block mb-2">出勤状态</span>
+                <span class="text-gray-600 text-sm block mb-2">出勤状态</span>
                 <div class="flex items-center gap-2">
                   <button
                     @click="updateAttendance(true)"
@@ -214,7 +214,7 @@
                     class="px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200"
                     :class="analysisData.attendance
                       ? 'bg-green-600 text-white'
-                      : 'bg-gray-600 text-gray-300 hover:bg-green-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed'"
+                      : 'bg-gray-200 text-gray-700 hover:bg-green-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed'"
                   >
                     在校
                   </button>
@@ -224,7 +224,7 @@
                     class="px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200"
                     :class="!analysisData.attendance
                       ? 'bg-red-600 text-white'
-                      : 'bg-gray-600 text-gray-300 hover:bg-red-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed'"
+                      : 'bg-gray-200 text-gray-700 hover:bg-red-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed'"
                   >
                     离校
                   </button>
@@ -234,8 +234,8 @@
           </div>
 
           <!-- 添加历史记录卡片 -->
-          <div class="bg-gray-700/50 rounded-lg p-5">
-            <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <div class="bg-gray-50 rounded-lg p-5 border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
@@ -244,11 +244,11 @@
             <div class="space-y-4">
               <!-- 日期选择 -->
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">选择日期</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">选择日期</label>
                 <div class="relative">
                   <button
                     @click="toggleCalendar"
-                    class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:outline-none text-left flex items-center justify-between"
+                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 focus:border-blue-500 focus:outline-none text-left flex items-center justify-between"
                   >
                     <span>{{ eventForm.displayDate || '点击选择日期' }}</span>
                     <span class="text-2xl">📅</span>
@@ -265,14 +265,14 @@
 
               <!-- 事件类型选择 -->
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">事件类型</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">事件类型</label>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
                   <button
                     @click="eventForm.eventType = 'official'"
                     class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
                     :class="eventForm.eventType === 'official'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-600 text-gray-300 hover:bg-blue-500 hover:text-white'"
+                      : 'bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white'"
                   >
                     公事
                   </button>
@@ -281,7 +281,7 @@
                     class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
                     :class="eventForm.eventType === 'personal'
                       ? 'bg-purple-600 text-white'
-                      : 'bg-gray-600 text-gray-300 hover:bg-purple-500 hover:text-white'"
+                      : 'bg-gray-200 text-gray-700 hover:bg-purple-500 hover:text-white'"
                   >
                     私事
                   </button>
@@ -290,7 +290,7 @@
                     class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
                     :class="eventForm.eventType === 'sick'
                       ? 'bg-yellow-600 text-white'
-                      : 'bg-gray-600 text-gray-300 hover:bg-yellow-500 hover:text-white'"
+                      : 'bg-gray-200 text-gray-700 hover:bg-yellow-500 hover:text-white'"
                   >
                     病假
                   </button>
@@ -302,13 +302,13 @@
                     :class="eventForm.eventType === 'temp'
                       ? 'bg-orange-600 text-white'
                       : isStudentPresent
-                        ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                        : 'bg-gray-600 text-gray-300 hover:bg-orange-500 hover:text-white'"
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-gray-200 text-gray-700 hover:bg-orange-500 hover:text-white'"
                   >
                     临时外出
                   </button>
                 </div>
-                <p v-if="isStudentPresent" class="text-yellow-400 text-xs mt-2">
+                <p v-if="isStudentPresent" class="text-yellow-600 text-xs mt-2">
                   ⚠️ 当前学生状态为在校，不能选择临时外出
                 </p>
               </div>
@@ -328,8 +328,8 @@
           </div>
 
           <!-- 事件统计概览 -->
-          <div class="bg-gray-700/50 rounded-lg p-5">
-            <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <div class="bg-gray-50 rounded-lg p-5 border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
@@ -337,38 +337,38 @@
             </h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
               <!-- 公事 -->
-              <div class="bg-blue-500/20 border border-blue-500/50 rounded-lg p-4 text-center">
-                <div class="text-blue-400 text-sm mb-1">公事</div>
-                <div class="text-2xl font-bold text-white">{{ analysisData.event_time.official_cnt }}</div>
-                <div class="text-xs text-gray-400 mt-1">次</div>
+              <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                <div class="text-blue-700 text-sm mb-1">公事</div>
+                <div class="text-2xl font-bold text-gray-800">{{ analysisData.event_time.official_cnt }}</div>
+                <div class="text-xs text-gray-600 mt-1">次</div>
               </div>
 
               <!-- 私事 -->
-              <div class="bg-purple-500/20 border border-purple-500/50 rounded-lg p-4 text-center">
-                <div class="text-purple-400 text-sm mb-1">私事</div>
-                <div class="text-2xl font-bold text-white">{{ analysisData.event_time.personal_cnt }}</div>
-                <div class="text-xs text-gray-400 mt-1">次</div>
+              <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
+                <div class="text-purple-700 text-sm mb-1">私事</div>
+                <div class="text-2xl font-bold text-gray-800">{{ analysisData.event_time.personal_cnt }}</div>
+                <div class="text-xs text-gray-600 mt-1">次</div>
               </div>
 
               <!-- 病假 -->
-              <div class="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4 text-center">
-                <div class="text-yellow-400 text-sm mb-1">病假</div>
-                <div class="text-2xl font-bold text-white">{{ analysisData.event_time.sick_cnt }}</div>
-                <div class="text-xs text-gray-400 mt-1">次</div>
+              <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+                <div class="text-yellow-700 text-sm mb-1">病假</div>
+                <div class="text-2xl font-bold text-gray-800">{{ analysisData.event_time.sick_cnt }}</div>
+                <div class="text-xs text-gray-600 mt-1">次</div>
               </div>
 
               <!-- 临时外出 -->
-              <div class="bg-orange-500/20 border border-orange-500/50 rounded-lg p-4 text-center">
-                <div class="text-orange-400 text-sm mb-1">临时外出</div>
-                <div class="text-2xl font-bold text-white">{{ analysisData.event_time.temp_cnt }}</div>
-                <div class="text-xs text-gray-400 mt-1">次</div>
+              <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
+                <div class="text-orange-700 text-sm mb-1">临时外出</div>
+                <div class="text-2xl font-bold text-gray-800">{{ analysisData.event_time.temp_cnt }}</div>
+                <div class="text-xs text-gray-600 mt-1">次</div>
               </div>
             </div>
           </div>
 
           <!-- 事件详情列表 -->
-          <div class="bg-gray-700/50 rounded-lg p-5">
-            <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <div class="bg-gray-50 rounded-lg p-5 border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
@@ -380,14 +380,14 @@
               <div v-if="sortedEventLists.official_list.length > 0">
                 <div class="flex items-center gap-2 mb-2">
                   <div class="w-3 h-3 rounded-full bg-blue-500"></div>
-                  <h4 class="text-blue-400 font-medium">公事记录</h4>
+                  <h4 class="text-blue-700 font-medium">公事记录</h4>
                 </div>
-                <div class="bg-gray-800/50 rounded-lg p-3">
+                <div class="bg-white rounded-lg p-3 border border-gray-200">
                   <div class="flex flex-wrap gap-2">
                     <span
                       v-for="date in sortedEventLists.official_list"
                       :key="'official-' + date"
-                      class="px-3 py-1 bg-blue-500/20 text-blue-300 text-sm rounded-full"
+                      class="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full"
                     >
                       {{ formatDate(date) }}
                     </span>
@@ -399,14 +399,14 @@
               <div v-if="sortedEventLists.personal_list.length > 0">
                 <div class="flex items-center gap-2 mb-2">
                   <div class="w-3 h-3 rounded-full bg-purple-500"></div>
-                  <h4 class="text-purple-400 font-medium">私事记录</h4>
+                  <h4 class="text-purple-700 font-medium">私事记录</h4>
                 </div>
-                <div class="bg-gray-800/50 rounded-lg p-3">
+                <div class="bg-white rounded-lg p-3 border border-gray-200">
                   <div class="flex flex-wrap gap-2">
                     <span
                       v-for="date in sortedEventLists.personal_list"
                       :key="'personal-' + date"
-                      class="px-3 py-1 bg-purple-500/20 text-purple-300 text-sm rounded-full"
+                      class="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full"
                     >
                       {{ formatDate(date) }}
                     </span>
@@ -418,14 +418,14 @@
               <div v-if="sortedEventLists.sick_list.length > 0">
                 <div class="flex items-center gap-2 mb-2">
                   <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                  <h4 class="text-yellow-400 font-medium">病假记录</h4>
+                  <h4 class="text-yellow-700 font-medium">病假记录</h4>
                 </div>
-                <div class="bg-gray-800/50 rounded-lg p-3">
+                <div class="bg-white rounded-lg p-3 border border-gray-200">
                   <div class="flex flex-wrap gap-2">
                     <span
                       v-for="date in sortedEventLists.sick_list"
                       :key="'sick-' + date"
-                      class="px-3 py-1 bg-yellow-500/20 text-yellow-300 text-sm rounded-full"
+                      class="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm rounded-full"
                     >
                       {{ formatDate(date) }}
                     </span>
@@ -437,14 +437,14 @@
               <div v-if="sortedEventLists.temp_list.length > 0">
                 <div class="flex items-center gap-2 mb-2">
                   <div class="w-3 h-3 rounded-full bg-orange-500"></div>
-                  <h4 class="text-orange-400 font-medium">临时外出记录</h4>
+                  <h4 class="text-orange-700 font-medium">临时外出记录</h4>
                 </div>
-                <div class="bg-gray-800/50 rounded-lg p-3">
+                <div class="bg-white rounded-lg p-3 border border-gray-200">
                   <div class="flex flex-wrap gap-2">
                     <span
                       v-for="date in sortedEventLists.temp_list"
                       :key="'temp-' + date"
-                      class="px-3 py-1 bg-orange-500/20 text-orange-300 text-sm rounded-full"
+                      class="px-3 py-1 bg-orange-100 text-orange-700 text-sm rounded-full"
                     >
                       {{ formatDate(date) }}
                     </span>
@@ -468,11 +468,11 @@
       </div>
 
       <!-- 模态框底部 -->
-      <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-700 sticky bottom-0 bg-gray-800">
+      <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200 sticky bottom-0 bg-white">
         <button
           @click="$emit('close')"
           type="button"
-          class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors duration-200"
+          class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-colors duration-200"
         >
           关闭
         </button>

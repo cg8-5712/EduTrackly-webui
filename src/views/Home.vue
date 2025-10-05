@@ -36,7 +36,7 @@
     <div class="flex-1 grid grid-cols-1 md:grid-cols-[0.8fr_1.2fr] gap-4 min-h-0 py-2 mt-2">
       <!-- 左侧考勤信息 -->
       <div class="bg-gray-800 rounded-xl p-6 shadow-lg overflow-y-auto overflow-x-hidden min-h-0">
-        <students ref="studentsComponent" :selected-date="selectedDate" :selected-cid="selectedCid" />
+        <AttendanceDisplay ref="studentsComponent" :selected-date="selectedDate" :selected-cid="selectedCid" />
       </div>
 
       <!-- 右侧作业信息 -->
@@ -59,7 +59,7 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
-import students from '@/components/student/students.vue'
+import AttendanceDisplay from '@/components/student/AttendanceDisplay.vue'
 import Homework from '@/components/homework/homework.vue'
 import Calendar from '@/components/common/calendar.vue'
 import ClassSwitch from '@/components/common/ClasssWitch.vue'

@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen h-screen w-full bg-gray-900 text-gray-200 flex flex-col gap-4 p-4 box-border overflow-hidden">
     <ClassSwitch @update:cid="handleClassChange" />
-    <StudentList :cid="selectedCid" ref="studentListComponent" />
+    <StudentEventSelector :cid="selectedCid" ref="studentListComponent" />
     <!-- 引入作业提交组件 -->
     <SubmitHomework :cid="selectedCid" />
   </div>
@@ -10,7 +10,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import ClassSwitch from '@/components/common/ClassSwitch.vue'
-import StudentList from '@/components/student/StudentList.vue'
+import StudentEventSelector from '@/components/student/StudentEventSelector.vue'
 import SubmitHomework from '@/components/homework/SubmitHomework.vue' // 引入组件
 
 // 选中的班级ID

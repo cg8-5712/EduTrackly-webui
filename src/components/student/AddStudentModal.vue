@@ -2,13 +2,13 @@
   <!-- 模态框背景 -->
   <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click="handleBackdropClick">
     <!-- 模态框内容 -->
-    <div class="bg-gray-800 rounded-xl shadow-2xl w-full max-w-md mx-4" @click.stop>
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4" @click.stop>
       <!-- 模态框头部 -->
-      <div class="flex items-center justify-between p-6 border-b border-gray-700">
-        <h2 class="text-xl font-bold text-white">添加学生</h2>
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h2 class="text-xl font-bold text-gray-800">添加学生</h2>
         <button
           @click="$emit('close')"
-          class="text-gray-400 hover:text-white transition-colors duration-200"
+          class="text-gray-500 hover:text-gray-800 transition-colors duration-200"
         >
           <span class="text-2xl">&times;</span>
         </button>
@@ -53,12 +53,12 @@
         <form @submit.prevent="handleSubmit" class="space-y-4">
           <!-- 目标班级选择（仅手动模式显示） -->
           <div v-if="!batchMode">
-            <label class="block text-sm font-medium text-gray-300 mb-2">
-              目标班级 <span class="text-red-400">*</span>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              目标班级 <span class="text-red-600">*</span>
             </label>
             <select
               v-model="selectedClassId"
-              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 focus:border-blue-500 focus:outline-none"
               :class="{ 'border-red-500': errors.class_id }"
               required
             >
@@ -71,32 +71,32 @@
                 {{ classItem.class_name }}
               </option>
             </select>
-            <p v-if="errors.class_id" class="text-red-400 text-sm mt-1">
+            <p v-if="errors.class_id" class="text-red-600 text-sm mt-1">
               {{ errors.class_id }}
             </p>
           </div>
 
           <!-- 学生姓名（仅手动模式显示） -->
           <div v-if="!batchMode">
-            <label class="block text-sm font-medium text-gray-300 mb-2">
-              学生姓名 <span class="text-red-400">*</span>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              学生姓名 <span class="text-red-600">*</span>
             </label>
             <input
               v-model="formData.student_name"
               type="text"
               placeholder="请输入学生姓名"
-              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:border-blue-500 focus:outline-none"
               :class="{ 'border-red-500': errors.student_name }"
               required
             />
-            <p v-if="errors.student_name" class="text-red-400 text-sm mt-1">
+            <p v-if="errors.student_name" class="text-red-600 text-sm mt-1">
               {{ errors.student_name }}
             </p>
           </div>
 
           <!-- 初始出勤状态（仅手动模式显示） -->
           <div v-if="!batchMode">
-            <label class="block text-sm font-medium text-gray-300 mb-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
               初始状态
             </label>
             <div class="flex gap-4">
@@ -107,7 +107,7 @@
                   :value="true"
                   class="mr-2 text-green-500"
                 />
-                <span class="text-green-400">在校</span>
+                <span class="text-green-600">在校</span>
               </label>
               <label class="flex items-center">
                 <input
@@ -116,22 +116,22 @@
                   :value="false"
                   class="mr-2 text-red-500"
                 />
-                <span class="text-red-400">离校</span>
+                <span class="text-red-600">离校</span>
               </label>
             </div>
           </div>
 
           <!-- 批量添加文本框（仅批量模式显示） -->
           <div v-if="batchMode">
-            <label class="block text-sm font-medium text-gray-300 mb-2">
-              批量输入学生信息 <span class="text-red-400">*</span>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              批量输入学生信息 <span class="text-red-600">*</span>
             </label>
 
             <!-- 文件上传区域 -->
             <div class="mb-3">
               <div class="flex items-center gap-2">
                 <label
-                  class="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg cursor-pointer transition-colors duration-200 border border-gray-600"
+                  class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg cursor-pointer transition-colors duration-200 border border-gray-300"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -145,7 +145,7 @@
                     class="hidden"
                   />
                 </label>
-                <span v-if="uploadedFileName" class="text-sm text-gray-400">
+                <span v-if="uploadedFileName" class="text-sm text-gray-600">
                   {{ uploadedFileName }}
                 </span>
               </div>
@@ -158,13 +158,13 @@
               v-model="batchNames"
               placeholder="CSV格式，每行一个学生，格式：班级ID,姓名,出勤状态&#10;例如：&#10;1,张三,1&#10;1,李四,0&#10;2,王五,1&#10;&#10;出勤状态：1=在校，0=离校"
               rows="10"
-              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none resize-none font-mono"
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:border-blue-500 focus:outline-none resize-none font-mono"
               :class="{ 'border-red-500': errors.student_name }"
             ></textarea>
-            <p class="text-sm text-gray-400 mt-1">
+            <p class="text-sm text-gray-600 mt-1">
               CSV格式：班级ID,姓名,出勤状态（1=在校，0=离校）
             </p>
-            <p v-if="errors.student_name" class="text-red-400 text-sm mt-1">
+            <p v-if="errors.student_name" class="text-red-600 text-sm mt-1">
               {{ errors.student_name }}
             </p>
           </div>
@@ -172,11 +172,11 @@
       </div>
 
       <!-- 模态框底部 -->
-      <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-700">
+      <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
         <button
           @click="$emit('close')"
           type="button"
-          class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors duration-200"
+          class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-colors duration-200"
         >
           取消
         </button>
