@@ -62,7 +62,7 @@ import { ref, onMounted, computed, watch } from 'vue'
 import AttendanceDisplay from '@/components/student/AttendanceDisplay.vue'
 import Homework from '@/components/homework/homework.vue'
 import Calendar from '@/components/common/calendar.vue'
-import ClassSwitch from '@/components/common/ClasssWitch.vue'
+import ClassSwitch from '@/components/common/ClassSwitch.vue'
 import { formatYYYYMMDDToDate } from '@/utils/formatDate'
 
 const currentTime = ref('')

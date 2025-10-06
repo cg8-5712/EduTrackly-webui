@@ -155,7 +155,7 @@
 
 <script>
 import Home from '@/views/Home.vue'
-import ClassSwitch from '@/components/common/classswitch.vue'
+import ClassSwitch from '@/components/common/ClassSwitch.vue'
 import StudentEventSelector from '@/components/student/StudentEventSelector.vue'
 import SubmitHomework from '@/components/homework/SubmitHomework.vue'
 
