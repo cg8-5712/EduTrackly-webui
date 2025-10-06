@@ -1,0 +1,105 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # 匹配 v1.0.0, v2.1.3 等版本号
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 允许创建 release
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Create .env file
+        run: |
+          if [ -f .env.example ]; then
+            cp .env.example .env
+            echo "✅ Created .env from .env.example"
+          fi
+
+          # 使用 GitHub Secrets 配置生产环境变量
+          # 请在 GitHub 仓库设置中添加以下 secrets（根据实际需要）:
+          # - VITE_API_URL
+          # - VITE_APP_TITLE
+          # 等等...
+
+          # 示例：覆盖环境变量
+          # if [ -n "${{ secrets.VITE_API_URL }}" ]; then
+          #   echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env
+          # fi
+
+          echo "📝 Environment variables configured"
+
+      - name: Build project
+        run: yarn build
+        env:
+          NODE_ENV: production
+
+      - name: Clean up unnecessary files
+        run: |
+          # 删除根目录的 text* 文件
+          rm -f text*
+          echo "✅ Cleaned up text* files"
+
+      - name: Create build archive
+        run: |
+          cd dist
+          zip -r ../edutrackly-webui-${{ steps.get_version.outputs.VERSION }}.zip .
+          cd ..
+          echo "✅ Created release archive"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          echo "## 🚀 Release ${{ steps.get_version.outputs.VERSION }}" > RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "### 📦 Build Information" >> RELEASE_NOTES.md
+          echo "- **Version**: ${{ steps.get_version.outputs.VERSION }}" >> RELEASE_NOTES.md
+          echo "- **Build Date**: $(date +'%Y-%m-%d %H:%M:%S UTC')" >> RELEASE_NOTES.md
+          echo "- **Commit**: ${GITHUB_SHA::7}" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "### 📥 Installation" >> RELEASE_NOTES.md
+          echo '```bash' >> RELEASE_NOTES.md
+          echo "# 下载并解压" >> RELEASE_NOTES.md
+          echo "unzip edutrackly-webui-${{ steps.get_version.outputs.VERSION }}.zip" >> RELEASE_NOTES.md
+          echo '```' >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "### ⚙️ Configuration" >> RELEASE_NOTES.md
+          echo "请确保配置正确的环境变量文件 (.env) 后再部署。" >> RELEASE_NOTES.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ steps.get_version.outputs.VERSION }}
+          body_path: RELEASE_NOTES.md
+          files: |
+            edutrackly-webui-${{ steps.get_version.outputs.VERSION }}.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ steps.get_version.outputs.VERSION }}
+          path: dist
+          retention-days: 30

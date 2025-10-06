@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  lint-and-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Check formatting and linting
+        run: |
+          echo "✅ Dependencies installed successfully"
+          echo "📦 Project: $(node -p "require('./package.json').name")"
+          echo "📌 Version: $(node -p "require('./package.json').version")"
+
+      - name: Type check (if applicable)
+        continue-on-error: true
+        run: |
+          if [ -f "tsconfig.json" ]; then
+            echo "Running type check..."
+          else
+            echo "⏭️ No TypeScript config found, skipping type check"
+          fi

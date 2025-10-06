@@ -1,0 +1,61 @@
+name: Build Test
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  build-test:
+    # 只在提交消息包含 [build test] 时运行
+    if: contains(github.event.head_commit.message, '[build test]')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Create .env file
+        run: |
+          if [ -f .env.example ]; then
+            cp .env.example .env
+            echo "✅ Created .env from .env.example"
+          fi
+
+          # 如果有 GitHub Secrets 配置的环境变量，可以在这里覆盖
+          # 例如: echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env
+
+      - name: Build project
+        run: yarn build
+        env:
+          NODE_ENV: production
+
+      - name: Check build output
+        run: |
+          if [ -d "dist" ]; then
+            echo "✅ Build successful!"
+            echo "📦 Build size:"
+            du -sh dist
+            echo ""
+            echo "📁 Build contents:"
+            ls -lh dist
+          else
+            echo "❌ Build failed - dist directory not found"
+            exit 1
+          fi
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ github.sha }}
+          path: dist
+          retention-days: 7
