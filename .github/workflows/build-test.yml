@@ -4,11 +4,12 @@ on:
   push:
     branches:
       - '**'
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   build-test:
-    # 只在提交消息包含 [build test] 时运行
-    if: contains(github.event.head_commit.message, '[build test]')
+    # 手动触发时运行，或者提交消息包含 [build test] 时运行
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build test]')
     runs-on: ubuntu-latest
 
     steps:
