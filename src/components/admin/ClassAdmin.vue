@@ -78,8 +78,8 @@
 
       <!-- 加载状态 -->
       <div v-if="loading" class="text-center py-12">
-        <div class="w-12 h-12 border-4 border-gray-200 border-b-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-        <p class="text-gray-500 text-base m-0">加载中...</p>
+        <LoadingSpinner />
+        <p class="text-gray-500 text-base m-0 mt-4">加载班级列表中...</p>
       </div>
 
       <!-- 错误提示 -->
@@ -120,7 +120,7 @@
           <div
             v-for="classItem in sortedClassList"
             :key="classItem.cid"
-            class="flex items-center py-4 px-6 border-b border-gray-100 transition-all duration-200 last:border-b-0 hover:bg-gray-50"
+            class="flex items-center py-4 px-6 border-b border-gray-100 transition-all duration-200 last:border-b-0 hover:bg-gray-50 hover:shadow-md hover:-translate-y-0.5"
           >
             <div class="flex items-center px-2 min-w-0 flex-[2]">
               <h3 class="text-lg font-semibold text-gray-800 m-0 truncate">{{ classItem.class_name }}</h3>
@@ -318,6 +318,7 @@
 import { ref, reactive, onMounted, computed, onUnmounted } from 'vue'
 import AdminClassService from '@/services/admin/class'
 import AttendanceChart from './AttendanceChart.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import notificationService from '@/services/common/notification'
 
 // 响应式数据

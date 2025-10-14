@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-70 rounded-lg">
+  <div class="relative w-full sm:w-70 max-w-full rounded-lg">
     <!-- 班级选择器 -->
     <div class="relative flex items-center bg-gray-800 rounded-lg p-2 shadow-md overflow-hidden">
       <input
@@ -7,14 +7,14 @@
         v-model="searchQuery"
         type="text"
         placeholder="搜索班级..."
-        class="flex-1 bg-transparent border-none text-gray-200 text-2xl p-2 outline-none w-full rounded-lg placeholder-blue-200 placeholder-opacity-50"
+        class="flex-1 bg-transparent border-none text-gray-200 text-xl sm:text-2xl p-2 outline-none w-full rounded-lg placeholder-blue-200 placeholder-opacity-50"
         @blur="handleBlur"
       />
       <select
         v-else
         v-model="selectedCid"
         @change="onClassChange"
-        class="flex-1 bg-transparent border-none text-gray-200 text-2xl p-2 outline-none w-full cursor-pointer rounded-lg bg-gray-800 appearance-none"
+        class="flex-1 bg-transparent border-none text-gray-200 text-xl sm:text-2xl p-2 outline-none w-full cursor-pointer rounded-lg bg-gray-800 appearance-none"
       >
         <option value="" disabled>{{ loading ? '加载中...' : '选择班级' }}</option>
         <option
@@ -26,7 +26,7 @@
           {{ cls.class_name }}
         </option>
       </select>
-      <button @click="toggleSearch" class="bg-transparent border-none text-blue-200 text-3xl px-2 py-1 cursor-pointer transition-colors duration-200 hover:text-blue-300">
+      <button @click="toggleSearch" class="bg-transparent border-none text-blue-200 text-2xl sm:text-3xl px-2 py-1 cursor-pointer transition-all duration-200 hover:text-blue-300 active:scale-95">
         {{ isSearching ? '×' : '🔍' }}
       </button>
     </div>

@@ -24,8 +24,9 @@
         <div class="grid gap-4" :style="gridStyle">
           <div v-for="subject in subjectsWithContent"
                :key="subject.key"
-               class="p-4 bg-gray-700 text-gray-200 rounded-xl shadow-lg flex text-3xl font-extrabold">
-            <div class="text-lg font-bold text-blue-300 min-w-15 flex-shrink-0 text-center py-2 px-2 bg-blue-300/10 rounded-lg border border-blue-300/20">
+               class="p-4 bg-gray-700 text-gray-200 rounded-xl shadow-lg flex text-3xl font-extrabold transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5">
+            <div class="text-lg font-bold min-w-15 flex-shrink-0 text-center py-2 px-2 rounded-lg border"
+                 :class="[getSubjectColor(subject.key).bg, getSubjectColor(subject.key).border, getSubjectColor(subject.key).text]">
               {{ subject.name }}
             </div>
             <div class="flex-1 flex flex-col gap-1 pt-2 pl-3">
@@ -80,6 +81,25 @@ const subjectConfig = {
   geography: '地理',
   politics: '政治',
   others: '其他'
+}
+
+// 学科颜色配置
+const subjectColors = {
+  chinese: { bg: 'bg-red-300/10', border: 'border-red-300/20', text: 'text-red-300' },
+  maths: { bg: 'bg-blue-300/10', border: 'border-blue-300/20', text: 'text-blue-300' },
+  english: { bg: 'bg-green-300/10', border: 'border-green-300/20', text: 'text-green-300' },
+  physics: { bg: 'bg-purple-300/10', border: 'border-purple-300/20', text: 'text-purple-300' },
+  chemistry: { bg: 'bg-yellow-300/10', border: 'border-yellow-300/20', text: 'text-yellow-300' },
+  biology: { bg: 'bg-emerald-300/10', border: 'border-emerald-300/20', text: 'text-emerald-300' },
+  history: { bg: 'bg-orange-300/10', border: 'border-orange-300/20', text: 'text-orange-300' },
+  geography: { bg: 'bg-cyan-300/10', border: 'border-cyan-300/20', text: 'text-cyan-300' },
+  politics: { bg: 'bg-pink-300/10', border: 'border-pink-300/20', text: 'text-pink-300' },
+  others: { bg: 'bg-gray-300/10', border: 'border-gray-300/20', text: 'text-gray-300' }
+}
+
+// 获取学科颜色
+const getSubjectColor = (key) => {
+  return subjectColors[key] || subjectColors.others
 }
 
 // 获取作业函数

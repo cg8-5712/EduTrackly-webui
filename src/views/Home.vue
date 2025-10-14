@@ -3,17 +3,17 @@
     <!-- 顶部栏 -->
     <div class="flex justify-between items-center p-4 bg-gray-800 rounded-xl shadow-lg">
       <div class="relative flex items-center gap-4 text-2xl font-semibold text-blue-300">
-        <div class="flex flex-col md:flex-row gap-2 md:gap-4">
-          <span class="text-3xl md:text-5xl font-bold">今日：{{ todayDate }}</span>
-          <span v-if="selectedDate && selectedDate !== todayDateInt" class="text-3xl md:text-5xl font-bold text-blue-400">
+        <div class="flex flex-col gap-2 sm:flex-row sm:gap-4">
+          <span class="text-2xl sm:text-3xl md:text-5xl font-bold">今日：{{ todayDate }}</span>
+          <span v-if="selectedDate && selectedDate !== todayDateInt" class="text-2xl sm:text-3xl md:text-5xl font-bold text-blue-400">
             选中：{{ formattedSelectedDate }}
           </span>
         </div>
         <div class="relative">
-          <button @click="showCalendar = !showCalendar" class="calendar-btn text-4xl md:text-5xl p-1 rounded transition-transform hover:scale-110 border-0 bg-transparent cursor-pointer">
+          <button @click="showCalendar = !showCalendar" class="calendar-btn text-4xl md:text-5xl p-1 rounded transition-all duration-200 hover:scale-110 active:scale-95 border-0 bg-transparent cursor-pointer">
             📅
           </button>
-          <div v-if="showCalendar" class="calendar-popup absolute top-full right-0 mt-2 z-[1000] bg-gray-800 rounded-xl shadow-lg">
+          <div v-if="showCalendar" class="calendar-popup absolute top-full right-0 mt-2 z-[1000] bg-gray-800 rounded-xl shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
             <Calendar mode="single" @select-date="onDateSelect" />
           </div>
         </div>
@@ -22,11 +22,11 @@
       <!-- 替换原有班级选择为新组件 -->
       <ClassSwitch v-model:cid="selectedCid" />
 
-      <div class="flex items-center gap-6">
-        <div class="text-5xl md:text-6xl font-black text-blue-300 font-[inherit]">
+      <div class="flex items-center gap-3 sm:gap-6">
+        <div class="text-3xl sm:text-5xl md:text-6xl font-black text-blue-300 font-[inherit]">
           {{ currentTime }}
         </div>
-        <button @click.stop="toggleFullscreen" class="bg-gray-700 text-blue-300 border-0 px-8 py-4 rounded-lg text-2xl md:text-3xl cursor-pointer transition-colors hover:bg-gray-600">
+        <button @click.stop="toggleFullscreen" class="bg-gray-700 text-blue-300 border-0 px-4 sm:px-8 py-2 sm:py-4 rounded-lg text-lg sm:text-2xl md:text-3xl cursor-pointer transition-all duration-200 hover:bg-gray-600 active:scale-95">
           {{ isFullscreen ? '退出全屏' : '全屏' }}
         </button>
       </div>

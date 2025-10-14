@@ -31,7 +31,7 @@
           <button
             type="submit"
             :disabled="isLogging"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition-all duration-200"
           >
             {{ isLogging ? '登录中...' : '登录' }}
           </button>
@@ -52,8 +52,13 @@
               v-for="(item, index) in navigation"
               :key="index"
               @click="changeComponent(item)"
+              @keydown.enter="changeComponent(item)"
               :class="{'bg-slate-600 border-l-cyan-400 font-semibold': item.current}"
-              class="py-4 px-5 cursor-pointer flex items-center transition-all duration-300 border-l-4 border-l-transparent hover:bg-slate-600 hover:border-l-cyan-400"
+              class="py-4 px-5 cursor-pointer flex items-center transition-all duration-300 border-l-4 border-l-transparent hover:bg-slate-600 hover:border-l-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-inset"
+              tabindex="0"
+              role="button"
+              :aria-label="item.name"
+              :aria-current="item.current ? 'page' : undefined"
           >
             <component :is="item.icon" class="w-5 h-5 mr-3 flex-shrink-0" />
             {{ item.name }}
@@ -63,7 +68,7 @@
       <div class="p-4 border-t border-slate-600">
         <button
           @click="handleLogout"
-          class="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white text-sm rounded-md transition-colors"
+          class="w-full py-2 px-4 bg-red-600 hover:bg-red-700 active:scale-95 text-white text-sm rounded-md transition-all duration-200"
         >
           退出登录
         </button>

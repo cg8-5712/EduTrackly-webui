@@ -176,10 +176,18 @@
               {{ selectedClassIds.length === 0 ? '请先选择班级' :
                  searchQuery ? '未找到匹配的学生' : '暂无学生数据' }}
             </div>
-            <div class="text-sm text-gray-400">
+            <div class="text-sm text-gray-400 mb-4">
               {{ selectedClassIds.length === 0 ? '在上方下拉框中选择要查看的班级' :
-                 searchQuery ? '请尝试其他搜索关键词' : '请添加学生或切换班级' }}
+                 searchQuery ? '请尝试其他搜索关键词' : '还没有添加学生哦～' }}
             </div>
+            <button
+              v-if="selectedClassIds.length > 0 && !searchQuery"
+              @click="showAddModal = true"
+              class="mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-200 flex items-center gap-2 active:scale-95"
+            >
+              <span>➕</span>
+              立即添加学生
+            </button>
           </div>
 
           <!-- 学生表格 -->
@@ -197,7 +205,7 @@
               <tr
                 v-for="student in paginatedStudents"
                 :key="`${student.cid}-${student.sid}`"
-                class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200"
+                class="border-b border-gray-200 even:bg-gray-50/50 hover:bg-blue-50 transition-all duration-200"
               >
                 <!-- 班级 -->
                 <td class="py-3 px-4 text-gray-700">

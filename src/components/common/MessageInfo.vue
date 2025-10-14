@@ -22,17 +22,17 @@
       >
         <!-- 主要内容区域 -->
         <div class="flex items-center p-5">
-          <div class="mr-4 w-8 h-8 flex-shrink-0">
-            <CheckCircleIcon v-if="notificationService.state.type === 'success'" />
-            <InformationCircleIcon v-else-if="notificationService.state.type === 'info'" />
-            <XCircleIcon v-else />
+          <div class="mr-4 w-8 h-8 flex-shrink-0 animate-bounce">
+            <CheckCircleIcon v-if="notificationService.state.type === 'success'" class="w-full h-full" />
+            <InformationCircleIcon v-else-if="notificationService.state.type === 'info'" class="w-full h-full" />
+            <XCircleIcon v-else class="w-full h-full animate-pulse" />
           </div>
           <div class="flex-1 text-xl leading-relaxed">
             {{ notificationService.state.message }}
           </div>
-          <button class="bg-transparent border-0 text-white cursor-pointer flex items-center ml-4 hover:bg-white/20 rounded-lg p-1 transition-colors" @click="notificationService.close">
+          <button class="bg-transparent border-0 text-white cursor-pointer flex items-center ml-4 hover:bg-white/20 rounded-lg p-1 transition-all duration-200 active:scale-90" @click="notificationService.close">
             <XMarkIcon class="w-6 h-6" />
-            <span class="sr-only">{{ $t('components.messageInfo.close') }}</span>
+            <span class="sr-only">关闭</span>
           </button>
         </div>
 
