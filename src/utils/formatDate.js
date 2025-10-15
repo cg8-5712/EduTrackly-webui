@@ -20,6 +20,24 @@ export function formatYYYYMMDDToDate(dateInt) {
     return `${month + 1}月${day}日 星期${dayOfWeek}`;
 }
 
+/**
+ * 将 YYYYMMDD 格式转换为简短日期格式（用于图表展示）
+ * @param {number | string} dateInt - YYYYMMDD 格式的日期
+ * @returns {string} M/D 格式，如 "8/30"
+ */
+export function formatYYYYMMDDToShort(dateInt) {
+    // 确保传入的是有效的 8 位整数（YYYYMMDD）
+    const dateString = dateInt.toString();
+    if (dateString.length !== 8 || isNaN(dateInt)) {
+        return dateString; // 格式不对就直接返回原值
+    }
+
+    const month = parseInt(dateString.slice(4, 6));
+    const day = parseInt(dateString.slice(6, 8));
+
+    return `${month}/${day}`;
+}
+
 
 /**
  * 将日期格式化为 YYYY-MM-DD 字符串

@@ -16,6 +16,7 @@ import {
   LegendComponent
 } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
+import { formatYYYYMMDDToShort } from '@/utils/formatDate'
 
 // 注册 ECharts 组件
 use([
@@ -34,15 +35,9 @@ const props = defineProps({
   }
 })
 
-// 格式化日期（时间戳转日期字符串）
-const formatDate = (timestamp) => {
-  const date = new Date(timestamp * 1000)
-  return `${date.getMonth() + 1}/${date.getDate()}`
-}
-
 // 计算图表配置
 const chartOption = computed(() => {
-  const dates = props.data.map(item => formatDate(item.date))
+  const dates = props.data.map(item => formatYYYYMMDDToShort(item.date))
   const rates = props.data.map(item => Number(item.attendance_rate).toFixed(1))
 
   return {

@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-col gap-4">
     <!-- 加载中 -->
-    <div v-if="loading" class="p-4 bg-gray-700 text-gray-200 rounded-xl shadow-lg flex text-3xl font-extrabold text-blue-300">
-      加载中...
+    <div v-if="loading" class="p-4 bg-gray-700 text-gray-200 rounded-xl shadow-lg flex items-center justify-center min-h-[200px]">
+      <LoadingSpinner :size="60" color="#93c5fd" message="" />
     </div>
 
     <!-- 错误提示通过 MessageInfo 显示 -->
@@ -47,6 +47,7 @@
 import { ref, watch, computed } from 'vue'
 import HomeworkService from '@/services/basic/homework'
 import notificationService from '@/services/common/notification'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 // Props：选中日期 + 选中班级 + 列数（默认值为 1）
 const props = defineProps({

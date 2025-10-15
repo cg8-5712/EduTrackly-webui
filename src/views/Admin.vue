@@ -1,42 +1,77 @@
 <template>
   <!-- 登录表单 -->
-  <div v-if="!isAuthenticated" class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-      <div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          管理员登录
-        </h2>
-        <p class="mt-2 text-center text-sm text-gray-600">
-          请输入管理员密码
-        </p>
+  <div v-if="!isAuthenticated" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="w-[520px]">
+      <!-- 登录卡片 - 宽高比约3:4 -->
+      <div class="bg-white rounded-3xl shadow-2xl p-12 space-y-8 aspect-[3/4]">
+        <!-- 标题区域 -->
+        <div class="text-center">
+          <div class="mx-auto h-16 w-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg transform hover:scale-105 transition-transform duration-200">
+            <svg class="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h2 class="text-3xl font-bold text-gray-900 mb-2">
+            管理员登录
+          </h2>
+          <p class="text-sm text-gray-600">
+            请输入管理员密码以继续
+          </p>
+        </div>
+
+        <!-- 登录表单 -->
+        <form class="space-y-6 flex-1 flex flex-col justify-center" @submit.prevent="handleLogin">
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+              密码
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              class="appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              placeholder="请输入管理员密码"
+              v-model="password"
+              :disabled="isLogging"
+            />
+          </div>
+
+          <!-- 错误提示 -->
+          <div v-if="loginError" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+            <svg class="h-5 w-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+            <span>{{ loginError }}</span>
+          </div>
+
+          <!-- 提交按钮 -->
+          <div>
+            <button
+              type="submit"
+              :disabled="isLogging"
+              class="group relative w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 active:scale-98 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              <template v-if="isLogging">
+                <LoadingSpinner :size="20" color="#ffffff" message="" />
+                <span>登录中...</span>
+              </template>
+              <template v-else>
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                <span>登录</span>
+              </template>
+            </button>
+          </div>
+        </form>
       </div>
-      <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
-        <div>
-          <label for="password" class="sr-only">密码</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autocomplete="current-password"
-            required
-            class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-            placeholder="管理员密码"
-            v-model="password"
-          />
-        </div>
-        <div v-if="loginError" class="text-red-600 text-sm text-center">
-          {{ loginError }}
-        </div>
-        <div>
-          <button
-            type="submit"
-            :disabled="isLogging"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition-all duration-200"
-          >
-            {{ isLogging ? '登录中...' : '登录' }}
-          </button>
-        </div>
-      </form>
+
+      <!-- 底部提示 -->
+      <p class="mt-4 text-center text-xs text-gray-300">
+        请妥善保管您的管理员密码
+      </p>
     </div>
   </div>
 
@@ -96,6 +131,7 @@ import ClassAdmin from '@/components/admin/ClassAdmin.vue'
 import StudentAdmin from '@/components/admin/StudentAdmin.vue'
 import HomeworkAdmin from '@/components/admin/HomeworkAdmin.vue'
 import System from '@/components/admin/System.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 // 引入图标组件（你需要根据实际使用的图标库调整）
 import { AcademicCapIcon, BookOpenIcon, UsersIcon, Cog8ToothIcon } from '@heroicons/vue/24/outline'
