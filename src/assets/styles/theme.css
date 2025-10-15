@@ -1,0 +1,107 @@
+/* 主题样式变量配置 */
+
+/*
+ * CSS 变量将由 ThemeService 动态设置
+ * 这里只定义默认值和过渡动画
+ */
+
+/* 默认主题变量（深色） */
+:root {
+  /* 主色调 */
+  --color-primary: #60a5fa;
+  --color-secondary: #a78bfa;
+
+  /* 背景色 */
+  --color-background: #111827;
+  --color-surface: #1f2937;
+
+  /* 文字颜色 */
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #d1d5db;
+  --color-text-tertiary: #9ca3af;
+
+  /* 边框颜色 */
+  --color-border: #374151;
+
+  /* 状态颜色 */
+  --color-error: #f87171;
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-info: #60a5fa;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+
+  /* 过渡时间 */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 300ms ease-in-out;
+  --transition-slow: 500ms ease-in-out;
+}
+
+/* 全局样式应用 */
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+/* 滚动条样式（适配主题） */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+  transition: background var(--transition-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+  transition: background var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* 选中文本样式 */
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+/* 链接样式 */
+a {
+  color: var(--color-primary);
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-secondary);
+}
+
+/* 主题切换过渡动画 */
+* {
+  transition-property: background-color, color, border-color, box-shadow;
+  transition-duration: var(--transition-base);
+  transition-timing-function: ease-in-out;
+}
+
+/* 排除某些不需要过渡的元素 */
+*:not(body):not(html):not([class*="transition-none"]) {
+  transition-property: background-color, color, border-color;
+}
+
+/* 主题类名（保留用于特殊样式） */
+.theme-light,
+.theme-dark,
+.theme-blue,
+.theme-green,
+.theme-purple {
+  /* 主题特定样式可以在这里定义 */
+}

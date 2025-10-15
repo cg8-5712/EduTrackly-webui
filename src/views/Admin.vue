@@ -111,8 +111,9 @@
     </div>
 
     <div class="flex-1 flex flex-col bg-gray-50 overflow-hidden">
-      <div class="bg-white py-5 px-8 border-b border-gray-200 shadow-sm z-10">
+      <div class="bg-white py-5 px-8 border-b border-gray-200 shadow-sm z-10 flex justify-between items-center">
         <h2 class="m-0 text-2xl font-semibold text-slate-700">{{ currentMenuName }}</h2>
+        <ThemeToggle />
       </div>
       <div class="flex-1 p-8 overflow-y-auto overflow-x-hidden">
         <component :is="currentComponent" />
@@ -132,6 +133,7 @@ import StudentAdmin from '@/components/admin/StudentAdmin.vue'
 import HomeworkAdmin from '@/components/admin/HomeworkAdmin.vue'
 import System from '@/components/admin/System.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import ThemeToggle from '@/components/common/ThemeToggle.vue'
 
 // 引入图标组件（你需要根据实际使用的图标库调整）
 import { AcademicCapIcon, BookOpenIcon, UsersIcon, Cog8ToothIcon } from '@heroicons/vue/24/outline'

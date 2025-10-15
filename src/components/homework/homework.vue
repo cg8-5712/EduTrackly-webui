@@ -1,38 +1,33 @@
 <template>
-  <div class="flex flex-col gap-4">
+  <div class="homework-wrapper">
     <!-- 加载中 -->
-    <div v-if="loading" class="p-4 bg-gray-700 text-gray-200 rounded-xl shadow-lg flex items-center justify-center min-h-[200px]">
-      <LoadingSpinner :size="60" color="#93c5fd" message="" />
+    <div v-if="loading" class="homework-loading">
+      <LoadingSpinner :size="60" color="var(--color-primary)" message="" />
     </div>
-
-    <!-- 错误提示通过 MessageInfo 显示 -->
 
     <!-- 作业内容展示 -->
     <template v-else>
       <!-- 如果无作业数据 -->
-      <div v-if="error === 'no-homework'" class="p-4 bg-gray-700 text-gray-200 rounded-xl shadow-lg flex text-3xl font-extrabold text-blue-300">
-        <div class="flex items-center justify-center w-full">
-          <div class="text-center">
-            <div class="text-6xl mb-4">📝</div>
-            <div class="text-2xl">暂无作业</div>
-            <div class="text-lg text-gray-400 mt-2">今天没有布置作业哦～</div>
-          </div>
+      <div v-if="error === 'no-homework'" class="homework-empty">
+        <div class="empty-content">
+          <div class="empty-icon">📝</div>
+          <div class="empty-title">暂无作业</div>
+          <div class="empty-subtitle">今天没有布置作业哦～</div>
         </div>
       </div>
       <!-- 显示分科目作业内容 -->
       <template v-else>
-        <div class="grid gap-4" :style="gridStyle">
+        <div class="homework-grid" :style="gridStyle">
           <div v-for="subject in subjectsWithContent"
                :key="subject.key"
-               class="p-4 bg-gray-700 text-gray-200 rounded-xl shadow-lg flex text-3xl font-extrabold transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5">
-            <div class="text-lg font-bold min-w-15 flex-shrink-0 text-center py-2 px-2 rounded-lg border"
-                 :class="[getSubjectColor(subject.key).bg, getSubjectColor(subject.key).border, getSubjectColor(subject.key).text]">
+               class="subject-card">
+            <div class="subject-label" :style="getSubjectStyle(subject.key)">
               {{ subject.name }}
             </div>
-            <div class="flex-1 flex flex-col gap-1 pt-2 pl-3">
+            <div class="subject-content">
               <div v-for="(line, index) in subject.lines"
                    :key="index"
-                   class="text-xl leading-relaxed text-gray-200 break-words">
+                   class="content-line">
                 {{ line }}
               </div>
             </div>
@@ -84,23 +79,28 @@ const subjectConfig = {
   others: '其他'
 }
 
-// 学科颜色配置
+// 学科颜色配置（使用CSS变量和透明度）
 const subjectColors = {
-  chinese: { bg: 'bg-red-300/10', border: 'border-red-300/20', text: 'text-red-300' },
-  maths: { bg: 'bg-blue-300/10', border: 'border-blue-300/20', text: 'text-blue-300' },
-  english: { bg: 'bg-green-300/10', border: 'border-green-300/20', text: 'text-green-300' },
-  physics: { bg: 'bg-purple-300/10', border: 'border-purple-300/20', text: 'text-purple-300' },
-  chemistry: { bg: 'bg-yellow-300/10', border: 'border-yellow-300/20', text: 'text-yellow-300' },
-  biology: { bg: 'bg-emerald-300/10', border: 'border-emerald-300/20', text: 'text-emerald-300' },
-  history: { bg: 'bg-orange-300/10', border: 'border-orange-300/20', text: 'text-orange-300' },
-  geography: { bg: 'bg-cyan-300/10', border: 'border-cyan-300/20', text: 'text-cyan-300' },
-  politics: { bg: 'bg-pink-300/10', border: 'border-pink-300/20', text: 'text-pink-300' },
-  others: { bg: 'bg-gray-300/10', border: 'border-gray-300/20', text: 'text-gray-300' }
+  chinese: { base: '#ef4444', opacity: 0.15 },     // 红色
+  maths: { base: '#3b82f6', opacity: 0.15 },       // 蓝色
+  english: { base: '#10b981', opacity: 0.15 },     // 绿色
+  physics: { base: '#8b5cf6', opacity: 0.15 },     // 紫色
+  chemistry: { base: '#f59e0b', opacity: 0.15 },   // 黄色
+  biology: { base: '#059669', opacity: 0.15 },     // 翠绿色
+  history: { base: '#f97316', opacity: 0.15 },     // 橙色
+  geography: { base: '#06b6d4', opacity: 0.15 },   // 青色
+  politics: { base: '#ec4899', opacity: 0.15 },    // 粉色
+  others: { base: '#6b7280', opacity: 0.15 }       // 灰色
 }
 
-// 获取学科颜色
-const getSubjectColor = (key) => {
-  return subjectColors[key] || subjectColors.others
+// 获取学科样式（动态生成）
+const getSubjectStyle = (key) => {
+  const color = subjectColors[key] || subjectColors.others
+  return {
+    backgroundColor: `${color.base}${Math.floor(color.opacity * 255).toString(16).padStart(2, '0')}`,
+    borderColor: `${color.base}${Math.floor(color.opacity * 2 * 255).toString(16).padStart(2, '0')}`,
+    color: color.base
+  }
 }
 
 // 获取作业函数
@@ -179,42 +179,146 @@ const gridStyle = computed(() => {
 </script>
 
 <style scoped>
+.homework-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.homework-loading {
+  padding: 1rem;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  transition: background-color var(--transition-base);
+}
+
+.homework-empty {
+  padding: 1rem;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  font-size: 1.875rem;
+  font-weight: 800;
+  transition: background-color var(--transition-base);
+}
+
+.empty-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+  flex-direction: column;
+}
+
+.empty-icon {
+  font-size: 3.75rem;
+  margin-bottom: 1rem;
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+  transition: color var(--transition-base);
+}
+
+.empty-subtitle {
+  font-size: 1.125rem;
+  color: var(--color-text-tertiary);
+  margin-top: 0.5rem;
+  transition: color var(--transition-base);
+}
+
+.homework-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.subject-card {
+  padding: 1rem;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  font-size: 1.875rem;
+  font-weight: 800;
+  transition: all 0.2s;
+}
+
+.subject-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px);
+}
+
+.subject-label {
+  font-size: 1.125rem;
+  font-weight: bold;
+  min-width: 3.75rem;
+  flex-shrink: 0;
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid;
+}
+
+.subject-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 0.5rem;
+  padding-left: 0.75rem;
+}
+
+.content-line {
+  font-size: 1.25rem;
+  line-height: 1.75;
+  color: var(--color-text-primary);
+  word-break: break-word;
+  transition: color var(--transition-base);
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .text-3xl {
+  .subject-card {
     font-size: 1.25rem;
-  }
-
-  .p-4 {
     padding: 0.75rem;
-  }
-
-  .flex {
     flex-direction: column;
     gap: 0.5rem;
   }
 
-  .text-lg {
+  .subject-label {
     font-size: 1rem;
     min-width: auto;
     text-align: center;
   }
 
-  .pt-2 {
+  .subject-content {
     padding-top: 0;
+    padding-left: 0;
   }
 
-  .text-xl {
+  .content-line {
     font-size: 1.1rem;
   }
 }
 
 /* 当只有一个科目时的特殊样式 */
-.grid:has(.p-4:only-child) .p-4 {
+.homework-grid:has(.subject-card:only-child) .subject-card {
   min-height: 200px;
 }
 
-.grid:has(.p-4:only-child) .text-xl {
+.homework-grid:has(.subject-card:only-child) .content-line {
   font-size: 1.5rem;
   line-height: 1.8;
 }

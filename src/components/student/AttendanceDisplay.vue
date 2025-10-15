@@ -1,43 +1,43 @@
 <template>
-  <div class="p-4 bg-gray-700 text-gray-200 min-h-full rounded-xl">
+  <div class="attendance-container">
     <!-- 加载中 -->
-    <div v-if="loading" class="flex justify-center items-center h-40">
+    <div v-if="loading" class="loading-container">
       <LoadingSpinner />
     </div>
 
     <!-- 错误提示 -->
-    <div v-else-if="error" class="text-red-400 text-center">
+    <div v-else-if="error" class="error-message">
       {{ error }}
     </div>
 
     <!-- 展示出勤数据 -->
-    <div v-else-if="attendance.class_name" class="space-y-6">
+    <div v-else-if="attendance.class_name" class="attendance-content">
       <!-- 出勤统计 -->
-      <div class="flex flex-col gap-4">
-        <div class="bg-gray-800 p-4 rounded-lg text-gray-100 text-3xl">
-          <span class="font-bold">应到：</span>{{ attendance.expected_attend }}人
+      <div class="stats-container">
+        <div class="stat-card">
+          <span class="stat-label">应到：</span>{{ attendance.expected_attend }}人
         </div>
-        <div class="bg-gray-800 p-4 rounded-lg text-gray-100 text-3xl">
-          <span class="font-bold">实到：</span>{{ attendance.actual_attend }}人
+        <div class="stat-card">
+          <span class="stat-label">实到：</span>{{ attendance.actual_attend }}人
         </div>
       </div>
 
       <!-- 请假名单 -->
-      <div v-if="hasAbsentStudents" class="">
-        <h3 class="text-4xl font-semibold mb-4 text-blue-300 flex items-center gap-2">
-          <span class="text-3xl">📋</span>
+      <div v-if="hasAbsentStudents" class="section">
+        <h3 class="section-title">
+          <span class="section-icon">📋</span>
           <span>请假名单</span>
         </h3>
-        <ul class="list-none pl-0">
+        <ul class="student-list">
           <li v-for="(event, index) in absentStudents"
               :key="index"
-              class="p-4 bg-gray-800 rounded-lg mb-3 flex justify-between text-gray-200 text-2xl transition-all duration-200 hover:bg-gray-700 hover:shadow-lg">
-            <span class="cursor-pointer text-blue-400 relative"
+              class="student-item">
+            <span class="student-name"
                   @mouseover="showReason(event, index)"
                   @mouseleave="hideReason">
               {{ event.student_name }}
-              <span v-if="showTooltip && currentEventId === index" class="absolute left-full ml-3 bg-gray-900 bg-opacity-95 text-white py-2 px-4 rounded-lg text-sm whitespace-nowrap shadow-2xl border border-gray-700 animate-in fade-in slide-in-from-left-2 duration-200">
-                <span class="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45 border-l border-b border-gray-700"></span>
+              <span v-if="showTooltip && currentEventId === index" class="tooltip">
+                <span class="tooltip-arrow"></span>
                 {{ getEventTypeText(event.event_type) }}
               </span>
             </span>
@@ -46,13 +46,13 @@
       </div>
 
       <!-- 临时参加名单 -->
-      <div v-if="tempStudents.length > 0" class="">
-        <h3 class="text-4xl font-semibold mb-4 text-blue-300 flex items-center gap-2">
-          <span class="text-3xl">✨</span>
+      <div v-if="tempStudents.length > 0" class="section">
+        <h3 class="section-title">
+          <span class="section-icon">✨</span>
           <span>临时参加名单</span>
         </h3>
-        <ul class="list-none pl-0">
-          <li v-for="(event, index) in tempStudents" :key="index" class="p-4 bg-gray-800 rounded-lg mb-3 flex justify-between text-gray-200 text-2xl transition-all duration-200 hover:bg-gray-700 hover:shadow-lg">
+        <ul class="student-list">
+          <li v-for="(event, index) in tempStudents" :key="index" class="student-item">
             {{ event.student_name }}
           </li>
         </ul>
@@ -60,7 +60,7 @@
     </div>
 
     <!-- 没有数据 -->
-    <div v-else class="text-gray-400 text-center">
+    <div v-else class="no-data">
       暂无出勤信息
     </div>
   </div>
@@ -175,4 +175,150 @@ const hideReason = () => {
 </script>
 
 <style scoped>
+.attendance-container {
+  padding: 1rem;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  min-height: 100%;
+  border-radius: 0.75rem;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10rem;
+}
+
+.error-message {
+  color: var(--color-error);
+  text-align: center;
+  font-size: 1.125rem;
+}
+
+.attendance-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.stats-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.stat-card {
+  background-color: var(--color-background);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  color: var(--color-text-primary);
+  font-size: 1.875rem;
+  transition: background-color var(--transition-base);
+}
+
+.stat-label {
+  font-weight: bold;
+}
+
+.section {
+  margin-top: 1rem;
+}
+
+.section-title {
+  font-size: 2.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color var(--transition-base);
+}
+
+.section-icon {
+  font-size: 1.875rem;
+}
+
+.student-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.student-item {
+  padding: 1rem;
+  background-color: var(--color-background);
+  border-radius: 0.5rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-text-primary);
+  font-size: 1.5rem;
+  transition: all 0.2s;
+}
+
+.student-item:hover {
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.student-name {
+  cursor: pointer;
+  color: var(--color-primary);
+  position: relative;
+  transition: color var(--transition-fast);
+}
+
+.student-name:hover {
+  color: var(--color-secondary);
+}
+
+.tooltip {
+  position: absolute;
+  left: 100%;
+  margin-left: 0.75rem;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--color-border);
+  animation: fadeIn 0.2s ease-in-out;
+  z-index: 10;
+}
+
+.tooltip-arrow {
+  position: absolute;
+  left: -0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: var(--color-surface);
+  transform: translateY(-50%) rotate(45deg);
+  border-left: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.no-data {
+  color: var(--color-text-tertiary);
+  text-align: center;
+  font-size: 1.125rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 </style>

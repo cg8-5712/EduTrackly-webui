@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen h-screen w-full bg-gray-900 text-gray-200 flex flex-col gap-4 p-4 box-border overflow-hidden">
+  <div class="submit-container">
     <ClassSwitch @update:cid="handleClassChange" />
     <StudentEventSelector :cid="selectedCid" ref="studentListComponent" />
     <!-- 引入作业提交组件 -->
@@ -39,4 +39,18 @@ watch(
 </script>
 
 <style scoped>
+.submit-container {
+  min-height: 100vh;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
 </style>

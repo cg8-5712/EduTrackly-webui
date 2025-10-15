@@ -1,19 +1,19 @@
 <template>
-  <div class="h-screen w-full bg-gray-900 text-gray-200 flex flex-col p-4 box-border overflow-hidden" @click="handleGlobalClick">
+  <div class="home-container" @click="handleGlobalClick">
     <!-- 顶部栏 -->
-    <div class="flex justify-between items-center p-4 bg-gray-800 rounded-xl shadow-lg">
-      <div class="relative flex items-center gap-4 text-2xl font-semibold text-blue-300">
-        <div class="flex flex-col gap-2 sm:flex-row sm:gap-4">
-          <span class="text-2xl sm:text-3xl md:text-5xl font-bold">今日：{{ todayDate }}</span>
-          <span v-if="selectedDate && selectedDate !== todayDateInt" class="text-2xl sm:text-3xl md:text-5xl font-bold text-blue-400">
+    <div class="top-bar">
+      <div class="date-section">
+        <div class="date-display">
+          <span class="date-text">今日：{{ todayDate }}</span>
+          <span v-if="selectedDate && selectedDate !== todayDateInt" class="date-text selected-date">
             选中：{{ formattedSelectedDate }}
           </span>
         </div>
-        <div class="relative">
-          <button @click="showCalendar = !showCalendar" class="calendar-btn text-4xl md:text-5xl p-1 rounded transition-all duration-200 hover:scale-110 active:scale-95 border-0 bg-transparent cursor-pointer">
+        <div class="calendar-wrapper">
+          <button @click="showCalendar = !showCalendar" class="calendar-btn">
             📅
           </button>
-          <div v-if="showCalendar" class="calendar-popup absolute top-full right-0 mt-2 z-[1000] bg-gray-800 rounded-xl shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
+          <div v-if="showCalendar" class="calendar-popup">
             <Calendar mode="single" @select-date="onDateSelect" />
           </div>
         </div>
@@ -22,36 +22,37 @@
       <!-- 替换原有班级选择为新组件 -->
       <ClassSwitch v-model:cid="selectedCid" />
 
-      <div class="flex items-center gap-3 sm:gap-6">
-        <div class="text-3xl sm:text-5xl md:text-6xl font-black text-blue-300 font-[inherit]">
+      <div class="action-bar">
+        <ThemeToggle />
+        <div class="time-display">
           {{ currentTime }}
         </div>
-        <button @click.stop="toggleFullscreen" class="bg-gray-700 text-blue-300 border-0 px-4 sm:px-8 py-2 sm:py-4 rounded-lg text-lg sm:text-2xl md:text-3xl cursor-pointer transition-all duration-200 hover:bg-gray-600 active:scale-95">
+        <button @click.stop="toggleFullscreen" class="fullscreen-btn">
           {{ isFullscreen ? '退出全屏' : '全屏' }}
         </button>
       </div>
     </div>
 
     <!-- 主要内容区域 -->
-    <div class="flex-1 grid grid-cols-1 md:grid-cols-[0.8fr_1.2fr] gap-4 min-h-0 py-2 mt-2">
+    <div class="main-content">
       <!-- 左侧考勤信息 -->
-      <div class="bg-gray-800 rounded-xl p-6 shadow-lg overflow-y-auto overflow-x-hidden min-h-0">
+      <div class="content-card">
         <AttendanceDisplay ref="studentsComponent" :selected-date="selectedDate" :selected-cid="selectedCid" />
       </div>
 
       <!-- 右侧作业信息 -->
-      <div class="bg-gray-800 rounded-xl p-1 px-2.5 pb-4 shadow-lg overflow-y-auto overflow-x-hidden min-h-0">
-        <div class="flex justify-between items-center m-0 py-0.5 mb-4 mt-4.5 ml-4">
-          <h2 class="text-4xl md:text-5xl font-bold text-blue-300 m-0">作业内容</h2>
-          <span class="text-3xl md:text-4xl text-blue-400 mr-5">{{ selectedDateText }}</span>
+      <div class="content-card">
+        <div class="homework-header">
+          <h2 class="homework-title">作业内容</h2>
+          <span class="homework-date">{{ selectedDateText }}</span>
         </div>
-        <div class="mt-6">
+        <div class="homework-content">
           <Homework :selected-date="selectedDate" :selected-cid="selectedCid" ref="homeworkComponent" :columns="1"/>
         </div>
       </div>
     </div>
 
-    <footer v-if="!isFullscreen" class="text-center bg-gray-800 text-gray-500 py-3 px-2 text-lg mt-auto">
+    <footer v-if="!isFullscreen" class="footer">
       <p>© 2024 Edutrackly. All rights reserved.</p>
     </footer>
   </div>
@@ -63,6 +64,7 @@ import AttendanceDisplay from '@/components/student/AttendanceDisplay.vue'
 import Homework from '@/components/homework/homework.vue'
 import Calendar from '@/components/common/calendar.vue'
 import ClassSwitch from '@/components/common/ClassSwitch.vue'
+import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import { formatYYYYMMDDToDate } from '@/utils/formatDate'
 
 const currentTime = ref('')
@@ -159,23 +161,298 @@ onMounted(() => {
 })
 </script>
 
-<style>
+<style scoped>
+/* 容器样式 */
+.home-container {
+  height: 100vh;
+  width: 100%;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+/* 顶部栏 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--color-surface);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-lg);
+  transition: background-color var(--transition-base);
+}
+
+/* 日期区域 */
+.date-section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.date-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .date-display {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
+
+.date-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-primary);
+}
+
+.selected-date {
+  color: var(--color-secondary);
+}
+
+@media (min-width: 640px) {
+  .date-text {
+    font-size: 1.875rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .date-text {
+    font-size: 3rem;
+  }
+}
+
+/* 日历按钮 */
+.calendar-wrapper {
+  position: relative;
+}
+
+.calendar-btn {
+  font-size: 2.25rem;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.calendar-btn:hover {
+  transform: scale(1.1);
+}
+
+.calendar-btn:active {
+  transform: scale(0.95);
+}
+
+@media (min-width: 768px) {
+  .calendar-btn {
+    font-size: 3rem;
+  }
+}
+
+.calendar-popup {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  z-index: 1000;
+  background-color: var(--color-surface);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-lg);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 操作栏 */
+.action-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .action-bar {
+    gap: 1.5rem;
+  }
+}
+
+.time-display {
+  font-size: 1.875rem;
+  font-weight: 900;
+  color: var(--color-primary);
+}
+
+@media (min-width: 640px) {
+  .time-display {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .time-display {
+    font-size: 3.75rem;
+  }
+}
+
+.fullscreen-btn {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  border: 2px solid var(--color-border);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+
+.fullscreen-btn:hover {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  border-color: var(--color-primary);
+}
+
+.fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+@media (min-width: 640px) {
+  .fullscreen-btn {
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .fullscreen-btn {
+    font-size: 1.875rem;
+  }
+}
+
+/* 主内容区域 */
+.main-content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  min-height: 0;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .main-content {
+    grid-template-columns: 0.8fr 1.2fr;
+  }
+}
+
+.content-card {
+  background-color: var(--color-surface);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-lg);
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  transition: background-color var(--transition-base);
+}
+
+/* 作业区域 */
+.homework-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding: 0.125rem 0;
+  margin-bottom: 1rem;
+  margin-top: 1.125rem;
+  margin-left: 1rem;
+}
+
+.homework-title {
+  font-size: 2.25rem;
+  font-weight: bold;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .homework-title {
+    font-size: 3rem;
+  }
+}
+
+.homework-date {
+  font-size: 1.875rem;
+  color: var(--color-secondary);
+  margin-right: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .homework-date {
+    font-size: 2.25rem;
+  }
+}
+
+.homework-content {
+  margin-top: 1.5rem;
+}
+
+/* 页脚 */
+.footer {
+  text-align: center;
+  background-color: var(--color-surface);
+  color: var(--color-text-tertiary);
+  padding: 0.75rem 0.5rem;
+  font-size: 1.125rem;
+  margin-top: auto;
+  transition: background-color var(--transition-base);
+}
+
+.footer p {
+  margin: 0;
+}
+
 /* 自定义滚动条样式 */
 ::-webkit-scrollbar {
   width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: var(--color-background);
   border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #4a4a4a;
+  background: var(--color-border);
   border-radius: 6px;
+  transition: background var(--transition-fast);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #5a5a5a;
+  background: var(--color-text-tertiary);
 }
 </style>
