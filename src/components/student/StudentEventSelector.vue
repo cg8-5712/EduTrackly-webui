@@ -1,18 +1,18 @@
 <template>
-  <div class="flex flex-col items-center">
-    <div class="w-full max-w-[85%] p-4 rounded-xl bg-gray-900 min-h-[30vh] shadow-2xl max-h-[60vh] h-auto overflow-x-auto overflow-y-auto">
-      <div class="flex gap-4 flex-nowrap pb-2">
+  <div class="event-selector-wrapper">
+    <div class="students-container">
+      <div class="students-scroll">
         <div
           v-for="student in students"
           :key="student.sid"
-          class="relative flex-none"
+          class="student-item"
         >
           <Popup v-if="student.attendance">
             <!-- 触发元素 -->
             <template #reference="{ open }">
               <div
-                class="py-3 px-4 min-w-20 text-center rounded-lg bg-gray-700 text-gray-200 cursor-pointer transition-all duration-200 select-none shadow-md hover:scale-105 hover:shadow-lg"
-                :class="{ 'border-2 border-blue-300': selectedEvents[student.sid] }"
+                class="student-card active"
+                :class="{ 'selected': selectedEvents[student.sid] }"
                 @click="handleStudentClick(student)"
                 @mouseenter="open"
               >
@@ -21,21 +21,21 @@
             </template>
 
             <!-- 弹窗内容 -->
-            <div class="flex flex-col gap-2 min-w-30">
+            <div class="event-options">
               <button
-                class="py-1.5 px-0 border-none rounded bg-blue-500 text-white cursor-pointer"
+                class="event-button personal"
                 @click="setEvent(student.sid, 'personal')"
               >
                 事假
               </button>
               <button
-                class="py-1.5 px-0 border-none rounded bg-green-500 text-white cursor-pointer"
+                class="event-button sick"
                 @click="setEvent(student.sid, 'sick')"
               >
                 病假
               </button>
               <button
-                class="py-1.5 px-0 border-none rounded bg-amber-500 text-white cursor-pointer"
+                class="event-button official"
                 @click="setEvent(student.sid, 'official')"
               >
                 公假
@@ -44,8 +44,8 @@
           </Popup>
 
           <div v-else
-            class="py-3 px-4 min-w-20 text-center rounded-lg bg-gray-600 text-gray-400 cursor-pointer transition-all duration-200 select-none shadow-md hover:scale-105 hover:shadow-lg"
-            :class="{ 'border-2 border-blue-300': selectedEvents[student.sid] }"
+            class="student-card inactive"
+            :class="{ 'selected': selectedEvents[student.sid] }"
             @click="handleStudentClick(student)"
           >
             {{ student.student_name }}
@@ -54,8 +54,8 @@
       </div>
     </div>
 
-    <div class="flex justify-center mt-3">
-      <button class="py-2 px-4 border-none rounded-md bg-blue-500 text-white font-medium cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed" @click="submitEvents" :disabled="loading">
+    <div class="submit-container">
+      <button class="submit-btn" @click="submitEvents" :disabled="loading">
         {{ loading ? '提交中...' : '提交' }}
       </button>
     </div>
@@ -137,4 +137,180 @@ defineExpose({ fetchStudents })
 </script>
 
 <style scoped>
+.event-selector-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.students-container {
+  width: 100%;
+  max-width: 85%;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background-color: var(--color-surface);
+  min-height: 30vh;
+  max-height: 60vh;
+  box-shadow: var(--shadow-xl);
+  overflow-x: auto;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+.students-scroll {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  padding-bottom: 0.5rem;
+}
+
+.student-item {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.student-card {
+  padding: 0.75rem 1rem;
+  min-width: 80px;
+  text-align: center;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  box-shadow: var(--shadow-md);
+  border: 2px solid transparent;
+}
+
+.student-card.active {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+.student-card.inactive {
+  background-color: var(--color-border);
+  color: var(--color-text-tertiary);
+}
+
+.student-card:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-lg);
+}
+
+.student-card.selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary);
+}
+
+.event-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 120px;
+}
+
+.event-button {
+  padding: 0.5rem 0;
+  border: none;
+  border-radius: 0.25rem;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.event-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.event-button.personal {
+  background-color: #3b82f6;
+}
+
+.event-button.personal:hover {
+  background-color: #2563eb;
+}
+
+.event-button.sick {
+  background-color: #10b981;
+}
+
+.event-button.sick:hover {
+  background-color: #059669;
+}
+
+.event-button.official {
+  background-color: #f59e0b;
+}
+
+.event-button.official:hover {
+  background-color: #d97706;
+}
+
+.submit-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+.submit-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-md);
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: var(--color-secondary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 自定义滚动条 */
+.students-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.students-container::-webkit-scrollbar-track {
+  background: var(--color-background);
+  border-radius: 4px;
+}
+
+.students-container::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.students-container::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .students-container {
+    max-width: 95%;
+  }
+
+  .student-card {
+    padding: 0.5rem 0.75rem;
+    min-width: 60px;
+    font-size: 0.875rem;
+  }
+}
 </style>

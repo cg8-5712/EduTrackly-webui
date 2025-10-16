@@ -182,6 +182,54 @@ class ThemeService {
   }
 
   /**
+   * 获取当前主题的模式(light/dark)
+   * @returns {string} 'light' 或 'dark'
+   */
+  getThemeMode() {
+    return this.state.currentThemeId === 'light' ? 'light' : 'dark'
+  }
+
+  /**
+   * 切换到下一个同模式的主题
+   * 例如: dark -> blue -> green -> purple -> dark
+   */
+  cycleTheme() {
+    const allThemes = this.getAvailableThemes()
+    const currentMode = this.getThemeMode()
+
+    // 获取当前模式下的所有主题
+    const themesInMode = currentMode === 'light'
+      ? allThemes.filter(t => t.id === 'light')
+      : allThemes.filter(t => t.id !== 'light')
+
+    if (themesInMode.length <= 1) {
+      return
+    }
+
+    // 找到当前主题在列表中的索引
+    const currentIndex = themesInMode.findIndex(t => t.id === this.state.currentThemeId)
+    // 切换到下一个主题
+    const nextIndex = (currentIndex + 1) % themesInMode.length
+    this.setTheme(themesInMode[nextIndex].id)
+  }
+
+  /**
+   * 获取所有暗色主题
+   * @returns {Array} 暗色主题配置数组
+   */
+  getDarkThemes() {
+    return this.getAvailableThemes().filter(t => t.id !== 'light')
+  }
+
+  /**
+   * 获取所有亮色主题
+   * @returns {Array} 亮色主题配置数组
+   */
+  getLightThemes() {
+    return this.getAvailableThemes().filter(t => t.id === 'light')
+  }
+
+  /**
    * 获取当前主题 ID
    * @returns {string} 当前主题 ID
    */

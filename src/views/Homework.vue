@@ -154,7 +154,7 @@ onMounted(() => {
 
 .top-bar {
   display: flex;
-  justify-between;
+  justify-content: space-between;
   align-items: center;
   padding: 1rem;
   padding-top: 2rem;

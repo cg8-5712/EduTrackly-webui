@@ -1,37 +1,37 @@
 <template>
-  <div class="w-[90%] max-w-6xl p-6 bg-gray-800 rounded-xl text-gray-100 shadow-2xl mt-8 mx-auto">
-    <h2 class="text-center mb-6 text-white text-2xl font-bold">提交作业</h2>
-    <div class="grid grid-cols-3 gap-6 mb-6">
+  <div class="submit-homework-wrapper">
+    <h2 class="submit-title">提交作业</h2>
+    <div class="subjects-grid">
       <div
           v-for="subject in mainSubjects"
           :key="subject.key"
-          class="flex flex-col"
+          class="subject-item"
       >
-        <label class="mb-2 font-bold text-blue-300 text-center">{{ subject.name }}</label>
+        <label class="subject-label">{{ subject.name }}</label>
         <textarea
             v-model="homeworkContent[subject.key]"
             @input="resizeTextarea($event)"
             :placeholder="`请输入${subject.name}作业内容`"
             rows="2"
-            class="resize-none overflow-y-auto p-3 text-base rounded-lg border-none bg-gray-700 text-gray-100 outline-none transition-all duration-200 ease-in-out max-h-16 focus:shadow-blue-500 focus:shadow-lg focus:bg-gray-600 placeholder-gray-400"
+            class="subject-textarea"
         ></textarea>
       </div>
     </div>
 
     <!-- 单独的"其他"科目 -->
-    <div class="mb-6">
-      <div class="flex flex-col w-1/3">
-        <label class="mb-2 font-bold text-blue-300 text-center">{{ otherSubject.name }}</label>
+    <div class="other-subject-section">
+      <div class="other-subject-item">
+        <label class="subject-label">{{ otherSubject.name }}</label>
         <textarea
             v-model="homeworkContent[otherSubject.key]"
             @input="resizeTextarea($event)"
             :placeholder="`请输入${otherSubject.name}作业内容`"
             rows="2"
-            class="resize-none overflow-y-auto p-3 text-base rounded-lg border-none bg-gray-700 text-gray-100 outline-none transition-all duration-200 ease-in-out max-h-16 focus:shadow-blue-500 focus:shadow-lg focus:bg-gray-600 placeholder-gray-400"
+            class="subject-textarea"
         ></textarea>
       </div>
     </div>
-    <button @click="submitHomework" class="mt-8 px-10 py-4 text-xl font-medium cursor-pointer border-none rounded-lg bg-blue-500 text-white transition-colors duration-200 ease-in-out block mx-auto hover:bg-blue-600 active:translate-y-px shadow-lg">提交作业</button>
+    <button @click="submitHomework" class="submit-button">提交作业</button>
   </div>
 </template>
 
@@ -186,4 +186,142 @@ async function submitHomework() {
 </script>
 
 <style scoped>
+.submit-homework-wrapper {
+  width: 90%;
+  max-width: 1152px;
+  padding: 1.5rem;
+  background-color: var(--color-surface);
+  border-radius: 0.75rem;
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-xl);
+  margin: 2rem auto;
+  transition: all 0.3s ease;
+}
+
+.submit-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--color-text-primary);
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.subjects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.subject-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.subject-label {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: var(--color-primary);
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+.subject-textarea {
+  resize: none;
+  overflow-y: auto;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--color-border);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  outline: none;
+  transition: all 0.2s ease;
+  max-height: 64px;
+}
+
+.subject-textarea:focus {
+  box-shadow: 0 0 0 3px var(--color-primary);
+  background-color: var(--color-surface);
+  border-color: var(--color-primary);
+}
+
+.subject-textarea::placeholder {
+  color: var(--color-text-tertiary);
+  opacity: 0.7;
+}
+
+.other-subject-section {
+  margin-bottom: 1.5rem;
+}
+
+.other-subject-item {
+  display: flex;
+  flex-direction: column;
+  width: 33.333%;
+}
+
+.submit-button {
+  margin-top: 2rem;
+  padding: 1rem 2.5rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--color-primary);
+  color: white;
+  transition: all 0.2s ease;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.submit-button:hover {
+  background-color: var(--color-secondary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+}
+
+.submit-button:active {
+  transform: translateY(0);
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .subjects-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .other-subject-item {
+    width: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .submit-homework-wrapper {
+    width: 95%;
+    padding: 1rem;
+  }
+
+  .subjects-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .other-subject-item {
+    width: 100%;
+  }
+
+  .submit-title {
+    font-size: 1.25rem;
+  }
+
+  .submit-button {
+    font-size: 1rem;
+    padding: 0.75rem 2rem;
+  }
+}
 </style>

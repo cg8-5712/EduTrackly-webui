@@ -1,32 +1,32 @@
 <template>
-  <div class="relative w-full sm:w-70 max-w-full rounded-lg">
+  <div class="class-switch-wrapper">
     <!-- 班级选择器 -->
-    <div class="relative flex items-center bg-gray-800 rounded-lg p-2 shadow-md overflow-hidden">
+    <div class="class-switch-container">
       <input
         v-if="isSearching"
         v-model="searchQuery"
         type="text"
         placeholder="搜索班级..."
-        class="flex-1 bg-transparent border-none text-gray-200 text-xl sm:text-2xl p-2 outline-none w-full rounded-lg placeholder-blue-200 placeholder-opacity-50"
+        class="search-input"
         @blur="handleBlur"
       />
       <select
         v-else
         v-model="selectedCid"
         @change="onClassChange"
-        class="flex-1 bg-transparent border-none text-gray-200 text-xl sm:text-2xl p-2 outline-none w-full cursor-pointer rounded-lg bg-gray-800 appearance-none"
+        class="class-select"
       >
         <option value="" disabled>{{ loading ? '加载中...' : '选择班级' }}</option>
         <option
           v-for="cls in filteredClasses"
           :key="cls.cid"
           :value="cls.cid"
-          class="bg-gray-800 text-gray-200 p-2 rounded-lg hover:bg-gray-700"
+          class="class-option"
         >
           {{ cls.class_name }}
         </option>
       </select>
-      <button @click="toggleSearch" class="bg-transparent border-none text-blue-200 text-2xl sm:text-3xl px-2 py-1 cursor-pointer transition-all duration-200 hover:text-blue-300 active:scale-95">
+      <button @click="toggleSearch" class="search-button">
         {{ isSearching ? '×' : '🔍' }}
       </button>
     </div>
@@ -110,17 +110,127 @@ export default {
 
 
 <style scoped>
+.class-switch-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  border-radius: 0.5rem;
+}
+
+.class-switch-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.class-switch-container:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: 1.25rem;
+  padding: 0.5rem;
+  outline: none;
+  width: 100%;
+  border-radius: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.search-input::placeholder {
+  color: var(--color-text-tertiary);
+  opacity: 0.7;
+}
+
+.class-select {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: 1.25rem;
+  padding: 0.5rem;
+  outline: none;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  appearance: none;
+  transition: color 0.3s ease;
+}
+
+.class-select option {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.class-select option:hover {
+  background-color: var(--color-background);
+}
+
+.search-button {
+  background: transparent;
+  border: none;
+  color: var(--color-primary);
+  font-size: 1.5rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 0.25rem;
+}
+
+.search-button:hover {
+  color: var(--color-secondary);
+  transform: scale(1.1);
+}
+
+.search-button:active {
+  transform: scale(0.95);
+}
+
 /* 自定义滚动条样式 */
 select::-webkit-scrollbar {
   width: 8px;
 }
 
 select::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: var(--color-background);
 }
 
 select::-webkit-scrollbar-thumb {
-  background: #4a4a4a;
+  background: var(--color-border);
   border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+select::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+  .class-switch-wrapper {
+    max-width: 100%;
+  }
+
+  .search-input,
+  .class-select {
+    font-size: 1rem;
+  }
+
+  .search-button {
+    font-size: 1.25rem;
+  }
 }
 </style>
