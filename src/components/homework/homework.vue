@@ -11,8 +11,8 @@
       <div v-if="error === 'no-homework'" class="homework-empty">
         <div class="empty-content">
           <div class="empty-icon">📝</div>
-          <div class="empty-title">暂无作业</div>
-          <div class="empty-subtitle">今天没有布置作业哦～</div>
+          <div class="empty-title">{{ $t('homework.noHomework') }}</div>
+          <div class="empty-subtitle">{{ $t('homework.noHomeworkToday') }}</div>
         </div>
       </div>
       <!-- 显示分科目作业内容 -->
@@ -40,9 +40,12 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import HomeworkService from '@/services/basic/homework'
 import notificationService from '@/services/common/notification'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+
+const { t: $t } = useI18n()
 
 // Props：选中日期 + 选中班级 + 列数（默认值为 1）
 const props = defineProps({
@@ -66,18 +69,18 @@ const loading = ref(false)
 const error = ref(null)
 
 // 科目映射配置
-const subjectConfig = {
-  chinese: '语文',
-  maths: '数学',
-  english: '英语',
-  physics: '物理',
-  chemistry: '化学',
-  biology: '生物',
-  history: '历史',
-  geography: '地理',
-  politics: '政治',
-  others: '其他'
-}
+const subjectConfig = computed(() => ({
+  chinese: $t('homework.subjects.chinese'),
+  maths: $t('homework.subjects.math'),
+  english: $t('homework.subjects.english'),
+  physics: $t('homework.subjects.physics'),
+  chemistry: $t('homework.subjects.chemistry'),
+  biology: $t('homework.subjects.biology'),
+  history: $t('homework.subjects.history'),
+  geography: $t('homework.subjects.geography'),
+  politics: $t('homework.subjects.politics'),
+  others: $t('homework.subjects.others')
+}))
 
 // 学科颜色配置（使用CSS变量和透明度）
 const subjectColors = {
@@ -129,8 +132,8 @@ const fetchHomework = async () => {
     homework.value = response.data.data || null
   } catch (err) {
     console.error('获取作业失败:', err)
-    error.value = '获取作业失败，请稍后重试'
-    notificationService.notify('获取作业失败，请稍后重试', 'error')
+    error.value = $t('homework.fetchFailed')
+    notificationService.notify($t('homework.fetchFailed'), 'error')
   } finally {
     loading.value = false
   }
@@ -153,12 +156,12 @@ const subjectsWithContent = computed(() => {
   const homeworkContent = homework.value.homework_content
 
   // 遍历所有科目，只显示有内容的科目
-  Object.keys(subjectConfig).forEach(key => {
+  Object.keys(subjectConfig.value).forEach(key => {
     const content = homeworkContent[key]
     if (content && content.trim()) {
       subjects.push({
         key,
-        name: subjectConfig[key],
+        name: subjectConfig.value[key],
         content: content.trim(),
         lines: content.trim().split('\n')
       })

@@ -1,6 +1,6 @@
 <template>
   <div class="submit-homework-wrapper">
-    <h2 class="submit-title">提交作业</h2>
+    <h2 class="submit-title">{{ $t('homework.submitHomework') }}</h2>
     <div class="subjects-grid">
       <div
           v-for="subject in mainSubjects"
@@ -11,7 +11,7 @@
         <textarea
             v-model="homeworkContent[subject.key]"
             @input="resizeTextarea($event)"
-            :placeholder="`请输入${subject.name}作业内容`"
+            :placeholder="$t('homework.pleaseEnterContent') + subject.name"
             rows="2"
             class="subject-textarea"
         ></textarea>
@@ -25,20 +25,23 @@
         <textarea
             v-model="homeworkContent[otherSubject.key]"
             @input="resizeTextarea($event)"
-            :placeholder="`请输入${otherSubject.name}作业内容`"
+            :placeholder="$t('homework.pleaseEnterContent') + otherSubject.name"
             rows="2"
             class="subject-textarea"
         ></textarea>
       </div>
     </div>
-    <button @click="submitHomework" class="submit-button">提交作业</button>
+    <button @click="submitHomework" class="submit-button">{{ $t('homework.submit') }}</button>
   </div>
 </template>
 
 <script setup>
-import { reactive, watch, onMounted } from 'vue';
+import { reactive, watch, onMounted, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import HomeworkService from '@/services/basic/homework';
 import { formatDateToYYYYMMDD } from "@/utils/formatDate.js";
+
+const { t: $t } = useI18n();
 
 const props = defineProps({
   cid: {
@@ -48,28 +51,28 @@ const props = defineProps({
 });
 
 // 主要科目配置 - 3×3布局
-const mainSubjects = [
-  { key: 'chinese', name: '语文' },
-  { key: 'maths', name: '数学' },
-  { key: 'english', name: '英语' },
-  { key: 'physics', name: '物理' },
-  { key: 'chemistry', name: '化学' },
-  { key: 'biology', name: '生物' },
-  { key: 'history', name: '历史' },
-  { key: 'geography', name: '地理' },
-  { key: 'politics', name: '政治' }
-];
+const mainSubjects = computed(() => [
+  { key: 'chinese', name: $t('homework.subjects.chinese') },
+  { key: 'maths', name: $t('homework.subjects.math') },
+  { key: 'english', name: $t('homework.subjects.english') },
+  { key: 'physics', name: $t('homework.subjects.physics') },
+  { key: 'chemistry', name: $t('homework.subjects.chemistry') },
+  { key: 'biology', name: $t('homework.subjects.biology') },
+  { key: 'history', name: $t('homework.subjects.history') },
+  { key: 'geography', name: $t('homework.subjects.geography') },
+  { key: 'politics', name: $t('homework.subjects.politics') }
+]);
 
 // 其他科目配置
-const otherSubject = { key: 'others', name: '其他' };
+const otherSubject = computed(() => ({ key: 'others', name: $t('homework.subjects.others') }));
 
 // 所有科目配置（用于循环操作）
-const allSubjects = [...mainSubjects, otherSubject];
+const allSubjects = computed(() => [...mainSubjects.value, otherSubject.value]);
 
 const homeworkContent = reactive({});
 
 function resetHomework() {
-  allSubjects.forEach(subject => {
+  allSubjects.value.forEach(subject => {
     homeworkContent[subject.key] = '';
   });
 }
@@ -91,7 +94,7 @@ async function fetchTodayHomework(cid) {
       const apiHomeworkContent = res.data.data.homework_content;
 
       // 将API返回的内容填充到表单中
-      allSubjects.forEach(subject => {
+      allSubjects.value.forEach(subject => {
         if (apiHomeworkContent[subject.key]) {
           homeworkContent[subject.key] = apiHomeworkContent[subject.key];
         }
@@ -140,18 +143,18 @@ function resizeTextarea(event) {
 async function submitHomework() {
   try {
     // 检查是否至少填写了一个科目
-    const hasContent = allSubjects.some(subject =>
+    const hasContent = allSubjects.value.some(subject =>
         homeworkContent[subject.key] && homeworkContent[subject.key].trim()
     );
 
     if (!hasContent) {
-      alert('请至少填写一个学科的作业内容');
+      alert($t('homework.pleaseEnterContent'));
       return;
     }
 
     // 构造新API格式的homework_content对象
     const homework_content = {};
-    allSubjects.forEach(subject => {
+    allSubjects.value.forEach(subject => {
       // 只传递有内容的科目，空的传空字符串
       homework_content[subject.key] = homeworkContent[subject.key]?.trim() || "";
     });
@@ -168,18 +171,18 @@ async function submitHomework() {
     console.log('提交响应:', res.data);
 
     if (res.data.code === 0) {
-      alert('作业提交成功！');
+      alert($t('homework.submitSuccess'));
       resetHomework();
       fetchTodayHomework(props.cid); // 重新加载
     } else {
-      alert(`提交失败：${res.data.message}`);
+      alert(`${$t('homework.submitFailed')}：${res.data.message}`);
     }
   } catch (err) {
     console.error('提交作业失败:', err);
     if (err.response?.data?.message) {
-      alert(`提交失败：${err.response.data.message}`);
+      alert(`${$t('homework.submitFailed')}：${err.response.data.message}`);
     } else {
-      alert('提交失败，请重试');
+      alert($t('homework.submitFailed'));
     }
   }
 }

@@ -4,9 +4,9 @@
     <div class="top-bar">
       <div class="date-section">
         <div class="date-display">
-          <span class="date-text">今日：{{ todayDate }}</span>
+          <span class="date-text">{{ $t('common.today') }}：{{ todayDate }}</span>
           <span v-if="selectedDate && selectedDate !== todayDateInt" class="date-text selected-date">
-            选中：{{ formattedSelectedDate }}
+            {{ $t('datetime.selectDate') }}：{{ formattedSelectedDate }}
           </span>
         </div>
         <div class="calendar-wrapper">
@@ -23,12 +23,13 @@
       <ClassSwitch v-model:cid="selectedCid" />
 
       <div class="action-bar">
+        <LanguageToggle />
         <ThemeToggle />
         <div class="time-display">
           {{ currentTime }}
         </div>
         <button @click.stop="toggleFullscreen" class="fullscreen-btn">
-          {{ isFullscreen ? '退出全屏' : '全屏' }}
+          {{ isFullscreen ? $t('common.exitFullscreen') : $t('common.fullscreen') }}
         </button>
       </div>
     </div>
@@ -43,7 +44,7 @@
       <!-- 右侧作业信息 -->
       <div class="content-card">
         <div class="homework-header">
-          <h2 class="homework-title">作业内容</h2>
+          <h2 class="homework-title">{{ $t('homework.homeworkContent') }}</h2>
           <span class="homework-date">{{ selectedDateText }}</span>
         </div>
         <div class="homework-content">
@@ -60,12 +61,16 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AttendanceDisplay from '@/components/student/AttendanceDisplay.vue'
 import Homework from '@/components/homework/homework.vue'
 import Calendar from '@/components/common/calendar.vue'
 import ClassSwitch from '@/components/common/ClassSwitch.vue'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
+import LanguageToggle from '@/components/common/LanguageToggle.vue'
 import { formatYYYYMMDDToDate } from '@/utils/formatDate'
+
+const { t: $t } = useI18n()
 
 const currentTime = ref('')
 const todayDate = ref('')
@@ -89,9 +94,9 @@ const formattedSelectedDate = computed(() => {
 
 const selectedDateText = computed(() => {
   if (selectedDate.value && selectedDate.value !== todayDateInt.value) {
-    return formattedSelectedDate.value + '作业'
+    return formattedSelectedDate.value + ' ' + $t('homework.title')
   }
-  return '今日作业'
+  return $t('homework.todayHomework')
 })
 
 // 更新时间

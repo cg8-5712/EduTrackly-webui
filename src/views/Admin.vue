@@ -12,10 +12,10 @@
             </svg>
           </div>
           <h2 class="text-3xl font-bold text-gray-900 mb-2">
-            管理员登录
+            {{ $t('admin.login') }}
           </h2>
           <p class="text-sm text-gray-600">
-            请输入管理员密码以继续
+            {{ $t('admin.pleaseEnterPassword') }}
           </p>
         </div>
 
@@ -23,7 +23,7 @@
         <form class="space-y-6 flex-1 flex flex-col justify-center" @submit.prevent="handleLogin">
           <div>
             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-              密码
+              {{ $t('common.password') }}
             </label>
             <input
               id="password"
@@ -32,7 +32,7 @@
               autocomplete="current-password"
               required
               class="appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-              placeholder="请输入管理员密码"
+              :placeholder="$t('admin.pleaseEnterPassword')"
               v-model="password"
               :disabled="isLogging"
             />
@@ -55,13 +55,13 @@
             >
               <template v-if="isLogging">
                 <LoadingSpinner :size="20" color="#ffffff" message="" />
-                <span>登录中...</span>
+                <span>{{ $t('common.loading') }}</span>
               </template>
               <template v-else>
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
-                <span>登录</span>
+                <span>{{ $t('common.login') }}</span>
               </template>
             </button>
           </div>
@@ -79,7 +79,7 @@
   <div v-else class="flex h-screen overflow-hidden">
     <div class="w-60 min-w-60 bg-slate-700 text-white flex flex-col shadow-lg">
       <div class="p-5 border-b border-slate-600 bg-slate-800">
-        <h3 class="m-0 text-lg font-semibold text-center">管理后台</h3>
+        <h3 class="m-0 text-lg font-semibold text-center">{{ $t('admin.dashboard') }}</h3>
       </div>
       <div class="flex-1 overflow-y-auto pt-2">
         <ul class="list-none p-0 m-0">
@@ -105,7 +105,7 @@
           @click="handleLogout"
           class="w-full py-2 px-4 bg-red-600 hover:bg-red-700 active:scale-95 text-white text-sm rounded-md transition-all duration-200"
         >
-          退出登录
+          {{ $t('common.logout') }}
         </button>
       </div>
     </div>
@@ -113,7 +113,10 @@
     <div class="flex-1 flex flex-col bg-gray-50 overflow-hidden">
       <div class="bg-white py-5 px-8 border-b border-gray-200 shadow-sm z-10 flex justify-between items-center">
         <h2 class="m-0 text-2xl font-semibold text-slate-700">{{ currentMenuName }}</h2>
-        <ThemeToggle />
+        <div class="flex items-center gap-3">
+          <LanguageToggle />
+          <ThemeToggle />
+        </div>
       </div>
       <div class="flex-1 p-8 overflow-y-auto overflow-x-hidden">
         <component :is="currentComponent" />
@@ -124,7 +127,10 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AuthService from '@/services/common/auth'
+
+const { t: $t } = useI18n()
 
 // 引入各个管理组件
 import CurrentAdmin from '@/components/admin/CurrentAdmin.vue'
@@ -134,6 +140,7 @@ import HomeworkAdmin from '@/components/admin/HomeworkAdmin.vue'
 import System from '@/components/admin/System.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
+import LanguageToggle from '@/components/common/LanguageToggle.vue'
 
 // 引入图标组件（你需要根据实际使用的图标库调整）
 import { AcademicCapIcon, BookOpenIcon, UsersIcon, Cog8ToothIcon } from '@heroicons/vue/24/outline'

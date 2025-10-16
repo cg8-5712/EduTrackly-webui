@@ -6,7 +6,7 @@
         v-if="isSearching"
         v-model="searchQuery"
         type="text"
-        placeholder="搜索班级..."
+        :placeholder="$t('class.searchPlaceholder')"
         class="search-input"
         @blur="handleBlur"
       />
@@ -16,7 +16,7 @@
         @change="onClassChange"
         class="class-select"
       >
-        <option value="" disabled>{{ loading ? '加载中...' : '选择班级' }}</option>
+        <option value="" disabled>{{ loading ? $t('common.loading') : $t('class.selectClass') }}</option>
         <option
           v-for="cls in filteredClasses"
           :key="cls.cid"
@@ -38,10 +38,16 @@
 <script>
 import ClassService from "@/services/basic/class";
 import notificationService from '@/services/common/notification';
+import { useI18n } from 'vue-i18n'
 
 export default {
   name: "ClassSwitch",
   emits: ["update:cid"],
+
+  setup() {
+    const { t } = useI18n()
+    return { t }
+  },
 
   data() {
     return {
@@ -78,7 +84,7 @@ export default {
       } catch (error) {
         console.error("加载班级列表失败:", error);
         this.classes = [];
-        notificationService.notify('暂无班级数据，请检查网络连接', 'error');
+        notificationService.notify(this.t('class.noClasses'), 'error');
       } finally {
         this.loading = false;
       }
