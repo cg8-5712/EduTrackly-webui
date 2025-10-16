@@ -1,12 +1,18 @@
 import axios from 'axios';
 import AuthService from '@/services/common/auth';
+import { getApiUrl } from '@/config/apiConfig';
 
 class ApiPrefix {
     constructor() {
+        // 使用动态获取的API URL
+        const baseURL = getApiUrl();
+
         this.api = axios.create({
-            baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1',
+            baseURL: baseURL,
             headers: { 'Content-Type': 'application/json' }
         });
+
+        console.log(`[ApiPrefix] Initialized with baseURL: ${baseURL}`);
 
         // 添加响应拦截器，处理错误
         this.api.interceptors.response.use(
@@ -27,6 +33,23 @@ class ApiPrefix {
                 throw error;
             }
         );
+    }
+
+    /**
+     * 获取当前的baseURL
+     * @returns {string} 当前API基础URL
+     */
+    getBaseURL() {
+        return this.api.defaults.baseURL;
+    }
+
+    /**
+     * 动态更新baseURL(用于特殊场景)
+     * @param {string} newBaseURL - 新的API基础URL
+     */
+    updateBaseURL(newBaseURL) {
+        this.api.defaults.baseURL = newBaseURL;
+        console.log(`[ApiPrefix] BaseURL updated to: ${newBaseURL}`);
     }
 
     // admin 请求才加 token

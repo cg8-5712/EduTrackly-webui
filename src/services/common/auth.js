@@ -1,12 +1,27 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import NotificationService from './notification';
+import { getApiUrl } from '@/config/apiConfig';
 
 class AuthService {
+    constructor() {
+        // 初始化时获取API URL
+        this.apiUrl = getApiUrl();
+        console.log(`[AuthService] Initialized with API URL: ${this.apiUrl}`);
+    }
+
+    /**
+     * 获取当前API URL
+     * @returns {string} API基础URL
+     */
+    getApiUrl() {
+        return this.apiUrl;
+    }
+
     login(username, password, rememberMe) {
 
         return axios
-            .post(`${import.meta.env.VITE_API_URL}/auth`, {
+            .post(`${this.apiUrl}/auth`, {
                 username,
                 password,
                 rememberMe
@@ -21,7 +36,7 @@ class AuthService {
 
     adminLogin(password) {
         return axios
-            .post(`${import.meta.env.VITE_API_URL}/auth`, {
+            .post(`${this.apiUrl}/auth`, {
                 password
             })
             .then(response => {
