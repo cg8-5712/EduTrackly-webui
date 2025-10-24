@@ -633,7 +633,7 @@ const deleteClass = async () => {
 
 const formatDate = (timestamp) => {
   if (!timestamp) return $t('common.unknown')
-  const date = new Date(timestamp * 1000) // 假设是Unix时间戳
+  const date = new Date(timestamp) // API返回的是毫秒级时间戳
   return date.toLocaleDateString('zh-CN', {
     year: 'numeric',
     month: '2-digit',
