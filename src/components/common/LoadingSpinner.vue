@@ -30,7 +30,7 @@ const props = defineProps({
 });
 
 const displayMessage = computed(() => {
-  return t('components.loadingSpinner.loading') || props.message;
+  return t('common.loading') || props.message;
 });
 
 const spinnerStyle = computed(() => ({
