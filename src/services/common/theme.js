@@ -1,5 +1,8 @@
 import { reactive, watch } from 'vue'
 import { themes, defaultTheme, getThemeById, getAllThemes } from '@/config/themes'
+import i18n from '@/i18n'
+
+const t = (key) => i18n.global.t(key)
 
 /**
  * 本地存储管理类
@@ -20,9 +23,9 @@ class ThemeStorage {
     try {
       const key = isAdmin ? this.ADMIN_STORAGE_KEY : this.STORAGE_KEY
       localStorage.setItem(key, themeId)
-      console.log(`主题已保存: ${themeId} (${isAdmin ? 'admin' : 'normal'})`)
+      console.log(`${t('service.themeSaved')}: ${themeId} (${isAdmin ? 'admin' : 'normal'})`)
     } catch (error) {
-      console.error('保存主题失败:', error)
+      console.error(t('service.saveThemeFailed') + ':', error)
     }
   }
 
@@ -37,16 +40,16 @@ class ThemeStorage {
       const savedTheme = localStorage.getItem(key)
 
       if (savedTheme && getThemeById(savedTheme)) {
-        console.log(`加载缓存主题: ${savedTheme} (${isAdmin ? 'admin' : 'normal'})`)
+        console.log(`${t('service.loadingCachedTheme')}: ${savedTheme} (${isAdmin ? 'admin' : 'normal'})`)
         return savedTheme
       }
 
       // 没有缓存，返回默认主题
       const defaultThemeId = isAdmin ? defaultTheme.admin : defaultTheme.normal
-      console.log(`使用默认主题: ${defaultThemeId} (${isAdmin ? 'admin' : 'normal'})`)
+      console.log(`${t('service.usingDefaultTheme')}: ${defaultThemeId} (${isAdmin ? 'admin' : 'normal'})`)
       return defaultThemeId
     } catch (error) {
-      console.error('加载主题失败:', error)
+      console.error(t('service.loadThemeFailed') + ':', error)
       return isAdmin ? defaultTheme.admin : defaultTheme.normal
     }
   }
@@ -59,9 +62,9 @@ class ThemeStorage {
     try {
       const key = isAdmin ? this.ADMIN_STORAGE_KEY : this.STORAGE_KEY
       localStorage.removeItem(key)
-      console.log(`主题缓存已清除 (${isAdmin ? 'admin' : 'normal'})`)
+      console.log(`${t('service.themeCacheCleared')} (${isAdmin ? 'admin' : 'normal'})`)
     } catch (error) {
-      console.error('清除主题缓存失败:', error)
+      console.error(t('service.clearThemeCacheFailed') + ':', error)
     }
   }
 
@@ -127,7 +130,7 @@ class ThemeService {
     const themeConfig = getThemeById(themeId)
 
     if (!themeConfig) {
-      console.warn(`未找到主题配置: ${themeId}`)
+      console.warn(`${t('error.themeConfigNotFound')}: ${themeId}`)
       return
     }
 
@@ -158,7 +161,7 @@ class ThemeService {
     root.style.setProperty('--shadow-lg', shadows.lg)
     root.style.setProperty('--shadow-xl', shadows.xl)
 
-    console.log(`主题已应用: ${themeId} (${themeConfig.name})`)
+    console.log(`${t('service.themeApplied')}: ${themeId} (${themeConfig.name})`)
   }
 
   /**
@@ -167,7 +170,7 @@ class ThemeService {
    */
   setTheme(themeId) {
     if (!getThemeById(themeId)) {
-      console.warn(`无效的主题 ID: ${themeId}`)
+      console.warn(`${t('error.invalidThemeId')}: ${themeId}`)
       return
     }
     this.state.currentThemeId = themeId
@@ -296,7 +299,7 @@ class ThemeService {
    */
   clearCache() {
     this.storage.clearAll()
-    console.log('所有主题缓存已清除')
+    console.log(t('service.allThemeCacheCleared'))
   }
 }
 

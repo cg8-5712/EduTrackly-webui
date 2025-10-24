@@ -1,4 +1,7 @@
 import ApiPrefix from '@/utils/ApiPrefix';
+import i18n from '@/i18n';
+
+const t = (key) => i18n.global.t(key);
 
 class AdminClassService extends ApiPrefix {
   constructor() {
@@ -20,7 +23,7 @@ class AdminClassService extends ApiPrefix {
       // page 和 size 作为 body 内容发送
       const bodyData = { page, size };
       const response = await this.get(url, bodyData);
-      console.log('获取班级列表成功:', response.message);
+      console.log(t('service.getClassListSuccess') + ':', response.message);
 
       if (response.code !== 0) {
         Error(response.message);
@@ -28,7 +31,7 @@ class AdminClassService extends ApiPrefix {
 
       return response;
     } catch (error) {
-      console.error('获取班级列表失败:', error);
+      console.error(t('service.getClassListFailed') + ':', error);
       throw error;
     }
   }
@@ -41,7 +44,7 @@ class AdminClassService extends ApiPrefix {
   async getClassDetail(cid = null, className = null) {
     try {
       if (!cid && !className) {
-        Error('班级ID或班级名称不能同时为空');
+        Error(t('error.classIdOrNameRequired'));
       }
 
       let url = '/class/get?';
@@ -52,7 +55,7 @@ class AdminClassService extends ApiPrefix {
       }
 
       const response = await this.adminGet(url);
-      console.log('获取班级详情成功:', response.message);
+      console.log(t('service.getClassDetailSuccess') + ':', response.message);
 
       if (response.code !== 0) {
         throw new Error(response.message);
@@ -60,7 +63,7 @@ class AdminClassService extends ApiPrefix {
 
       return response;
     } catch (error) {
-      console.error('获取班级详情失败:', error);
+      console.error(t('service.getClassDetailFailed') + ':', error);
       throw error;
     }
   }
@@ -72,12 +75,12 @@ class AdminClassService extends ApiPrefix {
   async createClass(className) {
     try {
       if (!className) {
-        throw new Error('班级名称不能为空');
+        throw new Error(t('error.classNameRequired'));
       }
 
       const url = `/class/create?class_name=${encodeURIComponent(className)}`;
       const response = await this.adminPost(url);
-      console.log('创建班级成功:', response.message);
+      console.log(t('service.createClassSuccess') + ':', response.message);
 
       if (response.code !== 0) {
         throw new Error(response.message);
@@ -85,7 +88,7 @@ class AdminClassService extends ApiPrefix {
 
       return response;
     } catch (error) {
-      console.error('创建班级失败:', error);
+      console.error(t('service.createClassFailed') + ':', error);
       throw error;
     }
   }
@@ -97,12 +100,12 @@ class AdminClassService extends ApiPrefix {
   async deleteClass(cid) {
     try {
       if (!cid) {
-        throw new Error('班级ID不能为空');
+        throw new Error(t('error.classIdEmpty'));
       }
 
       const url = `/class/delete?cid=${cid}`;
       const response = await this.adminDelete(url);
-      console.log('删除班级成功:', response.message);
+      console.log(t('service.deleteClassSuccess') + ':', response.message);
 
       if (response.code !== 0) {
         throw new Error(response.message);
@@ -110,7 +113,7 @@ class AdminClassService extends ApiPrefix {
 
       return response;
     } catch (error) {
-      console.error('删除班级失败:', error);
+      console.error(t('service.deleteClassFailed') + ':', error);
       throw error;
     }
   }
@@ -122,12 +125,12 @@ class AdminClassService extends ApiPrefix {
   async getClassAnalysis(cid) {
     try {
       if (!cid) {
-        throw new Error('班级ID不能为空');
+        throw new Error(t('error.classIdEmpty'));
       }
 
       const url = `/analysis/class?cid=${cid}`;
       const response = await this.adminGet(url);
-      console.log('获取班级分析数据成功:', response.message);
+      console.log(t('service.getClassAnalysisSuccess') + ':', response.message);
 
       if (response.code !== 0) {
         throw new Error(response.message);
@@ -135,7 +138,7 @@ class AdminClassService extends ApiPrefix {
 
       return response;
     } catch (error) {
-      console.error('获取班级分析数据失败:', error);
+      console.error(t('service.getClassAnalysisFailed') + ':', error);
       throw error;
     }
   }

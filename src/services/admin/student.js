@@ -1,4 +1,7 @@
 import ApiPrefix from '@/utils/ApiPrefix';
+import i18n from '@/i18n';
+
+const t = (key) => i18n.global.t(key);
 
 class StudentAdminService extends ApiPrefix {
   constructor() {
@@ -8,9 +11,9 @@ class StudentAdminService extends ApiPrefix {
   // 批量添加学生
   async addStudents(cid, students) {
     try {
-      if (!cid) throw new Error('班级ID必填');
+      if (!cid) throw new Error(t('error.classIdRequired'));
       if (!Array.isArray(students) || students.length === 0) {
-        throw new Error('学生数据不能为空');
+        throw new Error(t('error.studentDataEmpty'));
       }
 
       // 为每个学生添加 cid 字段
@@ -21,17 +24,17 @@ class StudentAdminService extends ApiPrefix {
       }));
 
       const data = await this.adminPost('/student/add', studentsWithCid);
-      console.log('批量添加学生:', data.message);
+      console.log(t('service.batchAddingStudents') + ':', data.message);
 
       if (data.code !== 0) {
-        throw new Error(data.message || '添加学生失败');
+        throw new Error(data.message || t('notification.addFailed'));
       }
 
       return data;
     } catch (error) {
-      console.error('批量添加学生失败:', error);
+      console.error(t('service.batchAddStudentsFailed') + ':', error);
       // 重新抛出错误，保留原始错误消息
-      throw new Error(error.message || '添加学生失败');
+      throw new Error(error.message || t('notification.addFailed'));
     }
   }
 
@@ -47,84 +50,84 @@ class StudentAdminService extends ApiPrefix {
   // 更改学生出勤状态
   async changeAttendance(sid, attendance) {
     try {
-      if (!sid) throw new Error('学生ID必填');
+      if (!sid) throw new Error(t('error.studentIdRequired'));
 
       const data = await this.adminPut(`/student/attendance-change?sid=${sid}&attendance=${attendance}`);
-      console.log('更改出勤状态:', data.message);
+      console.log(t('service.changingAttendanceStatus') + ':', data.message);
 
       if (data.code !== 0) {
-        throw new Error(data.message || '更改出勤状态失败');
+        throw new Error(data.message || t('service.changeAttendanceStatusFailed'));
       }
 
       return data;
     } catch (error) {
-      console.error('更改出勤状态失败:', error);
-      throw new Error(error.message || '更改出勤状态失败');
+      console.error(t('service.changeAttendanceStatusFailed') + ':', error);
+      throw new Error(error.message || t('service.changeAttendanceStatusFailed'));
     }
   }
 
   // 删除学生
   async deleteStudent(sid) {
     try {
-      if (!sid) throw new Error('学生ID必填');
+      if (!sid) throw new Error(t('error.studentIdRequired'));
 
       const data = await this.adminDelete(`/student/delete?sid=${sid}`);
-      console.log('删除学生:', data.message);
+      console.log(t('service.deletingStudent') + ':', data.message);
 
       if (data.code !== 0) {
-        throw new Error(data.message || '删除学生失败');
+        throw new Error(data.message || t('service.deleteStudentFailed'));
       }
 
       return data;
     } catch (error) {
-      console.error('删除学生失败:', error);
-      throw new Error(error.message || '删除学生失败');
+      console.error(t('service.deleteStudentFailed') + ':', error);
+      throw new Error(error.message || t('service.deleteStudentFailed'));
     }
   }
 
   // 提交学生事件
   async submitStudentEvents(events, date) {
     try {
-      if (!date) throw new Error('日期必填');
+      if (!date) throw new Error(t('error.dateRequired'));
       if (!Array.isArray(events) || events.length === 0) {
-        throw new Error('事件数据不能为空');
+        throw new Error(t('error.eventDataEmpty'));
       }
 
       const url = `/student/event?date=${date}`;
       const data = await this.adminPut(url, events);
-      console.log('提交学生事件:', data.message);
+      console.log(t('service.submittingStudentEvents') + ':', data.message);
 
       if (data.code !== 0) {
-        throw new Error(data.message || '提交学生事件失败');
+        throw new Error(data.message || t('service.submitStudentEventsFailed'));
       }
 
       return data;
     } catch (error) {
-      console.error('提交学生事件失败:', error);
-      throw new Error(error.message || '提交学生事件失败');
+      console.error(t('service.submitStudentEventsFailed') + ':', error);
+      throw new Error(error.message || t('service.submitStudentEventsFailed'));
     }
   }
 
   // 获取学生分析数据
   async getStudentAnalysis(sid, startDate = null, endDate = null) {
     try {
-      if (!sid) throw new Error('学生ID必填');
+      if (!sid) throw new Error(t('error.studentIdRequired'));
 
       let url = `/analysis/student?sid=${sid}`;
       if (startDate) url += `&startDate=${startDate}`;
       if (endDate) url += `&endDate=${endDate}`;
 
       const data = await this.adminGet(url);
-      console.log('获取学生分析数据:', data.message);
+      console.log(t('service.gettingStudentAnalysis') + ':', data.message);
 
       if (data.code !== 0) {
-        throw new Error(data.message || '获取学生分析数据失败');
+        throw new Error(data.message || t('service.getStudentAnalysisFailed'));
       }
 
       return data;
     } catch (error) {
-      console.error('获取学生分析数据失败:', error);
-      throw new Error(error.message || '获取学生分析数据失败');
+      console.error(t('service.getStudentAnalysisFailed') + ':', error);
+      throw new Error(error.message || t('service.getStudentAnalysisFailed'));
     }
   }
 
@@ -135,13 +138,13 @@ class StudentAdminService extends ApiPrefix {
 
     students.forEach((student, index) => {
       if (!student.student_name || !student.student_name.trim()) {
-        errors.push(`第${index + 1}个学生姓名不能为空`);
+        errors.push(t('error.studentNameEmpty', { index: index + 1 }));
         return;
       }
 
       const trimmedName = student.student_name.trim();
       if (trimmedName.length > 50) {
-        errors.push(`第${index + 1}个学生姓名不能超过50个字符`);
+        errors.push(t('error.studentNameTooLong', { index: index + 1 }));
         return;
       }
 

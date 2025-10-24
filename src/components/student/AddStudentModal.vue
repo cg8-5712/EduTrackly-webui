@@ -5,7 +5,7 @@
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4" @click.stop>
       <!-- 模态框头部 -->
       <div class="flex items-center justify-between p-6 border-b border-gray-200">
-        <h2 class="text-xl font-bold text-gray-800">添加学生</h2>
+        <h2 class="text-xl font-bold text-gray-800">{{ $t('ui.addStudent') }}</h2>
         <button
           @click="$emit('close')"
           class="text-gray-500 hover:text-gray-800 transition-colors duration-200"
@@ -26,10 +26,10 @@
                   ? 'active bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md'
                   : 'text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white'
               ]"
-              :title="'手动模式'"
+              :title="$t('ui.manual')"
             >
               <UserIcon class="w-4 h-4 mr-2" />
-              <span>手动</span>
+              <span>{{ $t('ui.manual') }}</span>
             </button>
             <button
               @click="batchMode = true"
@@ -39,10 +39,10 @@
                   ? 'active bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md'
                   : 'text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white'
               ]"
-              :title="'批量模式'"
+              :title="$t('ui.batch')"
             >
               <UsersIcon class="w-4 h-4 mr-2" />
-              <span>批量</span>
+              <span>{{ $t('ui.batch') }}</span>
             </button>
           </div>
         </div>
@@ -54,7 +54,7 @@
           <!-- 目标班级选择（仅手动模式显示） -->
           <div v-if="!batchMode">
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              目标班级 <span class="text-red-600">*</span>
+              {{ $t('ui.targetClass') }} <span class="text-red-600">*</span>
             </label>
             <select
               v-model="selectedClassId"
@@ -62,7 +62,7 @@
               :class="{ 'border-red-500': errors.class_id }"
               required
             >
-              <option value="">请选择班级</option>
+              <option value="">{{ $t('ui.selectClass') }}</option>
               <option
                 v-for="classItem in props.classList"
                 :key="classItem.cid"
@@ -79,12 +79,12 @@
           <!-- 学生姓名（仅手动模式显示） -->
           <div v-if="!batchMode">
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              学生姓名 <span class="text-red-600">*</span>
+              {{ $t('ui.studentName') }} <span class="text-red-600">*</span>
             </label>
             <input
               v-model="formData.student_name"
               type="text"
-              placeholder="请输入学生姓名"
+              :placeholder="$t('ui.enterStudentName')"
               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:border-blue-500 focus:outline-none"
               :class="{ 'border-red-500': errors.student_name }"
               required
@@ -97,7 +97,7 @@
           <!-- 初始出勤状态（仅手动模式显示） -->
           <div v-if="!batchMode">
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              初始状态
+              {{ $t('ui.initialStatus') }}
             </label>
             <div class="flex gap-4">
               <label class="flex items-center">
@@ -107,7 +107,7 @@
                   :value="true"
                   class="mr-2 text-green-500"
                 />
-                <span class="text-green-600">在校</span>
+                <span class="text-green-600">{{ $t('ui.inSchool') }}</span>
               </label>
               <label class="flex items-center">
                 <input
@@ -116,7 +116,7 @@
                   :value="false"
                   class="mr-2 text-red-500"
                 />
-                <span class="text-red-600">离校</span>
+                <span class="text-red-600">{{ $t('ui.leftSchool') }}</span>
               </label>
             </div>
           </div>
@@ -124,7 +124,7 @@
           <!-- 批量添加文本框（仅批量模式显示） -->
           <div v-if="batchMode">
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              批量输入学生信息 <span class="text-red-600">*</span>
+              {{ $t('ui.batchInputStudentInfo') }} <span class="text-red-600">*</span>
             </label>
 
             <!-- 文件上传区域 -->
@@ -136,7 +136,7 @@
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
-                  <span>选择文件</span>
+                  <span>{{ $t('ui.selectFile') }}</span>
                   <input
                     ref="fileInput"
                     type="file"
@@ -150,19 +150,19 @@
                 </span>
               </div>
               <p class="text-xs text-gray-500 mt-1">
-                支持上传 .txt、.csv 或 .xlsx/.xls 文件（每行格式：班级ID,姓名,出勤状态）
+                {{ $t('ui.fileFormatHint') }}
               </p>
             </div>
 
             <textarea
               v-model="batchNames"
-              placeholder="CSV格式，每行一个学生，格式：班级ID,姓名,出勤状态&#10;例如：&#10;1,张三,1&#10;1,李四,0&#10;2,王五,1&#10;&#10;出勤状态：1=在校，0=离校"
+              :placeholder="$t('ui.batchInputPlaceholder')"
               rows="10"
               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:border-blue-500 focus:outline-none resize-none font-mono"
               :class="{ 'border-red-500': errors.student_name }"
             ></textarea>
             <p class="text-sm text-gray-600 mt-1">
-              CSV格式：班级ID,姓名,出勤状态（1=在校，0=离校）
+              {{ $t('ui.batchInputHelp') }}
             </p>
             <p v-if="errors.student_name" class="text-red-600 text-sm mt-1">
               {{ errors.student_name }}
@@ -178,7 +178,7 @@
           type="button"
           class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-colors duration-200"
         >
-          取消
+          {{ $t('common.cancel') }}
         </button>
         <button
           @click="handleSubmit"
@@ -186,7 +186,7 @@
           class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
         >
           <LoadingSpinner v-if="submitting" size="small" />
-          {{ submitting ? '添加中...' : '确认添加' }}
+          {{ submitting ? $t('ui.adding') : $t('ui.confirmAdd') }}
         </button>
       </div>
     </div>
@@ -195,11 +195,14 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { UserIcon, UsersIcon } from '@heroicons/vue/24/outline'
 import * as XLSX from 'xlsx'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import StudentAdminService from '@/services/admin/student'
 import notificationService from '@/services/common/notification'
+
+const { t } = useI18n()
 
 // Props
 const props = defineProps({
@@ -249,7 +252,7 @@ const handleFileUpload = async (event) => {
   const isTextOrCsv = fileName.endsWith('.txt') || fileName.endsWith('.csv')
 
   if (!isExcel && !isTextOrCsv) {
-    notificationService.notify('仅支持上传 .txt、.csv、.xlsx 或 .xls 文件', 'error')
+    notificationService.notify(t('error.fileTypesSupported'), 'error')
     // 清空文件输入
     if (fileInput.value) {
       fileInput.value.value = ''
@@ -260,7 +263,7 @@ const handleFileUpload = async (event) => {
   // 检查文件大小（限制为 5MB）
   const maxSize = 5 * 1024 * 1024 // 5MB
   if (file.size > maxSize) {
-    notificationService.notify('文件大小不能超过 5MB', 'error')
+    notificationService.notify(t('error.fileSizeLimit'), 'error')
     if (fileInput.value) {
       fileInput.value.value = ''
     }
@@ -295,7 +298,7 @@ const handleFileUpload = async (event) => {
             if (firstLine.includes('班级') || firstLine.includes('姓名') || firstLine.includes('出勤') ||
                 firstLine.includes('class') || firstLine.includes('name') || firstLine.includes('attendance')) {
               startIndex = 1 // 跳过表头
-              notificationService.notify('检测到表头行，已自动跳过', 'info')
+              notificationService.notify(t('error.headerRowSkipped'), 'info')
             }
           }
 
@@ -305,19 +308,19 @@ const handleFileUpload = async (event) => {
           // 填充到文本框
           batchNames.value = dataLines.join('\n')
 
-          notificationService.notify(`成功加载 Excel 文件: ${file.name}，共 ${dataLines.length} 行数据`, 'success')
+          notificationService.notify(t('error.excelLoadSuccess', { filename: file.name, count: dataLines.length }), 'success')
 
           // 清空错误信息
           errors.student_name = ''
         } catch (error) {
           console.error('解析 Excel 文件错误:', error)
-          notificationService.notify('解析 Excel 文件失败，请检查文件格式', 'error')
+          notificationService.notify(t('error.excelParseFailed'), 'error')
           uploadedFileName.value = ''
         }
       }
 
       reader.onerror = () => {
-        notificationService.notify('读取 Excel 文件失败', 'error')
+        notificationService.notify(t('error.excelReadFailed'), 'error')
         uploadedFileName.value = ''
       }
 
@@ -363,14 +366,14 @@ const handleFileUpload = async (event) => {
         // 将内容填充到文本框
         batchNames.value = processedContent.trim()
 
-        notificationService.notify(`成功加载文件: ${file.name}`, 'success')
+        notificationService.notify(t('error.fileLoadSuccess', { filename: file.name }), 'success')
 
         // 清空错误信息
         errors.student_name = ''
       }
 
       reader.onerror = () => {
-        notificationService.notify('读取文件失败', 'error')
+        notificationService.notify(t('error.fileReadFailed'), 'error')
         uploadedFileName.value = ''
       }
 
@@ -380,7 +383,7 @@ const handleFileUpload = async (event) => {
 
   } catch (error) {
     console.error('文件上传错误:', error)
-    notificationService.notify('文件上传失败', 'error')
+    notificationService.notify(t('error.fileUpload'), 'error')
     uploadedFileName.value = ''
   }
 }
@@ -392,24 +395,24 @@ const validateForm = () => {
 
   // 手动模式需要验证班级
   if (!batchMode.value && !selectedClassId.value) {
-    errors.class_id = '请选择目标班级'
+    errors.class_id = $t('ui.selectClassRequired')
     return false
   }
 
   // 批量模式需要验证输入
   if (batchMode.value) {
     if (!batchNames.value.trim()) {
-      errors.student_name = '请输入学生信息'
+      errors.student_name = $t('ui.studentInfoRequired')
       return false
     }
   } else {
     if (!formData.student_name.trim()) {
-      errors.student_name = '学生姓名不能为空'
+      errors.student_name = $t('ui.studentNameRequired')
       return false
     }
 
     if (formData.student_name.trim().length > 50) {
-      errors.student_name = '学生姓名不能超过50个字符'
+      errors.student_name = $t('ui.studentNameMaxLength')
       return false
     }
   }
@@ -435,7 +438,7 @@ const handleSubmit = async () => {
         .filter(line => line.length > 0)
 
       if (lines.length === 0) {
-        errors.student_name = '请输入至少一个学生信息'
+        errors.student_name = $t('ui.studentInfoRequired')
         return
       }
 
@@ -568,7 +571,7 @@ const handleSubmit = async () => {
           'warning'
         )
       } else {
-        notificationService.notify(`成功添加 ${successCount} 个学生`, 'success')
+        notificationService.notify(t('component.studentsAddedSuccess', { count: successCount }), 'success')
       }
 
       // 重置表单
@@ -599,7 +602,7 @@ const handleSubmit = async () => {
     // 调用API添加学生（手动模式）
     await StudentAdminService.addStudents(targetCid, validation.validStudents)
 
-    notificationService.notify('添加学生成功', 'success')
+    notificationService.notify(t('component.studentAddedSuccess'), 'success')
 
     // 重置表单
     formData.student_name = ''

@@ -1,4 +1,7 @@
 import ApiPrefix from "@/utils/ApiPrefix";
+import i18n from '@/i18n';
+
+const t = (key) => i18n.global.t(key);
 
 class ClassService extends ApiPrefix {
   constructor() {
@@ -34,7 +37,7 @@ class ClassService extends ApiPrefix {
 
       return resp.data.data; // 返回班级数组
     } catch (error) {
-      console.error("获取班级失败:", error);
+      console.error(t('service.getClassesFailed') + ":", error);
       throw error;
     }
   }
@@ -47,7 +50,7 @@ class ClassService extends ApiPrefix {
   async getClassInfo(cid = null, className = null) {
     try {
       if (!cid && !className) {
-        throw new Error('班级ID或班级名称不能同时为空');
+        throw new Error(t('error.classIdOrNameRequired'));
       }
 
       let url = '/class/get?';
@@ -58,7 +61,7 @@ class ClassService extends ApiPrefix {
       }
 
       const response = await this.get(url);
-      console.log('获取班级信息成功:', response.message);
+      console.log(t('service.getClassInfoSuccess') + ':', response.message);
 
       if (response.code !== 0) {
         throw new Error(response.message);
@@ -66,7 +69,7 @@ class ClassService extends ApiPrefix {
 
       return response;
     } catch (error) {
-      console.error('获取班级信息失败:', error);
+      console.error(t('service.getClassInfoFailed') + ':', error);
       throw error;
     }
   }

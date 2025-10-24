@@ -9,13 +9,13 @@
             <div class="flex items-center gap-4">
               <div class="relative">
                 <div class="w-16 h-16 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-700 font-bold text-2xl shadow-sm border border-gray-200">
-                  <span>管</span>
+                  <span>{{ t('extraUI.adminConsole').substring(0, 1) }}</span>
                 </div>
                 <div class="absolute bottom-0 right-0 w-5 h-5 bg-green-400 border-4 border-white rounded-full"></div>
               </div>
               <div>
-                <h1 class="text-2xl font-bold text-gray-800 m-0 mb-1">管理员控制台</h1>
-                <p class="text-gray-500 m-0 text-sm">实时监控与管理</p>
+                <h1 class="text-2xl font-bold text-gray-800 m-0 mb-1">{{ t('extraUI.adminConsole') }}</h1>
+                <p class="text-gray-500 m-0 text-sm">{{ t('extraUI.realTimeMonitoring') }}</p>
               </div>
             </div>
 
@@ -24,7 +24,7 @@
                 <div class="flex items-center gap-3">
                   <span class="text-2xl">👥</span>
                   <div>
-                    <div class="text-xs text-gray-500">学生总数</div>
+                    <div class="text-xs text-gray-500">{{ t('extraUI.totalStudents') }}</div>
                     <div class="text-xl font-bold text-gray-700">{{ totalStudents || '0' }}</div>
                   </div>
                 </div>
@@ -33,7 +33,7 @@
                 <div class="flex items-center gap-3">
                   <span class="text-2xl">📚</span>
                   <div>
-                    <div class="text-xs text-gray-500">作业任务</div>
+                    <div class="text-xs text-gray-500">{{ t('extraUI.homeworkTasks') }}</div>
                     <div class="text-xl font-bold text-gray-700">{{ totalHomework || '0' }}</div>
                   </div>
                 </div>
@@ -49,7 +49,7 @@
             </div>
             <button @click="refreshPage" class="flex items-center gap-2 px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-700 font-semibold cursor-pointer transition-all hover:border-gray-400 hover:shadow-sm">
               <span class="text-xl">🔄</span>
-              <span>刷新</span>
+              <span>{{ t('extraUI.refresh') }}</span>
             </button>
           </div>
         </div>
@@ -59,7 +59,7 @@
       <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
         <div class="flex items-center gap-2 mb-6">
           <span class="text-2xl">🏠</span>
-          <h2 class="text-xl font-bold text-gray-800 m-0">主面板</h2>
+          <h2 class="text-xl font-bold text-gray-800 m-0">{{ t('extraUI.mainPanel') }}</h2>
         </div>
         <div>
           <Home />
@@ -74,7 +74,7 @@
           <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <div class="flex items-center gap-2 mb-4">
               <span class="text-2xl">🏫</span>
-              <h2 class="text-xl font-bold text-gray-800 m-0">班级选择</h2>
+              <h2 class="text-xl font-bold text-gray-800 m-0">{{ t('extraUI.classSelection') }}</h2>
             </div>
             <ClassSwitch @update:cid="handleClassChange" />
           </div>
@@ -83,15 +83,15 @@
           <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
             <div class="flex items-center gap-2 mb-4">
               <span class="text-2xl">📊</span>
-              <h2 class="text-xl font-bold text-gray-800 m-0">当前班级</h2>
+              <h2 class="text-xl font-bold text-gray-800 m-0">{{ t('extraUI.currentClass') }}</h2>
             </div>
             <div class="space-y-3">
               <div v-if="selectedCid" class="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                <div class="text-sm text-gray-500">班级ID</div>
+                <div class="text-sm text-gray-500">{{ t('extraUI.classIdLabel') }}</div>
                 <div class="text-2xl font-bold text-gray-700">{{ selectedCid }}</div>
               </div>
               <div v-else class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
-                <div class="text-sm text-gray-500">请选择班级</div>
+                <div class="text-sm text-gray-500">{{ t('extraUI.pleaseSelectClass') }}</div>
               </div>
             </div>
           </div>
@@ -100,20 +100,20 @@
           <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <div class="flex items-center gap-2 mb-4">
               <span class="text-2xl">⚡</span>
-              <h2 class="text-xl font-bold text-gray-800 m-0">系统状态</h2>
+              <h2 class="text-xl font-bold text-gray-800 m-0">{{ t('extraUI.systemStatus') }}</h2>
             </div>
             <div class="space-y-4">
               <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
                 <div class="w-3 h-3 rounded-full bg-green-400 animate-pulse"></div>
-                <span class="text-sm text-gray-700 font-medium">服务运行中</span>
+                <span class="text-sm text-gray-700 font-medium">{{ t('extraUI.serviceRunning') }}</span>
               </div>
               <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
                 <div class="w-3 h-3 rounded-full bg-green-400 animate-pulse"></div>
-                <span class="text-sm text-gray-700 font-medium">数据库连接</span>
+                <span class="text-sm text-gray-700 font-medium">{{ t('extraUI.databaseConnected') }}</span>
               </div>
               <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
                 <div class="w-3 h-3 rounded-full bg-green-400 animate-pulse"></div>
-                <span class="text-sm text-gray-700 font-medium">实时同步</span>
+                <span class="text-sm text-gray-700 font-medium">{{ t('extraUI.realTimeSync') }}</span>
               </div>
             </div>
           </div>
@@ -126,10 +126,10 @@
             <div class="flex justify-between items-center mb-6">
               <div class="flex items-center gap-2">
                 <span class="text-2xl">👥</span>
-                <h2 class="text-xl font-bold text-gray-800 m-0">学生管理</h2>
+                <h2 class="text-xl font-bold text-gray-800 m-0">{{ t('extraUI.studentManagement') }}</h2>
               </div>
               <div v-if="selectedCid" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold border border-gray-200">
-                当前班级：{{ selectedCid }}
+                {{ t('extraUI.currentClassLabel') }}：{{ selectedCid }}
               </div>
             </div>
             <div class="max-h-[500px] overflow-auto">
@@ -141,7 +141,7 @@
           <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <div class="flex items-center gap-2 mb-6">
               <span class="text-2xl">📝</span>
-              <h2 class="text-xl font-bold text-gray-800 m-0">作业管理</h2>
+              <h2 class="text-xl font-bold text-gray-800 m-0">{{ t('extraUI.homeworkManagement') }}</h2>
             </div>
             <div class="max-h-[500px] overflow-auto">
               <SubmitHomework :cid="selectedCid" />
@@ -154,6 +154,7 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n'
 import Home from '@/views/Home.vue'
 import ClassSwitch from '@/components/common/ClassSwitch.vue'
 import StudentEventSelector from '@/components/student/StudentEventSelector.vue'
@@ -166,6 +167,10 @@ export default {
     ClassSwitch,
     StudentList: StudentEventSelector,
     SubmitHomework
+  },
+  setup() {
+    const { t } = useI18n()
+    return { t }
   },
   data() {
     return {

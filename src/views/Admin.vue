@@ -70,7 +70,7 @@
 
       <!-- 底部提示 -->
       <p class="mt-4 text-center text-xs text-gray-300">
-        请妥善保管您的管理员密码
+        {{ $t('common.passwordSafetyWarning') }}
       </p>
     </div>
   </div>
@@ -92,11 +92,11 @@
               class="py-4 px-5 cursor-pointer flex items-center transition-all duration-300 border-l-4 border-l-transparent hover:bg-slate-600 hover:border-l-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-inset"
               tabindex="0"
               role="button"
-              :aria-label="item.name"
+              :aria-label="$t(item.nameKey)"
               :aria-current="item.current ? 'page' : undefined"
           >
             <component :is="item.icon" class="w-5 h-5 mr-3 flex-shrink-0" />
-            {{ item.name }}
+            {{ $t(item.nameKey) }}
           </li>
         </ul>
       </div>
@@ -165,11 +165,11 @@ const components = {
 
 // 导航菜单配置
 const navigation = ref([
-  { name: '当前状态', nameKey: 'nav.currentadmin', href: '#', icon: AcademicCapIcon, current: true, componentName: 'currentadmin'  },
-  { name: '班级管理', nameKey: 'nav.classadmin', href: '#', icon: UsersIcon, current: false, componentName: 'classadmin'  },
-  { name: '学生管理', nameKey: 'nav.studentadmin', href: '#', icon: UsersIcon, current: false, componentName: 'studentadmin'  },
-  { name: '作业管理', nameKey: 'nav.homeworkadmin', href: '#', icon: BookOpenIcon, current: false, componentName: 'homeworkadmin'  },
-  { name: '系统设置', nameKey: 'nav.system', href: '#', icon: Cog8ToothIcon, current: false, componentName: 'system'  }
+  { nameKey: 'nav.currentadmin', href: '#', icon: AcademicCapIcon, current: true, componentName: 'currentadmin'  },
+  { nameKey: 'nav.classadmin', href: '#', icon: UsersIcon, current: false, componentName: 'classadmin'  },
+  { nameKey: 'nav.studentadmin', href: '#', icon: UsersIcon, current: false, componentName: 'studentadmin'  },
+  { nameKey: 'nav.homeworkadmin', href: '#', icon: BookOpenIcon, current: false, componentName: 'homeworkadmin'  },
+  { nameKey: 'nav.system', href: '#', icon: Cog8ToothIcon, current: false, componentName: 'system'  }
 ])
 
 // 当前选中的菜单项
@@ -177,7 +177,8 @@ const currentComponent = ref(components[ navigation.value.find(item => item.curr
 
 // 当前菜单名称（用于显示页面标题）
 const currentMenuName = computed(() => {
-  return navigation.value.find(item => item.current)?.name || ''
+  const currentItem = navigation.value.find(item => item.current)
+  return currentItem ? $t(currentItem.nameKey) : ''
 })
 
 // 检查登录状态
@@ -220,7 +221,7 @@ const stopAuthCheck = () => {
 // 处理登录
 const handleLogin = async () => {
   if (!password.value.trim()) {
-    loginError.value = '请输入密码'
+    loginError.value = $t('common.passwordRequired')
     return
   }
 
@@ -236,11 +237,11 @@ const handleLogin = async () => {
       // 登录成功后启动定期检查
       startAuthCheck()
     } else {
-      loginError.value = response.message || '登录失败'
+      loginError.value = response.message || $t('admin.loginFailed')
     }
   } catch (error) {
     console.error('Login error:', error)
-    loginError.value = error.response?.data?.message || '登录失败，请重试'
+    loginError.value = error.response?.data?.message || $t('common.loginFailedRetry')
   } finally {
     isLogging.value = false
   }

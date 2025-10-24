@@ -3,15 +3,15 @@
     <div class="max-w-7xl mx-auto">
       <!-- 标题 -->
       <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-2">学生管理</h1>
-        <p class="text-gray-600">管理班级学生信息、出勤状态和统计数据</p>
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ $t('ui.studentManagement') }}</h1>
+        <p class="text-gray-600">{{ $t('ui.manageStudentInfo') }}</p>
       </div>
 
       <!-- 班级选择和操作栏 -->
       <div class="bg-white rounded-xl p-6 mb-6 shadow-lg border border-gray-200">
         <!-- 班级选择器 -->
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">选择班级</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('ui.selectClass') }}</label>
           <div class="relative">
             <button
               @click="showClassDropdown = !showClassDropdown"
@@ -33,7 +33,7 @@
                     @change="toggleSelectAll"
                     class="mr-3"
                   />
-                  <span class="font-medium text-blue-600">全选 ({{ classList.length }}个班级)</span>
+                  <span class="font-medium text-blue-600">{{ $t('ui.selectAll') }} ({{ classList.length }}{{ $t('ui.classes') }})</span>
                 </label>
               </div>
 
@@ -63,13 +63,13 @@
                   @click="confirmClassSelection"
                   class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors duration-200"
                 >
-                  确认选择
+                  {{ $t('ui.confirmSelection') }}
                 </button>
                 <button
                   @click="showClassDropdown = false"
                   class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg text-sm transition-colors duration-200"
                 >
-                  取消
+                  {{ $t('common.cancel') }}
                 </button>
               </div>
             </div>
@@ -84,7 +84,7 @@
               <input
                 v-model="searchQuery"
                 type="text"
-                placeholder="搜索学生姓名或学号..."
+                :placeholder="$t('ui.searchStudentPlaceholder')"
                 class="w-80 pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:border-blue-500 focus:outline-none shadow-sm"
               />
               <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
@@ -94,7 +94,7 @@
               v-if="searchQuery"
               class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-colors duration-200"
             >
-              清除
+              {{ $t('ui.clear') }}
             </button>
           </div>
 
@@ -105,14 +105,14 @@
               class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
             >
               <span>➕</span>
-              添加学生
+              {{ $t('ui.addStudent') }}
             </button>
             <button
               @click="refreshData"
               :disabled="loading"
               class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors duration-200"
             >
-              {{ loading ? '刷新中...' : '刷新' }}
+              {{ loading ? $t('ui.refreshing') : $t('ui.refresh') }}
             </button>
           </div>
         </div>
@@ -123,7 +123,7 @@
         <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white shadow-xl">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-blue-100 text-sm font-medium">总学生数</p>
+              <p class="text-blue-100 text-sm font-medium">{{ $t('ui.totalStudents') }}</p>
               <p class="text-3xl font-bold">{{ totalStudents }}</p>
             </div>
             <div class="text-4xl opacity-80">👥</div>
@@ -133,7 +133,7 @@
         <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 text-white shadow-xl">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-green-100 text-sm font-medium">在校学生</p>
+              <p class="text-green-100 text-sm font-medium">{{ $t('ui.studentsInSchool') }}</p>
               <p class="text-3xl font-bold">{{ attendingStudents }}</p>
             </div>
             <div class="text-4xl opacity-80">✅</div>
@@ -143,7 +143,7 @@
         <div class="bg-gradient-to-r from-red-600 to-red-700 rounded-xl p-6 text-white shadow-xl">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-red-100 text-sm font-medium">离校学生</p>
+              <p class="text-red-100 text-sm font-medium">{{ $t('ui.studentsLeftSchool') }}</p>
               <p class="text-3xl font-bold">{{ absentStudents }}</p>
             </div>
             <div class="text-4xl opacity-80">❌</div>
@@ -155,9 +155,9 @@
       <div class="bg-white rounded-xl shadow-lg border border-gray-200">
         <div class="p-6 border-b border-gray-200">
           <div class="flex items-center justify-between">
-            <h2 class="text-xl font-semibold text-gray-800">学生列表</h2>
+            <h2 class="text-xl font-semibold text-gray-800">{{ $t('ui.studentList') }}</h2>
             <div class="text-sm text-gray-500">
-              已选择 {{ selectedClassIds.length }} 个班级
+              {{ $t('ui.selectedClasses', { count: selectedClassIds.length }) }}
             </div>
           </div>
         </div>
@@ -166,19 +166,19 @@
           <!-- 加载中状态 -->
           <div v-if="loading" class="flex items-center justify-center py-12">
             <LoadingSpinner />
-            <span class="ml-3 text-gray-500">加载学生列表中...</span>
+            <span class="ml-3 text-gray-500">{{ $t('ui.loadingStudentList') }}</span>
           </div>
 
           <!-- 无数据状态 -->
           <div v-else-if="filteredStudents.length === 0" class="flex flex-col items-center justify-center py-12">
             <div class="text-6xl mb-4">👥</div>
             <div class="text-xl text-gray-500 mb-2">
-              {{ selectedClassIds.length === 0 ? '请先选择班级' :
-                 searchQuery ? '未找到匹配的学生' : '暂无学生数据' }}
+              {{ selectedClassIds.length === 0 ? $t('ui.pleaseSelectClass') :
+                 searchQuery ? $t('ui.noMatchingStudents') : $t('ui.noStudentData') }}
             </div>
             <div class="text-sm text-gray-400 mb-4">
-              {{ selectedClassIds.length === 0 ? '在上方下拉框中选择要查看的班级' :
-                 searchQuery ? '请尝试其他搜索关键词' : '还没有添加学生哦～' }}
+              {{ selectedClassIds.length === 0 ? $t('ui.selectClassFromDropdown') :
+                 searchQuery ? $t('ui.tryOtherKeywords') : $t('ui.noStudentsAddedYet') }}
             </div>
             <button
               v-if="selectedClassIds.length > 0 && !searchQuery"
@@ -186,7 +186,7 @@
               class="mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-200 flex items-center gap-2 active:scale-95"
             >
               <span>➕</span>
-              立即添加学生
+              {{ $t('ui.addStudentNow') }}
             </button>
           </div>
 
@@ -194,11 +194,11 @@
           <table v-else class="w-full">
             <thead>
               <tr class="bg-gray-50 border-b border-gray-200">
-                <th class="text-left py-3 px-4 font-semibold text-gray-700">班级</th>
-                <th class="text-left py-3 px-4 font-semibold text-gray-700">学号</th>
-                <th class="text-left py-3 px-4 font-semibold text-gray-700">姓名</th>
-                <th class="text-center py-3 px-4 font-semibold text-gray-700">出勤状态</th>
-                <th class="text-center py-3 px-4 font-semibold text-gray-700">操作</th>
+                <th class="text-left py-3 px-4 font-semibold text-gray-700">{{ $t('ui.class') }}</th>
+                <th class="text-left py-3 px-4 font-semibold text-gray-700">{{ $t('ui.studentId') }}</th>
+                <th class="text-left py-3 px-4 font-semibold text-gray-700">{{ $t('ui.name') }}</th>
+                <th class="text-center py-3 px-4 font-semibold text-gray-700">{{ $t('ui.attendanceStatus') }}</th>
+                <th class="text-center py-3 px-4 font-semibold text-gray-700">{{ $t('ui.actions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -239,7 +239,7 @@
                       ? 'bg-green-600 text-white hover:bg-green-700'
                       : 'bg-red-600 text-white hover:bg-red-700'"
                   >
-                    {{ student.attendance ? '在校' : '离校' }}
+                    {{ student.attendance ? $t('ui.inSchool') : $t('ui.leftSchool') }}
                   </button>
                 </td>
 
@@ -250,18 +250,18 @@
                     <button
                       @click="showStudentDetail(student)"
                       class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
-                      title="查看详情"
+                      :title="$t('ui.viewDetails')"
                     >
-                      详情
+                      {{ $t('ui.details') }}
                     </button>
 
                     <!-- 删除按钮 -->
                     <button
                       @click="deleteStudent(student)"
                       class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
-                      title="删除学生"
+                      :title="$t('ui.deleteStudent')"
                     >
-                      删除
+                      {{ $t('ui.delete') }}
                     </button>
                   </div>
                 </td>
@@ -276,10 +276,10 @@
             <!-- 分页信息和每页大小选择 -->
             <div class="flex items-center gap-4">
               <div class="text-sm text-gray-600">
-                显示第 {{ startItem }} - {{ endItem }} 条，共 {{ filteredStudents.length }} 条记录
+                {{ $t('ui.showingRecords', { start: startItem, end: endItem, total: filteredStudents.length }) }}
               </div>
               <div class="flex items-center gap-2">
-                <span class="text-sm text-gray-600">每页显示</span>
+                <span class="text-sm text-gray-600">{{ $t('ui.itemsPerPage') }}</span>
                 <select
                   v-model="pageSize"
                   @change="currentPage = 1"
@@ -290,7 +290,7 @@
                   <option value="50">50</option>
                   <option value="100">100</option>
                 </select>
-                <span class="text-sm text-gray-600">条</span>
+                <span class="text-sm text-gray-600">{{ $t('ui.items') }}</span>
               </div>
             </div>
 
@@ -305,7 +305,7 @@
                   ? 'border-gray-300 text-gray-400 cursor-not-allowed'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
               >
-                首页
+                {{ $t('ui.firstPage') }}
               </button>
 
               <!-- 上一页 -->
@@ -317,7 +317,7 @@
                   ? 'border-gray-300 text-gray-400 cursor-not-allowed'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
               >
-                上一页
+                {{ $t('ui.previousPage') }}
               </button>
 
               <!-- 页码按钮 -->
@@ -342,7 +342,7 @@
                   ? 'border-gray-300 text-gray-400 cursor-not-allowed'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
               >
-                下一页
+                {{ $t('ui.nextPage') }}
               </button>
 
               <!-- 末页 -->
@@ -354,12 +354,12 @@
                   ? 'border-gray-300 text-gray-400 cursor-not-allowed'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
               >
-                末页
+                {{ $t('ui.lastPage') }}
               </button>
 
               <!-- 页面跳转 -->
               <div class="flex items-center gap-2 ml-4">
-                <span class="text-sm text-gray-600">跳转到</span>
+                <span class="text-sm text-gray-600">{{ $t('ui.jumpTo') }}</span>
                 <input
                   v-model="jumpToPage"
                   @keyup.enter="handleJumpToPage"
@@ -368,12 +368,12 @@
                   :max="totalPages"
                   class="w-16 px-2 py-1 bg-white border border-gray-300 rounded text-gray-800 text-center text-sm focus:border-blue-500 focus:outline-none"
                 />
-                <span class="text-sm text-gray-600">页</span>
+                <span class="text-sm text-gray-600">{{ $t('ui.page') }}</span>
                 <button
                   @click="handleJumpToPage"
                   class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors duration-200"
                 >
-                  确定
+                  {{ $t('ui.confirm') }}
                 </button>
               </div>
             </div>
@@ -402,6 +402,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import AddStudentModal from '@/components/student/AddStudentModal.vue'
 import StudentDetailModal from '@/components/student/StudentDetailModal.vue'
@@ -409,6 +410,8 @@ import StudentService from '@/services/basic/student.js'
 import StudentAdminService from '@/services/admin/student.js'
 import ClassService from '@/services/basic/class.js'
 import notificationService from '@/services/common/notification.js'
+
+const { t: $t } = useI18n()
 
 // 数据状态
 const students = ref([])
@@ -489,19 +492,19 @@ const visiblePages = computed(() => {
 // 获取班级名称
 const getClassName = (cid) => {
   const classItem = classList.value.find(c => c.cid === cid)
-  return classItem ? classItem.class_name : `未知班级(${cid})`
+  return classItem ? classItem.class_name : $t('ui.unknownClass', { cid })
 }
 
 // 获取选中班级的显示文本
 const getSelectedClassesText = () => {
   if (selectedClassIds.value.length === 0) {
-    return '请选择班级'
+    return $t('ui.pleaseSelectClass')
   } else if (selectedClassIds.value.length === 1) {
     return getClassName(selectedClassIds.value[0])
   } else if (selectedClassIds.value.length === classList.value.length) {
-    return `全部班级 (${selectedClassIds.value.length}个)`
+    return $t('ui.allClasses', { count: selectedClassIds.value.length })
   } else {
-    return `已选择 ${selectedClassIds.value.length} 个班级`
+    return $t('ui.selectedClasses', { count: selectedClassIds.value.length })
   }
 }
 
@@ -542,8 +545,8 @@ const fetchClassList = async () => {
     const response = await ClassService.getAllClasses()
     classList.value = response || []
   } catch (error) {
-    console.error('获取班级列表失败:', error)
-    notificationService.notify(error.message || '获取班级列表失败', 'error')
+    console.error($t('component.getClassListFailed') + ':', error)
+    notificationService.notify(error.message || $t('component.getClassListFailed'), 'error')
     classList.value = []
   } finally {
     classLoading.value = false
@@ -573,8 +576,8 @@ const fetchStudents = async () => {
         }
         return []
       } catch (error) {
-        console.error(`获取班级 ${cid} 学生失败:`, error)
-        notificationService.notify(`获取班级 ${getClassName(cid)} 学生失败`, 'warning')
+        console.error($t('component.getStudentsForClassFailed', { className: cid }) + ':', error)
+        notificationService.notify($t('component.getStudentsForClassFailed', { className: getClassName(cid) }), 'warning')
         return []
       }
     })
@@ -586,8 +589,8 @@ const fetchStudents = async () => {
 
     students.value = allStudents
   } catch (error) {
-    console.error('获取学生列表失败:', error)
-    notificationService.notify('获取学生列表失败', 'error')
+    console.error($t('component.getStudentListFailed') + ':', error)
+    notificationService.notify($t('component.getStudentListFailed'), 'error')
     students.value = []
   } finally {
     loading.value = false
@@ -604,18 +607,18 @@ const toggleAttendance = async (student) => {
     student.attendance = newAttendance
 
     notificationService.notify(
-      `${student.student_name} 状态已更改为 ${newAttendance ? '在校' : '离校'}`,
+      `${student.student_name} ${$t('component.statusChangedTo')} ${newAttendance ? $t('ui.inSchool') : $t('ui.leftSchool')}`,
       'success'
     )
   } catch (error) {
-    console.error('更改出勤状态失败:', error)
-    notificationService.notify(error.message || '更改出勤状态失败', 'error')
+    console.error($t('component.changeAttendanceStatusFailed') + ':', error)
+    notificationService.notify(error.message || $t('component.changeAttendanceStatusFailed'), 'error')
   }
 }
 
 // 删除学生
 const deleteStudent = async (student) => {
-  if (!confirm(`确定要删除学生 ${student.student_name} 吗？此操作不可恢复。`)) {
+  if (!confirm($t('component.confirmDeleteStudent', { studentName: student.student_name }))) {
     return
   }
 
@@ -628,10 +631,10 @@ const deleteStudent = async (student) => {
       students.value.splice(index, 1)
     }
 
-    notificationService.notify(`删除学生 ${student.student_name} 成功`, 'success')
+    notificationService.notify($t('component.deleteStudentSuccess', { studentName: student.student_name }), 'success')
   } catch (error) {
-    console.error('删除学生失败:', error)
-    notificationService.notify(error.message || '删除学生失败', 'error')
+    console.error($t('component.deleteStudentFailed') + ':', error)
+    notificationService.notify(error.message || $t('component.deleteStudentFailed'), 'error')
   }
 }
 

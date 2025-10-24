@@ -1,4 +1,7 @@
 import { ref, reactive } from 'vue'
+import i18n from '@/i18n'
+
+const t = (key, params) => i18n.global.t(key, params)
 
 const state = reactive({
     message: '',
@@ -22,7 +25,7 @@ const VALID_TYPES = ['info', 'success', 'error', 'warn']
  */
 const notify = (message, type = 'info') => {
     if (!VALID_TYPES.includes(type)) {
-        console.warn(`Notification type "${type}" 不支持，默认使用 "info"`)
+        console.warn(t('error.notificationTypeNotSupported', { type }))
         type = 'info'
     }
 

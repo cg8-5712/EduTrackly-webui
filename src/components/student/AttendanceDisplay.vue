@@ -15,10 +15,10 @@
       <!-- 出勤统计 -->
       <div class="stats-container">
         <div class="stat-card">
-          <span class="stat-label">应到：</span>{{ attendance.expected_attend }}人
+          <span class="stat-label">{{ t('extraUI.expectedAttend') }}：</span>{{ attendance.expected_attend }}{{ t('extraUI.peopleUnit') }}
         </div>
         <div class="stat-card">
-          <span class="stat-label">实到：</span>{{ attendance.actual_attend }}人
+          <span class="stat-label">{{ t('extraUI.actualAttend') }}：</span>{{ attendance.actual_attend }}{{ t('extraUI.peopleUnit') }}
         </div>
       </div>
 
@@ -26,7 +26,7 @@
       <div v-if="hasAbsentStudents" class="section">
         <h3 class="section-title">
           <span class="section-icon">📋</span>
-          <span>请假名单</span>
+          <span>{{ t('extraUI.leaveList') }}</span>
         </h3>
         <ul class="student-list">
           <li v-for="(event, index) in absentStudents"
@@ -49,7 +49,7 @@
       <div v-if="tempStudents.length > 0" class="section">
         <h3 class="section-title">
           <span class="section-icon">✨</span>
-          <span>临时参加名单</span>
+          <span>{{ t('extraUI.temporaryJoinList') }}</span>
         </h3>
         <ul class="student-list">
           <li v-for="(event, index) in tempStudents" :key="index" class="student-item">
@@ -61,15 +61,18 @@
 
     <!-- 没有数据 -->
     <div v-else class="no-data">
-      暂无出勤信息
+      {{ t('extraUI.noAttendanceInfo') }}
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AttendanceService from '@/services/basic/analysis'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   selectedDate: {
@@ -111,23 +114,23 @@ const hasAbsentStudents = computed(() => absentStudents.value.length > 0)
 
 const getEventTypeText = (type) => {
   const typeMap = {
-    'personal': '事假',
-    'official': '公假',
-    'sick': '病假'
+    'personal': t('attendance.personalLeave'),
+    'official': t('attendance.officialLeave'),
+    'sick': t('attendance.sickLeave')
   }
   return typeMap[type] || type
 }
 
 const fetchAttendance = async () => {
   if (!props.selectedCid) {
-    error.value = '请先选择班级'
+    error.value = t('extraUI.pleaseSelectClassFirst')
     loading.value = false
     return
   }
 
   loading.value = true
   error.value = null
-  
+
   try {
     const res = props.selectedDate
         ? await AttendanceService.getAnalysisByDate(Number(props.selectedCid), props.selectedDate)
@@ -136,11 +139,11 @@ const fetchAttendance = async () => {
     if (res.data?.code === 0 && res.data?.data) {
       attendance.value = res.data.data
     } else {
-      throw new Error(res.data?.message || '获取数据失败')
+      throw new Error(res.data?.message || t('extraUI.fetchDataFailed'))
     }
   } catch (err) {
-    console.error('获取出勤信息失败:', err)
-    error.value = '获取出勤信息失败'
+    console.error(t('extraUI.fetchAttendanceInfoFailed'), err)
+    error.value = t('extraUI.fetchAttendanceInfoFailed')
     attendance.value = {
       class_name: '',
       expected_attend: 0,

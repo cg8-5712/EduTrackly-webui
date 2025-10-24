@@ -1,4 +1,7 @@
 import ApiPrefix from '@/utils/ApiPrefix';
+import i18n from '@/i18n';
+
+const t = (key) => i18n.global.t(key);
 
 class AdminHomeworkService extends ApiPrefix {
   constructor() {
@@ -25,7 +28,7 @@ class AdminHomeworkService extends ApiPrefix {
       url += params.join('&');
 
       const response = await this.get(url);
-      console.log('获取作业成功:', response.message);
+      console.log(t('service.getHomeworkSuccess') + ':', response.message);
 
       if (response.code !== 0) {
         throw new Error(response.message);
@@ -33,7 +36,7 @@ class AdminHomeworkService extends ApiPrefix {
 
       return response;
     } catch (error) {
-      console.error('获取作业失败:', error);
+      console.error(t('service.getHomeworkFailed') + ':', error);
       throw error;
     }
   }
@@ -67,7 +70,7 @@ class AdminHomeworkService extends ApiPrefix {
       // page 和 size 作为 body 内容发送
       const bodyData = { page, size };
       const response = await this.get(url, bodyData);
-      console.log('获取作业列表成功:', response.message);
+      console.log(t('service.getHomeworkListSuccess') + ':', response.message);
 
       if (response.code !== 0) {
         throw new Error(response.message);
@@ -75,7 +78,7 @@ class AdminHomeworkService extends ApiPrefix {
 
       return response;
     } catch (error) {
-      console.error('获取作业列表失败:', error);
+      console.error(t('service.getHomeworkListFailed') + ':', error);
       throw error;
     }
   }
@@ -90,12 +93,12 @@ class AdminHomeworkService extends ApiPrefix {
   async createHomework(data) {
     try {
       if (!data.cid || !data.homework_content || !data.due_date) {
-        throw new Error('班级ID、作业内容和截止日期不能为空');
+        throw new Error(t('error.homeworkContentAndDateRequired'));
       }
 
       const url = '/homework/post';
       const response = await this.adminPost(url, data);
-      console.log('创建作业成功:', response.message);
+      console.log(t('service.createHomeworkSuccess') + ':', response.message);
 
       if (response.code !== 0) {
         throw new Error(response.message);
@@ -103,7 +106,7 @@ class AdminHomeworkService extends ApiPrefix {
 
       return response;
     } catch (error) {
-      console.error('创建作业失败:', error);
+      console.error(t('service.createHomeworkFailed') + ':', error);
       throw error;
     }
   }
@@ -118,12 +121,12 @@ class AdminHomeworkService extends ApiPrefix {
   async updateHomework(data) {
     try {
       if (!data.cid || !data.homework_content || !data.due_date) {
-        throw new Error('班级ID、作业内容和截止日期不能为空');
+        throw new Error(t('error.homeworkContentAndDateRequired'));
       }
 
       const url = '/homework/post';
       const response = await this.adminPost(url, data);
-      console.log('更新作业成功:', response.message);
+      console.log(t('service.updateHomeworkSuccess') + ':', response.message);
 
       if (response.code !== 0) {
         throw new Error(response.message);
@@ -131,7 +134,7 @@ class AdminHomeworkService extends ApiPrefix {
 
       return response;
     } catch (error) {
-      console.error('更新作业失败:', error);
+      console.error(t('service.updateHomeworkFailed') + ':', error);
       throw error;
     }
   }
@@ -144,7 +147,7 @@ class AdminHomeworkService extends ApiPrefix {
   async deleteHomework(cid, date) {
     try {
       if (!cid) {
-        throw new Error('班级ID不能为空');
+        throw new Error(t('error.classIdEmpty'));
       }
 
       let url = `/homework/delete?cid=${cid}`;
@@ -153,7 +156,7 @@ class AdminHomeworkService extends ApiPrefix {
       }
 
       const response = await this.adminDelete(url);
-      console.log('删除作业成功:', response.message);
+      console.log(t('service.deleteHomeworkSuccess') + ':', response.message);
 
       if (response.code !== 0) {
         throw new Error(response.message);
@@ -161,7 +164,7 @@ class AdminHomeworkService extends ApiPrefix {
 
       return response;
     } catch (error) {
-      console.error('删除作业失败:', error);
+      console.error(t('service.deleteHomeworkFailed') + ':', error);
       throw error;
     }
   }

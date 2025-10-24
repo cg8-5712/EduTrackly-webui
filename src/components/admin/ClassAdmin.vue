@@ -5,13 +5,13 @@
       <div class="mb-8">
         <div class="flex justify-between items-start flex-wrap gap-6">
           <div class="flex-1 min-w-[300px]">
-            <h1 class="text-4xl font-bold bg-gradient-to-br from-blue-600 to-purple-600 bg-clip-text text-transparent m-0 mb-2">班级管理</h1>
-            <p class="text-gray-500 text-lg m-0 font-normal">管理所有班级信息，查看学生人数和创建时间</p>
+            <h1 class="text-4xl font-bold bg-gradient-to-br from-blue-600 to-purple-600 bg-clip-text text-transparent m-0 mb-2">{{ $t('ui.classManagement') }}</h1>
+            <p class="text-gray-500 text-lg m-0 font-normal">{{ $t('ui.manageClassInfo') }}</p>
           </div>
           <div class="flex gap-4">
             <button @click="showCreateDialog = true" class="flex items-center gap-2 py-3 px-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white border-none rounded-xl text-base font-semibold cursor-pointer transition-all duration-300 shadow-lg shadow-blue-600/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-600/40">
               <span class="text-base">➕</span>
-              创建班级
+              {{ $t('ui.createClass') }}
             </button>
           </div>
         </div>
@@ -24,17 +24,17 @@
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="搜索班级名称..."
+              :placeholder="$t('ui.searchClassName')"
               class="w-full py-3 pr-4 pl-12 border-2 border-gray-200 rounded-xl text-base transition-colors focus:outline-none focus:border-blue-600"
               @input="handleSearch"
             >
             <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-lg text-gray-500">🔍</span>
           </div>
           <div class="flex items-center gap-3">
-            <label>每页显示：</label>
+            <label>{{ $t('ui.itemsPerPage') }}：</label>
             <div class="relative min-w-40" ref="pageSizeSelectRef">
               <div class="flex items-center justify-between py-2.5 px-4 bg-white border-2 border-gray-200 rounded-xl cursor-pointer transition-all duration-300 text-sm font-medium text-gray-700 shadow-sm hover:border-blue-600 hover:shadow-blue-100 hover:shadow-lg" @click="togglePageSizeDropdown">
-                <span class="flex-1 text-left">{{ pagination.size }}条</span>
+                <span class="flex-1 text-left">{{ pagination.size }}{{ $t('pagination.itemsUnit') }}</span>
                 <span class="ml-3 text-xs text-gray-500 transition-transform duration-300" :class="{ 'rotate-180': showPageSizeDropdown }">▼</span>
               </div>
               <div class="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200" v-show="showPageSizeDropdown">
@@ -43,7 +43,7 @@
                   :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': pagination.size === 5 }"
                   @click="selectPageSizeOption(5)"
                 >
-                  5条
+                  5{{ $t('pagination.itemsUnit') }}
                   <span v-if="pagination.size === 5" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
                 </div>
                 <div
@@ -51,7 +51,7 @@
                   :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': pagination.size === 20 }"
                   @click="selectPageSizeOption(20)"
                 >
-                  20条
+                  20{{ $t('pagination.itemsUnit') }}
                   <span v-if="pagination.size === 20" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
                 </div>
                 <div
@@ -59,7 +59,7 @@
                   :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': pagination.size === 50 }"
                   @click="selectPageSizeOption(50)"
                 >
-                  50条
+                  50{{ $t('pagination.itemsUnit') }}
                   <span v-if="pagination.size === 50" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
                 </div>
                 <div
@@ -67,7 +67,7 @@
                   :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': pagination.size === 100 }"
                   @click="selectPageSizeOption(100)"
                 >
-                  100条
+                  100{{ $t('pagination.itemsUnit') }}
                   <span v-if="pagination.size === 100" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
                 </div>
               </div>
@@ -79,7 +79,7 @@
       <!-- 加载状态 -->
       <div v-if="loading" class="text-center py-12">
         <LoadingSpinner />
-        <p class="text-gray-500 text-base m-0 mt-4">加载班级列表中...</p>
+        <p class="text-gray-500 text-base m-0 mt-4">{{ $t('common.loading') }}</p>
       </div>
 
       <!-- 错误提示 -->
@@ -91,29 +91,29 @@
       <div v-if="!loading && !error" class="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div class="py-5 px-6 border-b border-gray-200 bg-gray-50">
           <div class="text-gray-500 text-sm font-medium">
-            <span>共找到 {{ pagination.total }} 个班级，每页显示 {{ pagination.size }} 条</span>
+            <span>{{ $t('ui.foundClassesInfo', { total: pagination.total, size: pagination.size }) }}</span>
           </div>
         </div>
 
         <!-- 表头排序 -->
         <div class="flex bg-gray-50 border-b-2 border-gray-200 py-4 px-6 font-semibold text-gray-700 text-sm">
-          <div class="flex items-center px-2 min-w-0 flex-[2]">班级名称</div>
+          <div class="flex items-center px-2 min-w-0 flex-[2]">{{ $t('ui.className') }}</div>
           <div class="flex items-center px-2 min-w-0 cursor-pointer select-none transition-colors gap-2 hover:text-blue-600" @click="handleSort('cid')">
-            <span>ID</span>
+            <span>{{ $t('ui.id') }}</span>
             <span class="flex flex-col gap-0 ml-1">
               <span class="text-xs text-gray-300 transition-colors leading-none -mb-0.5" :class="{ 'text-blue-600 font-bold': sortField === 'cid' && sortDirection === 'asc' }">↑</span>
               <span class="text-xs text-gray-300 transition-colors leading-none -mt-0.5" :class="{ 'text-blue-600 font-bold': sortField === 'cid' && sortDirection === 'desc' }">↓</span>
             </span>
           </div>
-          <div class="flex items-center px-2 min-w-0 flex-1">学生人数</div>
+          <div class="flex items-center px-2 min-w-0 flex-1">{{ $t('ui.studentCount') }}</div>
           <div class="flex items-center px-2 min-w-0 cursor-pointer select-none transition-colors gap-2 hover:text-blue-600" @click="handleSort('create_time')">
-            <span>创建时间</span>
+            <span>{{ $t('ui.creationTime') }}</span>
             <span class="flex flex-col gap-0 ml-1">
               <span class="text-xs text-gray-300 transition-colors leading-none -mb-0.5" :class="{ 'text-blue-600 font-bold': sortField === 'create_time' && sortDirection === 'asc' }">↑</span>
               <span class="text-xs text-gray-300 transition-colors leading-none -mt-0.5" :class="{ 'text-blue-600 font-bold': sortField === 'create_time' && sortDirection === 'desc' }">↓</span>
             </span>
           </div>
-          <div class="flex items-center px-2 min-w-0 flex-1">操作</div>
+          <div class="flex items-center px-2 min-w-0 flex-1">{{ $t('ui.actions') }}</div>
         </div>
 
         <div class="flex flex-col">
@@ -131,7 +131,7 @@
             <div class="flex items-center px-2 min-w-0 flex-1">
               <span class="flex items-center gap-1.5 text-sm text-gray-700 font-medium">
                 <span class="text-base">👥</span>
-                {{ getStudentCount(classItem.cid) }}人
+                {{ getStudentCount(classItem.cid) }}{{ $t('pagination.peopleUnit') }}
               </span>
             </div>
             <div class="flex items-center px-2 min-w-0">
@@ -142,14 +142,14 @@
                 <button
                   @click="viewClassDetail(classItem)"
                   class="flex items-center justify-center w-9 h-9 border-none rounded-lg text-sm cursor-pointer transition-all duration-200 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:scale-105"
-                  title="查看详情"
+                  :title="$t('ui.viewDetails')"
                 >
                   <span class="text-base">👁️</span>
                 </button>
                 <button
                   @click="confirmDelete(classItem)"
                   class="flex items-center justify-center w-9 h-9 border-none rounded-lg text-sm cursor-pointer transition-all duration-200 bg-red-50 text-red-600 hover:bg-red-100 hover:scale-105"
-                  title="删除班级"
+                  :title="$t('ui.deleteClass')"
                 >
                   <span class="text-base">🗑️</span>
                 </button>
@@ -177,26 +177,26 @@
     <div v-if="showCreateDialog" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showCreateDialog = false">
       <div class="bg-white rounded-2xl w-[90%] max-w-md max-h-[90vh] overflow-y-auto shadow-2xl">
         <div class="flex justify-between items-center p-6 border-b border-gray-200">
-          <h3 class="m-0 text-xl font-bold text-gray-800">创建新班级</h3>
+          <h3 class="m-0 text-xl font-bold text-gray-800">{{ $t('ui.createNewClass') }}</h3>
           <button @click="showCreateDialog = false" class="bg-none border-none text-lg cursor-pointer p-1 rounded transition-colors hover:bg-gray-100">✖️</button>
         </div>
         <div class="p-6">
           <div class="mb-5">
-            <label for="className" class="block mb-2 font-semibold text-gray-700">班级名称</label>
+            <label for="className" class="block mb-2 font-semibold text-gray-700">{{ $t('ui.className') }}</label>
             <input
               id="className"
               v-model="newClassName"
               type="text"
-              placeholder="请输入班级名称"
+              :placeholder="$t('ui.enterClassName')"
               class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-blue-600"
               @keyup.enter="createClass"
             >
           </div>
         </div>
         <div class="flex gap-3 justify-end p-6 border-t border-gray-200">
-          <button @click="showCreateDialog = false" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-gray-100 text-gray-700 border-none hover:bg-gray-200">取消</button>
+          <button @click="showCreateDialog = false" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-gray-100 text-gray-700 border-none hover:bg-gray-200">{{ $t('common.cancel') }}</button>
           <button @click="createClass" :disabled="!newClassName.trim() || creating" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-blue-600 text-white border-none hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed">
-            {{ creating ? '创建中...' : '确认创建' }}
+            {{ creating ? $t('ui.adding') : $t('ui.confirmCreate') }}
           </button>
         </div>
       </div>
@@ -206,49 +206,49 @@
     <div v-if="showDetailDialog" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showDetailDialog = false">
       <div class="bg-white rounded-2xl w-[90%] max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl">
         <div class="flex justify-between items-center p-6 border-b border-gray-200">
-          <h3 class="m-0 text-xl font-bold text-gray-800">班级详情 - {{ selectedClass?.class_name }}</h3>
+          <h3 class="m-0 text-xl font-bold text-gray-800">{{ $t('ui.classDetails', { className: selectedClass?.class_name }) }}</h3>
           <button @click="showDetailDialog = false" class="bg-none border-none text-lg cursor-pointer p-1 rounded transition-colors hover:bg-gray-100">✖️</button>
         </div>
         <div class="p-6">
           <div v-if="loadingDetail" class="text-center py-12">
             <div class="w-12 h-12 border-4 border-gray-200 border-b-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-            <p>加载详情中...</p>
+            <p>{{ $t('ui.loadingDetails') }}</p>
           </div>
           <div v-else-if="classDetail" class="flex flex-col gap-6">
             <!-- 班级基本信息 -->
             <div class="flex flex-col gap-3">
               <div class="flex items-center py-2 border-b border-gray-100">
-                <span class="font-semibold text-gray-700 min-w-25">班级ID：</span>
+                <span class="font-semibold text-gray-700 min-w-25">{{ $t('ui.classId') }}</span>
                 <span class="text-gray-500">{{ classDetail.cid }}</span>
               </div>
               <div class="flex items-center py-2 border-b border-gray-100">
-                <span class="font-semibold text-gray-700 min-w-25">班级名称：</span>
+                <span class="font-semibold text-gray-700 min-w-25">{{ $t('ui.classNameLabel') }}</span>
                 <span class="text-gray-500">{{ classDetail.class_name }}</span>
               </div>
               <div class="flex items-center py-2 border-b border-gray-100">
-                <span class="font-semibold text-gray-700 min-w-25">创建时间：</span>
+                <span class="font-semibold text-gray-700 min-w-25">{{ $t('ui.creationTimeLabel') }}</span>
                 <span class="text-gray-500">{{ formatDate(classDetail.create_time) }}</span>
               </div>
             </div>
 
             <!-- 班级分析数据 -->
             <div v-if="classAnalysis" class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6">
-              <h4 class="text-gray-800 text-lg m-0 mb-4 font-bold">班级统计分析</h4>
+              <h4 class="text-gray-800 text-lg m-0 mb-4 font-bold">{{ $t('ui.classStatistics') }}</h4>
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div class="bg-white rounded-lg p-4 shadow-sm">
-                  <div class="text-gray-500 text-sm mb-1">学生总数</div>
+                  <div class="text-gray-500 text-sm mb-1">{{ $t('ui.totalStudents') }}</div>
                   <div class="text-2xl font-bold text-blue-600">{{ classAnalysis.student_num }}</div>
                 </div>
                 <div class="bg-white rounded-lg p-4 shadow-sm">
-                  <div class="text-gray-500 text-sm mb-1">应到人数</div>
+                  <div class="text-gray-500 text-sm mb-1">{{ $t('ui.expectedAttendance') }}</div>
                   <div class="text-2xl font-bold text-purple-600">{{ classAnalysis.expected_attend }}</div>
                 </div>
                 <div class="bg-white rounded-lg p-4 shadow-sm">
-                  <div class="text-gray-500 text-sm mb-1">今日实到</div>
+                  <div class="text-gray-500 text-sm mb-1">{{ $t('ui.todayAttendance') }}</div>
                   <div class="text-2xl font-bold text-green-600">{{ classAnalysis.today_actual_attend }}</div>
                 </div>
                 <div class="bg-white rounded-lg p-4 shadow-sm">
-                  <div class="text-gray-500 text-sm mb-1">今日出勤率</div>
+                  <div class="text-gray-500 text-sm mb-1">{{ $t('ui.todayAttendanceRate') }}</div>
                   <div class="text-2xl font-bold text-orange-600">
                     {{ classAnalysis.expected_attend > 0 ? (classAnalysis.today_actual_attend / classAnalysis.expected_attend * 100).toFixed(1) : 0 }}%
                   </div>
@@ -260,13 +260,13 @@
                 <AttendanceChart :data="classAnalysis.daily_attendance_rates" />
               </div>
               <div v-else class="bg-white rounded-lg p-6 text-center text-gray-500">
-                暂无历史出勤数据
+                {{ $t('ui.noHistoricalAttendance') }}
               </div>
             </div>
 
             <!-- 班级学生列表 -->
             <div>
-              <h4 class="text-gray-800 text-lg m-0 mb-4">班级学生 ({{ classDetail.students?.length || 0 }}人)</h4>
+              <h4 class="text-gray-800 text-lg m-0 mb-4">{{ $t('ui.classStudents') }} ({{ classDetail.students?.length || 0 }}{{ $t('pagination.peopleUnit') }})</h4>
               <div v-if="classDetail.students && classDetail.students.length > 0" class="flex flex-col gap-2 max-h-75 overflow-y-auto">
                 <div
                   v-for="student in classDetail.students"
@@ -279,12 +279,12 @@
                     class="py-1 px-3 rounded-full text-xs font-semibold"
                     :class="student.attendance ? 'bg-blue-50 text-blue-700' : 'bg-red-50 text-red-700'"
                   >
-                    {{ student.attendance ? '在校' : '缺勤' }}
+                    {{ student.attendance ? $t('ui.inSchool') : $t('ui.absent') }}
                   </span>
                 </div>
               </div>
               <div v-else class="text-center text-gray-500 italic py-6">
-                暂无学生
+                {{ $t('ui.noStudentsYet') }}
               </div>
             </div>
           </div>
@@ -296,17 +296,17 @@
     <div v-if="showDeleteDialog" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showDeleteDialog = false">
       <div class="bg-white rounded-2xl w-[90%] max-w-md max-h-[90vh] overflow-y-auto shadow-2xl">
         <div class="flex justify-between items-center p-6 border-b border-gray-200">
-          <h3 class="m-0 text-xl font-bold text-gray-800">确认删除</h3>
+          <h3 class="m-0 text-xl font-bold text-gray-800">{{ $t('ui.confirmDelete') }}</h3>
           <button @click="showDeleteDialog = false" class="bg-none border-none text-lg cursor-pointer p-1 rounded transition-colors hover:bg-gray-100">✖️</button>
         </div>
         <div class="p-6">
-          <p>确定要删除班级 "{{ selectedClass?.class_name }}" 吗？</p>
-          <p class="text-red-600 text-sm mt-2">此操作不可撤销，请谨慎操作！</p>
+          <p>{{ $t('ui.confirmDeleteClass', { className: selectedClass?.class_name }) }}</p>
+          <p class="text-red-600 text-sm mt-2">{{ $t('ui.cannotUndo') }}</p>
         </div>
         <div class="flex gap-3 justify-end p-6 border-t border-gray-200">
-          <button @click="showDeleteDialog = false" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-gray-100 text-gray-700 border-none hover:bg-gray-200">取消</button>
+          <button @click="showDeleteDialog = false" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-gray-100 text-gray-700 border-none hover:bg-gray-200">{{ $t('common.cancel') }}</button>
           <button @click="deleteClass" :disabled="deleting" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-red-600 text-white border-none hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed">
-            {{ deleting ? '删除中...' : '确认删除' }}
+            {{ deleting ? $t('ui.deleting') : $t('ui.confirmDeleteButton') }}
           </button>
         </div>
       </div>
@@ -316,10 +316,13 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AdminClassService from '@/services/admin/class'
 import AttendanceChart from './AttendanceChart.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import notificationService from '@/services/common/notification'
+
+const { t } = useI18n()
 
 // 响应式数据
 const loading = ref(false)
@@ -463,8 +466,8 @@ const fetchClasses = async () => {
     await fetchStudentCounts()
 
   } catch (err) {
-    error.value = err.message || '获取班级列表失败'
-    console.error('获取班级列表失败:', err)
+    error.value = err.message || t('component.getClassListFailed')
+    console.error(t('component.getClassListFailed') + ':', err)
   } finally {
     loading.value = false
   }
@@ -559,12 +562,12 @@ const createClass = async () => {
     await fetchClasses()
 
     // 显示成功通知
-    notificationService.notify('班级创建成功', 'success')
+    notificationService.notify(t('component.classCreatedSuccess'), 'success')
 
   } catch (err) {
-    error.value = err.message || '创建班级失败'
-    notificationService.notify(err.message || '创建班级失败', 'error')
-    console.error('创建班级失败:', err)
+    error.value = err.message || t('component.createClassFailed')
+    notificationService.notify(err.message || t('component.createClassFailed'), 'error')
+    console.error(t('component.createClassFailed') + ':', err)
   } finally {
     creating.value = false
   }
@@ -581,7 +584,7 @@ const viewClassDetail = async (classItem) => {
     const [detailResponse, analysisResponse] = await Promise.all([
       AdminClassService.getClassDetail(classItem.cid),
       AdminClassService.getClassAnalysis(classItem.cid).catch(err => {
-        console.warn('获取班级分析数据失败:', err)
+        console.warn(t('component.getClassAnalysisFailed') + ':', err)
         return null
       })
     ])
@@ -589,8 +592,8 @@ const viewClassDetail = async (classItem) => {
     classDetail.value = detailResponse.data
     classAnalysis.value = analysisResponse?.data || null
   } catch (err) {
-    error.value = err.message || '获取班级详情失败'
-    console.error('获取班级详情失败:', err)
+    error.value = err.message || t('component.getClassDetailFailed')
+    console.error(t('component.getClassDetailFailed') + ':', err)
   } finally {
     loadingDetail.value = false
   }
@@ -617,19 +620,19 @@ const deleteClass = async () => {
     await fetchClasses()
 
     // 显示成功通知
-    notificationService.notify('班级删除成功', 'success')
+    notificationService.notify(t('component.classDeletedSuccess'), 'success')
 
   } catch (err) {
-    error.value = err.message || '删除班级失败'
-    notificationService.notify(err.message || '删除班级失败', 'error')
-    console.error('删除班级失败:', err)
+    error.value = err.message || t('component.deleteClassFailed')
+    notificationService.notify(err.message || t('component.deleteClassFailed'), 'error')
+    console.error(t('component.deleteClassFailed') + ':', err)
   } finally {
     deleting.value = false
   }
 }
 
 const formatDate = (timestamp) => {
-  if (!timestamp) return '未知'
+  if (!timestamp) return $t('common.unknown')
   const date = new Date(timestamp * 1000) // 假设是Unix时间戳
   return date.toLocaleDateString('zh-CN', {
     year: 'numeric',
