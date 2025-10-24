@@ -581,7 +581,6 @@ export default {
     confirm: 'Confirm',
     unknownClass: 'Unknown Class({cid})',
     allClasses: 'All Classes ({count})',
-    selectedClasses: 'Selected {count} classes'
   },
 
   // Footer

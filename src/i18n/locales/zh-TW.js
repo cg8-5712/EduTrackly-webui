@@ -34,7 +34,13 @@ export default {
     yesterday: '昨天',
     thisWeek: '本週',
     thisMonth: '本月',
-    total: '總計'
+    total: '總計',
+    fullscreen: '全螢幕',
+    exitFullscreen: '退出全螢幕',
+    unknown: '未知',
+    loginFailedRetry: '登入失敗，請重試',
+    passwordRequired: '請輸入密碼',
+    passwordSafetyWarning: '請妥善保管您的管理員密碼'
   },
 
   // 導航選單
@@ -47,7 +53,11 @@ export default {
     class: '班級',
     attendance: '考勤',
     analysis: '分析',
-    system: '系統'
+    system: '系統',
+    currentadmin: '目前狀態',
+    classadmin: '班級管理',
+    studentadmin: '學生管理',
+    homeworkadmin: '作業管理'
   },
 
   // 主題
@@ -137,9 +147,11 @@ export default {
     today: '今日作業',
     todayHomework: '今日作業',
     noHomework: '暫無作業',
+    noHomeworkToday: '今天沒有佈置作業哦～',
     pleaseEnterContent: '請輸入作業內容',
     submitSuccess: '提交成功',
     submitFailed: '提交失敗',
+    fetchFailed: '獲取作業失敗，請稍後重試',
 
     // 學科
     subjects: {
@@ -295,7 +307,9 @@ export default {
     prev: '上一頁',
     next: '下一頁',
     first: '首頁',
-    last: '末頁'
+    last: '末頁',
+    itemsUnit: '條',
+    peopleUnit: '人'
   },
 
   // 錯誤訊息
@@ -311,7 +325,262 @@ export default {
     formValidation: '表單驗證失敗',
     fileUpload: '檔案上傳失敗',
     fileSizeExceeded: '檔案大小超出限制',
-    fileTypeNotSupported: '不支援的檔案類型'
+    fileTypeNotSupported: '不支援的檔案類型',
+
+    // Service specific errors
+    classIdRequired: '班級ID必填',
+    studentDataEmpty: '學生資料不能為空',
+    studentIdRequired: '學生ID必填',
+    dateRequired: '日期必填',
+    eventDataEmpty: '事件資料不能為空',
+    classIdOrNameRequired: '班級ID或班級名稱不能同時為空',
+    classNameRequired: '班級名稱不能為空',
+    classIdEmpty: '班級ID不能為空',
+    homeworkContentAndDateRequired: '班級ID、作業內容和截止日期不能為空',
+    invalidThemeId: '無效的主題 ID',
+    themeConfigNotFound: '未找到主題配置',
+    notificationTypeNotSupported: 'Notification type "{type}" 不支援，預設使用 "info"',
+
+    // Validation errors
+    studentNameEmpty: '第{index}個學生姓名不能為空',
+    studentNameTooLong: '第{index}個學生姓名不能超過50個字元',
+    selectDateAndEventType: '請選擇日期和事件類型',
+    inSchoolCannotSelectTempLeave: '在校學生不能選擇臨時外出',
+    atLeastOneSubjectRequired: '請至少填寫一個科目的作業',
+
+    // File upload errors
+    fileTypesSupported: '僅支援上傳 .txt、.csv、.xlsx 或 .xls 檔案',
+    fileSizeLimit: '檔案大小不能超過 5MB',
+    headerRowSkipped: '檢測到表頭行，已自動跳過',
+    excelLoadSuccess: '成功載入 Excel 檔案: {filename}，共 {count} 行資料',
+    excelParseFailed: '解析 Excel 檔案失敗，請檢查檔案格式',
+    excelReadFailed: '讀取 Excel 檔案失敗',
+    fileLoadSuccess: '成功載入檔案: {filename}',
+    fileReadFailed: '讀取檔案失敗'
+  },
+
+  // Service messages (console logs and operations)
+  service: {
+    // Student service
+    batchAddingStudents: '批次新增學生',
+    batchAddStudentsFailed: '批次新增學生失敗',
+    changingAttendanceStatus: '更改出勤狀態',
+    changeAttendanceStatusFailed: '更改出勤狀態失敗',
+    deletingStudent: '刪除學生',
+    deleteStudentFailed: '刪除學生失敗',
+    submittingStudentEvents: '提交學生事件',
+    submitStudentEventsFailed: '提交學生事件失敗',
+    gettingStudentAnalysis: '獲取學生分析資料',
+    getStudentAnalysisFailed: '獲取學生分析資料失敗',
+
+    // Homework service
+    getHomeworkSuccess: '獲取作業成功',
+    getHomeworkFailed: '獲取作業失敗',
+    getHomeworkListSuccess: '獲取作業列表成功',
+    getHomeworkListFailed: '獲取作業列表失敗',
+    createHomeworkSuccess: '建立作業成功',
+    createHomeworkFailed: '建立作業失敗',
+    updateHomeworkSuccess: '更新作業成功',
+    updateHomeworkFailed: '更新作業失敗',
+    deleteHomeworkSuccess: '刪除作業成功',
+    deleteHomeworkFailed: '刪除作業失敗',
+
+    // Class service
+    getClassListSuccess: '獲取班級列表成功',
+    getClassListFailed: '獲取班級列表失敗',
+    getClassDetailSuccess: '獲取班級詳情成功',
+    getClassDetailFailed: '獲取班級詳情失敗',
+    getClassInfoSuccess: '獲取班級資訊成功',
+    getClassInfoFailed: '獲取班級資訊失敗',
+    createClassSuccess: '建立班級成功',
+    createClassFailed: '建立班級失敗',
+    deleteClassSuccess: '刪除班級成功',
+    deleteClassFailed: '刪除班級失敗',
+    getClassAnalysisSuccess: '獲取班級分析資料成功',
+    getClassAnalysisFailed: '獲取班級分析資料失敗',
+    getClassesFailed: '獲取班級失敗',
+
+    // Theme service
+    themeSaved: '主題已儲存',
+    saveThemeFailed: '儲存主題失敗',
+    loadingCachedTheme: '載入快取主題',
+    usingDefaultTheme: '使用預設主題',
+    loadThemeFailed: '載入主題失敗',
+    themeCacheCleared: '主題快取已清除',
+    clearThemeCacheFailed: '清除主題快取失敗',
+    themeApplied: '主題已套用',
+    allThemeCacheCleared: '所有主題快取已清除'
+  },
+
+  // Component specific messages
+  component: {
+    // ClassAdmin
+    classCreatedSuccess: '班級建立成功',
+    createClassFailed: '建立班級失敗',
+    classDeletedSuccess: '班級刪除成功',
+    deleteClassFailed: '刪除班級失敗',
+    getClassListFailed: '獲取班級列表失敗',
+    getClassAnalysisFailed: '獲取班級分析資料失敗',
+    getClassDetailFailed: '獲取班級詳情失敗',
+
+    // StudentAdmin
+    getStudentListFailed: '獲取學生列表失敗',
+    getStudentsForClassFailed: '獲取班級 {className} 學生失敗',
+    changeAttendanceStatusFailed: '更改出勤狀態失敗',
+    deleteStudentSuccess: '刪除學生 {studentName} 成功',
+    deleteStudentFailed: '刪除學生失敗',
+    confirmDeleteStudent: '確定要刪除學生 {studentName} 嗎？此操作不可恢復。',
+    statusChangedTo: '狀態已更改為',
+
+    // HomeworkAdmin
+    homeworkCreatedSuccess: '作業建立成功',
+    createHomeworkFailed: '建立作業失敗',
+    homeworkUpdatedSuccess: '作業更新成功',
+    updateHomeworkFailed: '更新作業失敗',
+    homeworkDeletedSuccess: '作業刪除成功',
+    deleteHomeworkFailed: '刪除作業失敗',
+    getHomeworkListFailed: '獲取作業列表失敗',
+
+    // AddStudentModal
+    studentsAddedSuccess: '成功新增 {count} 個學生',
+    studentAddedSuccess: '新增學生成功',
+
+    // StudentDetailModal
+    historyRecordAddedSuccess: '歷史記錄新增成功',
+    submitEventRecordFailed: '提交事件記錄失敗',
+
+    // StudentEventSelector
+    submitSuccess: '提交成功',
+    submitFailed: '提交失敗'
+  },
+
+  // UI text
+  ui: {
+    // ClassAdmin
+    classManagement: '班級管理',
+    manageClassInfo: '管理所有班級資訊，查看學生人數和建立時間',
+    createClass: '建立班級',
+    searchClassName: '搜尋班級名稱...',
+    itemsPerPage: '每頁顯示',
+    foundClassesInfo: '共找到 {total} 個班級，每頁顯示 {size} 條',
+    className: '班級名稱',
+    id: 'ID',
+    studentCount: '學生人數',
+    creationTime: '建立時間',
+    actions: '操作',
+    viewDetails: '查看詳情',
+    deleteClass: '刪除班級',
+    createNewClass: '建立新班級',
+    enterClassName: '請輸入班級名稱',
+    confirmCreate: '確認建立',
+    classDetails: '班級詳情 - {className}',
+    loadingDetails: '載入詳情中...',
+    classId: '班級ID：',
+    classNameLabel: '班級名稱：',
+    creationTimeLabel: '建立時間：',
+    classStatistics: '班級統計分析',
+    totalStudents: '學生總數',
+    expectedAttendance: '應到人數',
+    todayAttendance: '今日實到',
+    todayAttendanceRate: '今日出勤率',
+    noHistoricalAttendance: '暫無歷史出勤資料',
+    classStudents: '班級學生',
+    inSchool: '在校',
+    absent: '缺勤',
+    noStudentsYet: '暫無學生',
+    confirmDelete: '確認刪除',
+    confirmDeleteClass: '確定要刪除班級 "{className}" 嗎？',
+    cannotUndo: '此操作不可撤銷，請謹慎操作！',
+    deleting: '刪除中...',
+    confirmDeleteButton: '確認刪除',
+
+    // AddStudentModal
+    addStudent: '新增學生',
+    manual: '手動',
+    batch: '批次',
+    targetClass: '目標班級',
+    selectClass: '請選擇班級',
+    studentName: '學生姓名',
+    enterStudentName: '請輸入學生姓名',
+    initialStatus: '初始狀態',
+    leftSchool: '離校',
+    batchInputStudentInfo: '批次輸入學生資訊',
+    batchInputPlaceholder: 'CSV格式，每行一個學生，格式：班級ID,姓名,出勤狀態\n例如：\n1,張三,1\n1,李四,0\n\n出勤狀態：1=在校，0=離校',
+    batchInputHelp: 'CSV格式：班級ID,姓名,出勤狀態（1=在校，0=離校）',
+    selectFile: '選擇檔案',
+    fileFormatHint: '支援上傳 .txt、.csv 或 .xlsx/.xls 檔案（每行格式：班級ID,姓名,出勤狀態）',
+    confirmAdd: '確認新增',
+    adding: '新增中...',
+    selectClassRequired: '請選擇目標班級',
+    studentInfoRequired: '請輸入學生資訊',
+    studentNameRequired: '學生姓名不能為空',
+    studentNameMaxLength: '學生姓名不能超過50個字元',
+
+    // StudentDetailModal
+    studentIdLabel: '學號',
+    loadingAnalysisData: '載入分析資料中...',
+    loadAnalysisDataFailed: '載入分析資料失敗',
+    retry: '重試',
+    basicInfo: '基本資訊',
+    name: '姓名',
+    attendanceStatus: '出勤狀態',
+    addHistoryRecord: '新增歷史記錄',
+    selectDate: '選擇日期',
+    clickToSelectDate: '點擊選擇日期',
+    eventType: '事件類型',
+    official: '公事',
+    personal: '私事',
+    sickLeave: '病假',
+    temporaryLeave: '臨時外出',
+    warningInSchoolNoTempLeave: '⚠️ 目前學生狀態為在校，不能選擇臨時外出',
+    submitRecord: '提交記錄',
+    submitting: '提交中...',
+    eventStatistics: '事件統計',
+    times: '次',
+    noEventRecords: '暫無事件記錄',
+    officialRecords: '公事記錄',
+    personalRecords: '私事記錄',
+    sickLeaveRecords: '病假記錄',
+    temporaryLeaveRecords: '臨時外出記錄',
+    close: '關閉',
+
+    // StudentAdmin
+    studentManagement: '學生管理',
+    manageStudentInfo: '管理班級學生資訊、出勤狀態和統計資料',
+    confirmSelection: '確認選擇',
+    selectAll: '全選',
+    classes: '個班級',
+    searchStudentPlaceholder: '搜尋學生姓名或學號...',
+    clear: '清除',
+    refresh: '重新整理',
+    refreshing: '重新整理中...',
+    studentsInSchool: '在校學生',
+    studentsLeftSchool: '離校學生',
+    studentList: '學生列表',
+    selectedClasses: '已選擇 {count} 個班級',
+    loadingStudentList: '載入學生列表中...',
+    pleaseSelectClass: '請先選擇班級',
+    noMatchingStudents: '未找到符合的學生',
+    noStudentData: '暫無學生資料',
+    selectClassFromDropdown: '在上方下拉框中選擇要查看的班級',
+    tryOtherKeywords: '請嘗試其他搜尋關鍵詞',
+    noStudentsAddedYet: '還沒有新增學生哦～',
+    addStudentNow: '立即新增學生',
+    class: '班級',
+    studentId: '學號',
+    details: '詳情',
+    delete: '刪除',
+    showingRecords: '顯示第 {start} - {end} 條，共 {total} 條記錄',
+    items: '條',
+    firstPage: '首頁',
+    previousPage: '上一頁',
+    nextPage: '下一頁',
+    lastPage: '末頁',
+    jumpTo: '跳轉到',
+    page: '頁',
+    confirm: '確定',
+    unknownClass: '未知班級({cid})',
+    allClasses: '全部班級 ({count}個)'
   },
 
   // 頁尾
@@ -319,5 +588,90 @@ export default {
     copyright: '版權所有 © {year} EduTrackly. 保留所有權利。',
     version: '版本',
     build: '建置'
+  },
+
+  // 額外的 UI 文字
+  extraUI: {
+    // AttendanceDisplay
+    expectedAttend: '應到',
+    actualAttend: '實到',
+    leaveList: '請假名單',
+    temporaryJoinList: '臨時參加名單',
+    noAttendanceInfo: '暫無出勤資訊',
+    pleaseSelectClassFirst: '請先選擇班級',
+    fetchAttendanceInfoFailed: '獲取出勤資訊失敗',
+    fetchDataFailed: '獲取資料失敗',
+    peopleUnit: '人',
+
+    // CurrentAdmin
+    adminConsole: '管理員控制台',
+    realTimeMonitoring: '即時監控與管理',
+    totalStudents: '學生總數',
+    homeworkTasks: '作業任務',
+    refresh: '重新整理',
+    mainPanel: '主面板',
+    classSelection: '班級選擇',
+    currentClass: '目前班級',
+    classIdLabel: '班級ID',
+    pleaseSelectClass: '請選擇班級',
+    systemStatus: '系統狀態',
+    serviceRunning: '服務執行中',
+    databaseConnected: '資料庫連線',
+    realTimeSync: '即時同步',
+    studentManagement: '學生管理',
+    currentClassLabel: '目前班級',
+    homeworkManagement: '作業管理',
+
+    // ClassSwitch
+    loadClassListFailed: '載入班級列表失敗',
+
+    // SubmitHomework
+    subjects: {
+      chinese: '語文',
+      math: '數學',
+      english: '英語',
+      physics: '物理',
+      chemistry: '化學',
+      biology: '生物',
+      history: '歷史',
+      geography: '地理',
+      politics: '政治',
+      others: '其他'
+    },
+    getHomeworkSuccess: '獲取今日作業成功',
+
+    // AddStudentModal - 詳細的錯誤提示
+    lineFormatError: '第{index}行格式錯誤：應為「班級ID,姓名,出勤狀態」，當前有{count}個欄位',
+    detectedChineseComma: '檢測到中文逗號「，」，請使用英文逗號「,」',
+    detectedSpaceSeparator: '檢測到空格分隔符，請使用英文逗號「,」',
+    detectedTabSeparator: '檢測到Tab分隔符，請使用英文逗號「,」',
+    detectedChineseSemicolon: '檢測到中文分號「；」，請使用英文逗號「,」',
+    detectedSemicolon: '檢測到分號「;」，請使用英文逗號「,」',
+    detectedPipe: '檢測到豎線「|」，請使用英文逗號「,」',
+    classIdMustBePositiveInteger: '第{index}行：班級ID「{cid}」必須是正整數',
+    studentNameCannotBeEmpty: '第{index}行：學生姓名不能為空',
+    studentNameTooLongAtLine: '第{index}行：學生姓名「{name}」不能超過50個字元',
+    attendanceStatusMustBe0Or1: '第{index}行：出勤狀態「{status}」必須是0或1',
+    noValidStudentInfo: '沒有有效的學生資訊',
+    addStudentsFailed: '班級{cid}：{error}',
+    partialAddFailed: '部分新增失敗：成功{count}個',
+    addStudentFailedRetry: '新增學生失敗，請稍後重試',
+    parseExcelError: '解析 Excel 檔案錯誤',
+    readExcelFailed: '讀取 Excel 檔案失敗',
+    fileUploadError: '檔案上傳錯誤',
+    lineContent: '第{index}行原始內容',
+    lineParsed: '第{index}行分割結果',
+    parseSuccess: '第{index}行解析成功',
+    headerLineDetected: '檢測到表頭行，已自動跳過',
+    includesClass: '班級',
+    includesName: '姓名',
+    includesAttendance: '出勤',
+
+    // Home view
+    homeTitle: '首頁',
+
+    // 通用錯誤和成功訊息
+    operationSuccess: '操作成功',
+    operationFailed: '操作失敗'
   }
 }
