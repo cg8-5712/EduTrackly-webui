@@ -91,26 +91,26 @@ class StudentService extends ApiPrefix {
     }
   }
 
-  // 获取学生分析数据
-  async getStudentAnalysis(cid, startDate = null, endDate = null) {
+  // 提交学生事件
+  async submitStudentEvents(events, date) {
     try {
-      if (!cid) throw new Error('班级ID必填');
+      if (!date) throw new Error(t('error.dateRequired'));
+      if (!Array.isArray(events) || events.length === 0) {
+        throw new Error(t('error.eventDataEmpty'));
+      }
 
-      let url = `/analysis/student?cid=${cid}`;
-      if (startDate) url += `&startDate=${startDate}`;
-      if (endDate) url += `&endDate=${endDate}`;
-
-      const data = await this.get(url);
-      console.log('获取学生分析数据:', data.message);
+      const url = `/student/event?date=${date}`;
+      const data = await this.adminPut(url, events);
+      console.log(t('service.submittingStudentEvents') + ':', data.message);
 
       if (data.code !== 0) {
-        throw new Error(data.message);
+        throw new Error(data.message || t('service.submitStudentEventsFailed'));
       }
 
       return data;
     } catch (error) {
-      console.error('获取学生分析数据失败:', error);
-      throw error;
+      console.error(t('service.submitStudentEventsFailed') + ':', error);
+      throw new Error(error.message || t('service.submitStudentEventsFailed'));
     }
   }
 }
