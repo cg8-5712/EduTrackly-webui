@@ -41,7 +41,7 @@ watch(
 <style scoped>
 .submit-container {
   min-height: 100vh;
-  height: 100vh;
+  max-height: 100vh;
   width: 100%;
   background-color: var(--color-background);
   color: var(--color-text-primary);
@@ -50,7 +50,28 @@ watch(
   gap: 1rem;
   padding: 1rem;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+/* 自定义滚动条样式 */
+.submit-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.submit-container::-webkit-scrollbar-track {
+  background: var(--color-surface);
+  border-radius: 4px;
+}
+
+.submit-container::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.submit-container::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
 }
 </style>
