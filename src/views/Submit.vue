@@ -1,5 +1,5 @@
 <template>
-  <div class="submit-container">
+  <div class="min-h-screen max-h-screen w-full bg-background text-text-primary flex flex-col gap-4 p-4 box-border overflow-y-auto overflow-x-hidden transition-colors duration-200 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-surface [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb:hover]:bg-text-tertiary">
     <ClassSwitch @update:cid="handleClassChange" />
     <StudentEventSelector :cid="selectedCid" ref="studentListComponent" />
     <!-- 引入作业提交组件 -->
@@ -37,41 +37,3 @@ watch(
     { immediate: true }
 )
 </script>
-
-<style scoped>
-.submit-container {
-  min-height: 100vh;
-  max-height: 100vh;
-  width: 100%;
-  background-color: var(--color-background);
-  color: var(--color-text-primary);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
-  box-sizing: border-box;
-  overflow-y: auto;
-  overflow-x: hidden;
-  transition: background-color var(--transition-base), color var(--transition-base);
-}
-
-/* 自定义滚动条样式 */
-.submit-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.submit-container::-webkit-scrollbar-track {
-  background: var(--color-surface);
-  border-radius: 4px;
-}
-
-.submit-container::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 4px;
-  transition: background 0.3s ease;
-}
-
-.submit-container::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-tertiary);
-}
-</style>

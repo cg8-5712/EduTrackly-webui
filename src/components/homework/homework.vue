@@ -1,33 +1,33 @@
 <template>
-  <div class="homework-wrapper">
+  <div class="flex flex-col gap-4">
     <!-- 加载中 -->
-    <div v-if="loading" class="homework-loading">
+    <div v-if="loading" class="p-4 bg-surface text-text-primary rounded-xl shadow-lg flex items-center justify-center min-h-[200px] transition-colors duration-200">
       <LoadingSpinner :size="60" color="var(--color-primary)" message="" />
     </div>
 
     <!-- 作业内容展示 -->
     <template v-else>
       <!-- 如果无作业数据 -->
-      <div v-if="error === 'no-homework'" class="homework-empty">
-        <div class="empty-content">
-          <div class="empty-icon">📝</div>
-          <div class="empty-title">{{ $t('homework.noHomework') }}</div>
-          <div class="empty-subtitle">{{ $t('homework.noHomeworkToday') }}</div>
+      <div v-if="error === 'no-homework'" class="p-4 bg-surface text-text-primary rounded-xl shadow-lg flex text-3xl font-extrabold transition-colors duration-200">
+        <div class="flex items-center justify-center w-full text-center flex-col">
+          <div class="text-8xl mb-4">📝</div>
+          <div class="text-4xl text-primary mb-2 transition-colors duration-200">{{ $t('homework.noHomework') }}</div>
+          <div class="text-2xl text-text-tertiary mt-2 transition-colors duration-200">{{ $t('homework.noHomeworkToday') }}</div>
         </div>
       </div>
       <!-- 显示分科目作业内容 -->
       <template v-else>
-        <div class="homework-grid" :style="gridStyle">
+        <div class="grid gap-4" :style="gridStyle">
           <div v-for="subject in subjectsWithContent"
                :key="subject.key"
-               class="subject-card">
-            <div class="subject-label" :style="getSubjectStyle(subject.key)">
+               class="p-4 bg-surface text-text-primary rounded-xl shadow-lg flex text-4xl font-extrabold transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5 max-md:text-[1.65rem] max-md:p-3 max-md:flex-col max-md:gap-2">
+            <div class="text-2xl font-bold min-w-[3.75rem] flex-shrink-0 text-center p-2 rounded-lg border max-md:text-[1.35rem] max-md:min-w-0" :style="getSubjectStyle(subject.key)">
               {{ subject.name }}
             </div>
-            <div class="subject-content">
+            <div class="flex-1 flex flex-col gap-1 pt-2 pl-3 max-md:pt-0 max-md:pl-0">
               <div v-for="(line, index) in subject.lines"
                    :key="index"
-                   class="content-line">
+                   class="text-[1.65rem] leading-7 text-text-primary break-words transition-colors duration-200 max-md:text-[1.45rem]">
                 {{ line }}
               </div>
             </div>
@@ -192,146 +192,12 @@ const gridStyle = computed(() => {
 </script>
 
 <style scoped>
-.homework-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.homework-loading {
-  padding: 1rem;
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  transition: background-color var(--transition-base);
-}
-
-.homework-empty {
-  padding: 1rem;
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-lg);
-  display: flex;
-  font-size: 1.875rem;
-  font-weight: 800;
-  transition: background-color var(--transition-base);
-}
-
-.empty-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  text-align: center;
-  flex-direction: column;
-}
-
-.empty-icon {
-  font-size: 5rem;
-  margin-bottom: 1rem;
-}
-
-.empty-title {
-  font-size: 2rem;
-  color: var(--color-primary);
-  margin-bottom: 0.5rem;
-  transition: color var(--transition-base);
-}
-
-.empty-subtitle {
-  font-size: 1.5rem;
-  color: var(--color-text-tertiary);
-  margin-top: 0.5rem;
-  transition: color var(--transition-base);
-}
-
-.homework-grid {
-  display: grid;
-  gap: 1rem;
-}
-
-.subject-card {
-  padding: 1rem;
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-lg);
-  display: flex;
-  font-size: 2.25rem;
-  font-weight: 800;
-  transition: all 0.2s;
-}
-
-.subject-card:hover {
-  box-shadow: var(--shadow-xl);
-  transform: translateY(-2px);
-}
-
-.subject-label {
-  font-size: 1.5rem;
-  font-weight: bold;
-  min-width: 3.75rem;
-  flex-shrink: 0;
-  text-align: center;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid;
-}
-
-.subject-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding-top: 0.5rem;
-  padding-left: 0.75rem;
-}
-
-.content-line {
-  font-size: 1.65rem;
-  line-height: 1.75;
-  color: var(--color-text-primary);
-  word-break: break-word;
-  transition: color var(--transition-base);
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .subject-card {
-    font-size: 1.65rem;
-    padding: 0.75rem;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .subject-label {
-    font-size: 1.35rem;
-    min-width: auto;
-    text-align: center;
-  }
-
-  .subject-content {
-    padding-top: 0;
-    padding-left: 0;
-  }
-
-  .content-line {
-    font-size: 1.45rem;
-  }
-}
-
-/* 当只有一个科目时的特殊样式 */
-.homework-grid:has(.subject-card:only-child) .subject-card {
+/* 当只有一个科目时的特殊样式 - 使用深度选择器 */
+:deep(.grid:has(> div:only-child)) > div {
   min-height: 200px;
 }
 
-.homework-grid:has(.subject-card:only-child) .content-line {
+:deep(.grid:has(> div:only-child)) .text-\[1\.65rem\] {
   font-size: 2rem;
   line-height: 1.8;
 }

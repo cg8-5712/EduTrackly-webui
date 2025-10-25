@@ -13,6 +13,7 @@ export default {
     // 背景色
     background: '#f9fafb',
     surface: '#ffffff',
+    headerFooter: '#ffffff', // 顶栏和底栏专用颜色
 
     // 文字颜色
     text: {

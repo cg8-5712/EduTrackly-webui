@@ -19,6 +19,7 @@ html {
   /* 背景色 */
   --color-background: #111827;
   --color-surface: #1f2937;
+  --color-header-footer: #212936;
 
   /* 文字颜色 */
   --color-text-primary: #f9fafb;

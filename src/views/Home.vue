@@ -1,16 +1,16 @@
 <template>
-  <div class="home-container" @click="handleGlobalClick">
+  <div class="h-screen w-full bg-background flex flex-col p-4 box-border overflow-hidden transition-[background-color] duration-200" @click="handleGlobalClick">
     <!-- 顶部栏 -->
     <div class="top-bar">
-      <div class="date-section">
-        <div class="date-display">
+      <div class="relative flex items-center gap-4 text-2xl font-semibold">
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
           <span class="date-text">{{ $t('common.today') }}：{{ todayDate }}</span>
           <span v-if="selectedDate && selectedDate !== todayDateInt" class="date-text selected-date">
             {{ $t('datetime.selectDate') }}：{{ formattedSelectedDate }}
           </span>
         </div>
-        <div class="calendar-wrapper">
-          <button @click="showCalendar = !showCalendar" class="calendar-btn">
+        <div class="relative">
+          <button @click="showCalendar = !showCalendar" class="text-4xl md:text-5xl p-1 rounded-lg transition-all duration-200 border-none bg-transparent cursor-pointer hover:scale-110 active:scale-95">
             📅
           </button>
           <div v-if="showCalendar" class="calendar-popup">
@@ -22,7 +22,7 @@
       <!-- 替换原有班级选择为新组件 -->
       <ClassSwitch v-model:cid="selectedCid" />
 
-      <div class="action-bar">
+      <div class="flex items-center gap-3 sm:gap-6">
         <LanguageToggle />
         <ThemeToggle />
         <div class="time-display">
@@ -35,7 +35,7 @@
     </div>
 
     <!-- 主要内容区域 -->
-    <div class="main-content" ref="mainContentRef">
+    <div class="flex-1 flex flex-col md:flex-row gap-4 md:gap-0 min-h-0 py-2 mt-2" ref="mainContentRef">
       <!-- 左侧考勤信息 -->
       <div class="content-card" :style="{ width: leftWidth }">
         <AttendanceDisplay ref="studentsComponent" :selected-date="selectedDate" :selected-cid="selectedCid" />
@@ -43,10 +43,10 @@
 
       <!-- 可拖动分隔条 -->
       <div
-        class="resizer"
-        @mousedown="startResize"
-        @touchstart="startResize"
-        :class="{ 'resizing': isResizing }"
+          class="resizer"
+          @mousedown="startResize"
+          @touchstart="startResize"
+          :class="{ 'resizing': isResizing }"
       >
         <div class="resizer-line"></div>
       </div>
@@ -67,16 +67,8 @@
       <div class="footer-content">
         <div class="copyright">
           <router-link to="/about" class="copyright-link">
-            <p>© 2025 EduTrackly. All rights reserved.</p>
-            <p class="license-text">Licensed under CC BY-NC-ND 4.0</p>
-          </router-link>
-        </div>
-        <div class="version-info-wrapper">
-          <VersionInfo :compact="true" />
-        </div>
-        <div class="team-info">
-          <router-link to="/about" class="team-link">
-            Team: Cg8-5712 & Contributors
+            <p class="m-0 text-sm leading-6">© 2025 EduTrackly. All rights reserved.</p>
+            <p class="license-text">Licensed under GNU General Public License v3.0</p>
           </router-link>
         </div>
       </div>
@@ -241,7 +233,7 @@ const startResize = (e) => {
 // 监听班级变化刷新学生和作业
 watch(selectedCid, (newCid) => {
   if (!newCid) return
-  
+
   const cid = Number(newCid)
   if (studentsComponent.value?.fetchAttendance) {
     studentsComponent.value.fetchAttendance()
@@ -271,56 +263,19 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* 容器样式 */
-.home-container {
-  height: 100vh;
-  width: 100%;
-  background-color: var(--color-background);
-  color: var(--color-text-primary);
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  box-sizing: border-box;
-  overflow: hidden;
-  transition: background-color var(--transition-base), color var(--transition-base);
-}
-
 /* 顶部栏 */
 .top-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: var(--color-surface);
+  background-color: var(--color-header-footer);
   border-radius: 0.75rem;
   box-shadow: var(--shadow-lg);
   transition: background-color var(--transition-base);
 }
 
-/* 日期区域 */
-.date-section {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--color-primary);
-}
-
-.date-display {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-@media (min-width: 640px) {
-  .date-display {
-    flex-direction: row;
-    gap: 1rem;
-  }
-}
-
+/* 日期文本 */
 .date-text {
   font-size: 1.5rem;
   font-weight: bold;
@@ -343,71 +298,7 @@ onUnmounted(() => {
   }
 }
 
-/* 日历按钮 */
-.calendar-wrapper {
-  position: relative;
-}
-
-.calendar-btn {
-  font-size: 2.25rem;
-  padding: 0.25rem;
-  border-radius: 0.5rem;
-  transition: all 0.2s;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-.calendar-btn:hover {
-  transform: scale(1.1);
-}
-
-.calendar-btn:active {
-  transform: scale(0.95);
-}
-
-@media (min-width: 768px) {
-  .calendar-btn {
-    font-size: 3rem;
-  }
-}
-
-.calendar-popup {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 0.5rem;
-  z-index: 1000;
-  background-color: var(--color-surface);
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-lg);
-  animation: fadeIn 0.2s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 操作栏 */
-.action-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-@media (min-width: 640px) {
-  .action-bar {
-    gap: 1.5rem;
-  }
-}
-
+/* 时间显示 */
 .time-display {
   font-size: 1.875rem;
   font-weight: 900;
@@ -426,6 +317,7 @@ onUnmounted(() => {
   }
 }
 
+/* 全屏按钮 */
 .fullscreen-btn {
   background-color: var(--color-surface);
   color: var(--color-primary);
@@ -461,24 +353,31 @@ onUnmounted(() => {
   }
 }
 
-/* 主内容区域 */
-.main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-height: 0;
-  padding: 0.5rem 0;
+/* 日历弹出动画 */
+.calendar-popup {
+  position: absolute;
+  top: 100%;
+  right: 0;
   margin-top: 0.5rem;
+  z-index: 1000;
+  background-color: var(--color-surface);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-lg);
+  animation: fadeIn 0.2s ease-in-out;
 }
 
-@media (min-width: 768px) {
-  .main-content {
-    flex-direction: row;
-    gap: 0;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
+/* 内容卡片 */
 .content-card {
   background-color: var(--color-surface);
   border-radius: 0.75rem;
@@ -604,7 +503,7 @@ onUnmounted(() => {
 
 /* 页脚 */
 .footer {
-  background-color: var(--color-surface);
+  background-color: var(--color-header-footer);
   color: var(--color-text-tertiary);
   padding: 0.75rem 1rem;
   margin-top: auto;
@@ -649,32 +548,6 @@ onUnmounted(() => {
   margin-top: 0.25rem !important;
 }
 
-.version-info-wrapper {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  min-width: 200px;
-}
-
-.team-info {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  min-width: 200px;
-}
-
-.team-link {
-  color: var(--color-text-tertiary);
-  text-decoration: none;
-  font-size: 0.875rem;
-  transition: color 0.2s ease;
-}
-
-.team-link:hover {
-  color: var(--color-primary);
-  text-decoration: underline;
-}
-
 @media (max-width: 768px) {
   .footer-content {
     flex-direction: column;
@@ -682,9 +555,7 @@ onUnmounted(() => {
     text-align: center;
   }
 
-  .copyright,
-  .version-info-wrapper,
-  .team-info {
+  .copyright {
     justify-content: center;
     min-width: 100%;
   }
