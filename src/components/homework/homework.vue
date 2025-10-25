@@ -233,19 +233,19 @@ const gridStyle = computed(() => {
 }
 
 .empty-icon {
-  font-size: 3.75rem;
+  font-size: 5rem;
   margin-bottom: 1rem;
 }
 
 .empty-title {
-  font-size: 1.5rem;
+  font-size: 2rem;
   color: var(--color-primary);
   margin-bottom: 0.5rem;
   transition: color var(--transition-base);
 }
 
 .empty-subtitle {
-  font-size: 1.125rem;
+  font-size: 1.5rem;
   color: var(--color-text-tertiary);
   margin-top: 0.5rem;
   transition: color var(--transition-base);
@@ -263,7 +263,7 @@ const gridStyle = computed(() => {
   border-radius: 0.75rem;
   box-shadow: var(--shadow-lg);
   display: flex;
-  font-size: 1.875rem;
+  font-size: 2.25rem;
   font-weight: 800;
   transition: all 0.2s;
 }
@@ -274,7 +274,7 @@ const gridStyle = computed(() => {
 }
 
 .subject-label {
-  font-size: 1.125rem;
+  font-size: 1.5rem;
   font-weight: bold;
   min-width: 3.75rem;
   flex-shrink: 0;
@@ -294,7 +294,7 @@ const gridStyle = computed(() => {
 }
 
 .content-line {
-  font-size: 1.25rem;
+  font-size: 1.65rem;
   line-height: 1.75;
   color: var(--color-text-primary);
   word-break: break-word;
@@ -304,14 +304,14 @@ const gridStyle = computed(() => {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .subject-card {
-    font-size: 1.25rem;
+    font-size: 1.65rem;
     padding: 0.75rem;
     flex-direction: column;
     gap: 0.5rem;
   }
 
   .subject-label {
-    font-size: 1rem;
+    font-size: 1.35rem;
     min-width: auto;
     text-align: center;
   }
@@ -322,7 +322,7 @@ const gridStyle = computed(() => {
   }
 
   .content-line {
-    font-size: 1.1rem;
+    font-size: 1.45rem;
   }
 }
 
@@ -332,7 +332,7 @@ const gridStyle = computed(() => {
 }
 
 .homework-grid:has(.subject-card:only-child) .content-line {
-  font-size: 1.5rem;
+  font-size: 2rem;
   line-height: 1.8;
 }
 </style>
