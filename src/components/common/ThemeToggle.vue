@@ -1,7 +1,7 @@
 <template>
-  <div class="theme-toggle" @mouseenter="showThemeMenu = true" @mouseleave="showThemeMenu = false">
+  <div class="theme-toggle" @mouseenter="showThemeMenu = true" @mouseleave="showThemeMenu = false" @click.stop>
     <button
-      @click="toggleTheme"
+      @click.stop="toggleTheme"
       class="theme-toggle-btn"
       :title="isDark ? '切换到浅色模式' : '切换到深色模式'"
       :class="{ 'is-dark': isDark }"
@@ -14,7 +14,7 @@
 
     <!-- 主题色选择面板 -->
     <transition name="slide-fade">
-      <div v-if="showThemeMenu" class="theme-menu">
+      <div v-if="showThemeMenu" class="theme-menu" @click.stop>
         <div class="theme-menu-header">
           <span class="menu-title">{{ isDark ? '暗色主题' : '亮色主题' }}</span>
         </div>
@@ -22,7 +22,7 @@
           <button
             v-for="theme in availableThemes"
             :key="theme.id"
-            @click="selectTheme(theme.id)"
+            @click.stop="selectTheme(theme.id)"
             class="theme-option"
             :class="{ active: currentThemeId === theme.id }"
             :style="{ '--theme-primary': theme.colors.primary }"
@@ -67,29 +67,38 @@ const selectTheme = (themeId) => {
 </script>
 
 <style scoped>
-/* 主题切换按钮 - 使用Tailwind类和CSS变量 */
+/* 主题切换按钮 */
 .theme-toggle {
-  @apply inline-flex items-center justify-center relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
 .theme-toggle-btn {
-  @apply flex items-center justify-center rounded-xl cursor-pointer relative overflow-hidden;
-  @apply transition-all duration-300 ease-out;
-  width: 48px;  /* 固定宽度，与 LanguageToggle 一致 */
-  height: 48px; /* 固定高度 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease-out;
+  width: 48px;
+  height: 48px;
   border: 2px solid var(--color-border, #e5e7eb);
   background: var(--color-surface, #ffffff);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .theme-toggle-btn:hover {
-  @apply -translate-y-0.5;
+  transform: translateY(-2px);
   border-color: var(--color-primary, #3b82f6);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .theme-toggle-btn:active {
-  @apply translate-y-0;
+  transform: translateY(0);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -99,19 +108,26 @@ const selectTheme = (themeId) => {
 }
 
 .theme-icon {
-  @apply flex items-center justify-center;
-  @apply transition-transform duration-300 ease-out;
-  font-size: 1.5rem; /* 增加图标大小 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease-out;
+  font-size: 1.5rem;
   line-height: 1;
 }
 
 .theme-toggle-btn:hover .theme-icon {
-  @apply scale-110;
+  transform: scale(1.1);
 }
 
 /* 主题菜单 */
 .theme-menu {
-  @apply absolute right-0 min-w-[220px] rounded-xl p-2 z-[1000];
+  position: absolute;
+  right: 0;
+  min-width: 220px;
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+  z-index: 1000;
   top: calc(100% + 8px);
   background: var(--color-surface, #ffffff);
   border: 2px solid var(--color-border, #e5e7eb);
@@ -120,65 +136,89 @@ const selectTheme = (themeId) => {
 }
 
 .theme-menu-header {
-  @apply py-2 px-3 mb-2;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
   border-bottom: 1px solid var(--color-border, #e5e7eb);
 }
 
 .menu-title {
-  @apply text-sm font-semibold;
+  font-size: 0.875rem;
+  font-weight: 600;
   color: var(--color-text-primary, #111827);
 }
 
 .theme-options {
-  @apply flex flex-col gap-1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .theme-option {
-  @apply flex items-center gap-3 py-2.5 px-3 border-none rounded-lg cursor-pointer relative;
-  @apply transition-all duration-200 ease-in-out text-left w-full;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+  text-align: left;
+  width: 100%;
   background: transparent;
 }
 
 .theme-option:hover {
-  @apply translate-x-0.5;
+  transform: translateX(2px);
   background: var(--color-background, #f9fafb);
 }
 
 .theme-option.active {
-  @apply text-white font-semibold;
+  color: white;
+  font-weight: 600;
   background: var(--theme-primary, var(--color-primary, #3b82f6));
 }
 
 .theme-option.active .theme-name {
-  @apply text-white font-semibold;
+  color: white;
+  font-weight: 600;
 }
 
 .theme-color-preview {
-  @apply w-6 h-6 rounded-md flex-shrink-0;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.375rem;
+  flex-shrink: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .theme-name {
-  @apply flex-1 text-sm transition-colors duration-200;
+  flex: 1;
+  font-size: 0.875rem;
+  transition: color 0.2s;
   color: var(--color-text-primary, #111827);
 }
 
 .check-icon {
-  @apply text-base font-bold text-white;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
 }
 
 /* 过渡动画 - 图标 */
 .fade-enter-active,
 .fade-leave-active {
-  @apply transition-all duration-200 ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .fade-enter-from {
-  @apply opacity-0 scale-80 -rotate-90;
+  opacity: 0;
+  transform: scale(0.8) rotate(-90deg);
 }
 
 .fade-leave-to {
-  @apply opacity-0 scale-80 rotate-90;
+  opacity: 0;
+  transform: scale(0.8) rotate(90deg);
 }
 
 /* 过渡动画 - 菜单 */
@@ -191,11 +231,13 @@ const selectTheme = (themeId) => {
 }
 
 .slide-fade-enter-from {
-  @apply opacity-0 -translate-y-2 scale-95;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.95);
 }
 
 .slide-fade-leave-to {
-  @apply opacity-0 -translate-y-1 scale-98;
+  opacity: 0;
+  transform: translateY(-4px) scale(0.98);
 }
 
 /* 响应式设计 */
@@ -210,19 +252,20 @@ const selectTheme = (themeId) => {
   }
 
   .theme-menu {
-    @apply min-w-[200px];
+    min-width: 200px;
   }
 
   .theme-option {
-    @apply py-2 px-2.5;
+    padding: 0.5rem 0.625rem;
   }
 
   .theme-color-preview {
-    @apply w-5 h-5;
+    width: 1.25rem;
+    height: 1.25rem;
   }
 
   .theme-name {
-    @apply text-[13px];
+    font-size: 0.8125rem;
   }
 }
 </style>

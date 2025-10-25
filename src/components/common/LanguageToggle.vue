@@ -3,10 +3,11 @@
     class="language-toggle"
     @mouseenter="showLanguageMenu = true"
     @mouseleave="showLanguageMenu = false"
+    @click.stop
   >
     <!-- 语言切换按钮 -->
     <button
-      @click="toggleLanguage"
+      @click.stop="toggleLanguage"
       class="language-toggle-btn"
       :title="currentLanguage.name"
     >
@@ -15,11 +16,11 @@
 
     <!-- 语言菜单 -->
     <transition name="slide-fade">
-      <div v-if="showLanguageMenu" class="language-menu">
+      <div v-if="showLanguageMenu" class="language-menu" @click.stop>
         <button
           v-for="lang in availableLanguages"
           :key="lang.code"
-          @click="selectLanguage(lang.code)"
+          @click.stop="selectLanguage(lang.code)"
           class="language-option"
           :class="{ active: lang.code === currentLocale }"
         >
@@ -59,23 +60,28 @@ const selectLanguage = (locale) => {
 
 <style scoped>
 .language-toggle {
-  @apply relative inline-block;
+  position: relative;
+  display: inline-block;
 }
 
 .language-toggle-btn {
-  @apply border-none rounded-lg cursor-pointer;
-  @apply flex items-center justify-center;
-  @apply transition-all duration-300 ease-in-out;
-  width: 48px;  /* 固定宽度 */
-  height: 48px; /* 固定高度 */
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease-in-out;
+  width: 48px;
+  height: 48px;
   background: var(--color-surface);
   color: var(--color-text-primary);
   box-shadow: var(--shadow-sm);
-  border: 2px solid var(--color-border); /* 添加边框 */
+  border: 2px solid var(--color-border);
 }
 
 .language-toggle-btn:hover {
-  @apply -translate-y-0.5;
+  transform: translateY(-2px);
   background: var(--color-primary);
   color: white;
   box-shadow: var(--shadow-md);
@@ -83,14 +89,20 @@ const selectLanguage = (locale) => {
 }
 
 .language-icon {
-  @apply font-bold select-none;
-  font-size: 1.125rem; /* 增加字体大小 */
+  font-weight: bold;
+  user-select: none;
+  font-size: 1.125rem;
   line-height: 1;
 }
 
 /* 语言菜单 */
 .language-menu {
-  @apply absolute right-0 min-w-[180px] rounded-xl p-2 z-[1000];
+  position: absolute;
+  right: 0;
+  min-width: 180px;
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+  z-index: 1000;
   top: calc(100% + 8px);
   background: var(--color-surface);
   box-shadow: var(--shadow-lg);
@@ -98,9 +110,16 @@ const selectLanguage = (locale) => {
 }
 
 .language-option {
-  @apply w-full py-2.5 px-4 border-none cursor-pointer;
-  @apply flex items-center justify-between rounded-lg;
-  @apply transition-all duration-200 ease-in-out text-sm;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+  font-size: 0.875rem;
   background: transparent;
   color: var(--color-text-primary);
 }
@@ -111,8 +130,8 @@ const selectLanguage = (locale) => {
 }
 
 .language-option.active {
-  @apply font-medium;
-  background: rgba(var(--color-primary-rgb, 59, 130, 246), 0.1);
+  font-weight: 500;
+  background: rgba(59, 130, 246, 0.1);
   color: var(--color-primary);
 }
 
@@ -122,11 +141,14 @@ const selectLanguage = (locale) => {
 }
 
 .language-name {
-  @apply flex-1 text-left;
+  flex: 1;
+  text-align: left;
 }
 
 .check-icon {
-  @apply ml-2 text-base font-bold;
+  margin-left: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
 }
 
 /* 过渡动画 */
@@ -140,26 +162,31 @@ const selectLanguage = (locale) => {
 
 @keyframes slideIn {
   from {
-    @apply opacity-0 -translate-y-2.5;
+    opacity: 0;
+    transform: translateY(-10px);
   }
   to {
-    @apply opacity-100 translate-y-0;
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @keyframes slideOut {
   from {
-    @apply opacity-100 translate-y-0;
+    opacity: 1;
+    transform: translateY(0);
   }
   to {
-    @apply opacity-0 -translate-y-2.5;
+    opacity: 0;
+    transform: translateY(-10px);
   }
 }
 
 /* 响应式设计 */
 @media (max-width: 640px) {
   .language-menu {
-    @apply left-1/2 -translate-x-1/2;
+    left: 50%;
+    transform: translateX(-50%);
     right: auto;
   }
 }

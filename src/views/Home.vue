@@ -509,6 +509,7 @@ onUnmounted(() => {
   margin-top: auto;
   transition: background-color var(--transition-base);
   border-top: 1px solid var(--color-border);
+  border-radius: 0.375rem; /* 圆角大小：0.75rem = 12px */
 }
 
 .footer-content {
