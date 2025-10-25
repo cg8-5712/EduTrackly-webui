@@ -152,7 +152,7 @@ defineExpose({ fetchStudents })
   min-height: 30vh;
   max-height: 60vh;
   box-shadow: var(--shadow-xl);
-  overflow-x: auto;
+  overflow-x: hidden;
   overflow-y: auto;
   transition: all 0.3s ease;
 }
@@ -160,13 +160,12 @@ defineExpose({ fetchStudents })
 .students-scroll {
   display: flex;
   gap: 1rem;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   padding-bottom: 0.5rem;
 }
 
 .student-item {
   position: relative;
-  flex-shrink: 0;
 }
 
 .student-card {
