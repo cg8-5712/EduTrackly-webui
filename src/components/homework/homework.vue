@@ -108,6 +108,14 @@ const getSubjectStyle = (key) => {
 
 // 获取作业函数
 const fetchHomework = async () => {
+  // 如果没有选择班级，不发送请求
+  if (!props.selectedCid) {
+    loading.value = false
+    homework.value = null
+    error.value = null
+    return
+  }
+
   loading.value = true
   error.value = null
   homework.value = null
