@@ -631,41 +631,35 @@ const handleBackdropClick = () => {
 
 <style scoped>
 .mode-switch-group {
-  background: rgb(229 231 235); /* gray-200 */
+  @apply bg-gray-200;
 }
 
 .dark .mode-switch-group {
-  background: rgb(55 65 81); /* gray-700 */
+  @apply bg-gray-700;
 }
 
 .mode-switch-btn {
-  position: relative;
-  outline: none;
-  border: none;
-  cursor: pointer;
-  min-width: 80px;
-  white-space: nowrap;
+  @apply relative outline-none border-none cursor-pointer min-w-[80px] whitespace-nowrap;
 }
 
 .mode-switch-btn.active {
+  @apply text-white shadow-md;
   background: linear-gradient(to right, rgb(59 130 246), rgb(147 51 234)); /* blue-500 to purple-600 */
-  color: white;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .mode-switch-btn:not(.active) {
-  color: rgb(75 85 99); /* gray-600 */
+  @apply text-gray-600;
 }
 
 .mode-switch-btn:not(.active):hover {
-  color: rgb(31 41 55); /* gray-800 */
+  @apply text-gray-800;
 }
 
 .dark .mode-switch-btn:not(.active) {
-  color: rgb(209 213 219); /* gray-300 */
+  @apply text-gray-300;
 }
 
 .dark .mode-switch-btn:not(.active):hover {
-  color: white;
+  @apply text-white;
 }
 </style>

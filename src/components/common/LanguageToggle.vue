@@ -59,65 +59,44 @@ const selectLanguage = (locale) => {
 
 <style scoped>
 .language-toggle {
-  position: relative;
-  display: inline-block;
+  @apply relative inline-block;
 }
 
 .language-toggle-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 8px;
+  @apply w-10 h-10 border-none rounded-lg cursor-pointer;
+  @apply flex items-center justify-center;
+  @apply transition-all duration-300 ease-in-out;
   background: var(--color-surface);
   color: var(--color-text-primary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
   box-shadow: var(--shadow-sm);
 }
 
 .language-toggle-btn:hover {
+  @apply -translate-y-0.5;
   background: var(--color-primary);
   color: white;
-  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
 .language-icon {
-  font-size: 14px;
-  font-weight: 600;
-  user-select: none;
+  @apply text-sm font-semibold select-none;
 }
 
 /* 语言菜单 */
 .language-menu {
-  position: absolute;
+  @apply absolute right-0 min-w-[160px] rounded-xl p-2 z-[1000];
   top: calc(100% + 8px);
-  right: 0;
-  min-width: 160px;
   background: var(--color-surface);
-  border-radius: 12px;
   box-shadow: var(--shadow-lg);
-  padding: 8px;
-  z-index: 1000;
   border: 1px solid var(--color-border);
 }
 
 .language-option {
-  width: 100%;
-  padding: 10px 16px;
-  border: none;
+  @apply w-full py-2.5 px-4 border-none cursor-pointer;
+  @apply flex items-center justify-between rounded-lg;
+  @apply transition-all duration-200 ease-in-out text-sm;
   background: transparent;
   color: var(--color-text-primary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  font-size: 14px;
 }
 
 .language-option:hover {
@@ -126,9 +105,9 @@ const selectLanguage = (locale) => {
 }
 
 .language-option.active {
+  @apply font-medium;
   background: rgba(var(--color-primary-rgb, 59, 130, 246), 0.1);
   color: var(--color-primary);
-  font-weight: 500;
 }
 
 .language-option.active:hover {
@@ -137,14 +116,11 @@ const selectLanguage = (locale) => {
 }
 
 .language-name {
-  flex: 1;
-  text-align: left;
+  @apply flex-1 text-left;
 }
 
 .check-icon {
-  margin-left: 8px;
-  font-size: 16px;
-  font-weight: bold;
+  @apply ml-2 text-base font-bold;
 }
 
 /* 过渡动画 */
@@ -158,32 +134,27 @@ const selectLanguage = (locale) => {
 
 @keyframes slideIn {
   from {
-    opacity: 0;
-    transform: translateY(-10px);
+    @apply opacity-0 -translate-y-2.5;
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    @apply opacity-100 translate-y-0;
   }
 }
 
 @keyframes slideOut {
   from {
-    opacity: 1;
-    transform: translateY(0);
+    @apply opacity-100 translate-y-0;
   }
   to {
-    opacity: 0;
-    transform: translateY(-10px);
+    @apply opacity-0 -translate-y-2.5;
   }
 }
 
 /* 响应式设计 */
 @media (max-width: 640px) {
   .language-menu {
+    @apply left-1/2 -translate-x-1/2;
     right: auto;
-    left: 50%;
-    transform: translateX(-50%);
   }
 }
 </style>

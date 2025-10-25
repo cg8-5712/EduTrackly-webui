@@ -67,37 +67,27 @@ const selectTheme = (themeId) => {
 </script>
 
 <style scoped>
+/* 主题切换按钮 - 使用Tailwind类和CSS变量 */
 .theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  @apply inline-flex items-center justify-center relative;
 }
 
 .theme-toggle-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
+  @apply flex items-center justify-center w-12 h-12 rounded-xl cursor-pointer relative overflow-hidden;
+  @apply transition-all duration-300 ease-out;
   border: 2px solid var(--color-border, #e5e7eb);
-  border-radius: 12px;
   background: var(--color-surface, #ffffff);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
 }
 
 .theme-toggle-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  @apply -translate-y-0.5;
   border-color: var(--color-primary, #3b82f6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .theme-toggle-btn:active {
-  transform: translateY(0);
+  @apply translate-y-0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -107,116 +97,84 @@ const selectTheme = (themeId) => {
 }
 
 .theme-icon {
-  font-size: 24px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  @apply text-2xl leading-none flex items-center justify-center;
+  @apply transition-transform duration-300 ease-out;
 }
 
 .theme-toggle-btn:hover .theme-icon {
-  transform: scale(1.1);
+  @apply scale-110;
 }
 
 /* 主题菜单 */
 .theme-menu {
-  position: absolute;
+  @apply absolute right-0 min-w-[220px] rounded-xl p-2 z-[1000];
   top: calc(100% + 8px);
-  right: 0;
-  min-width: 220px;
   background: var(--color-surface, #ffffff);
   border: 2px solid var(--color-border, #e5e7eb);
-  border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  padding: 8px;
-  z-index: 1000;
   backdrop-filter: blur(8px);
 }
 
 .theme-menu-header {
-  padding: 8px 12px;
+  @apply py-2 px-3 mb-2;
   border-bottom: 1px solid var(--color-border, #e5e7eb);
-  margin-bottom: 8px;
 }
 
 .menu-title {
-  font-size: 14px;
-  font-weight: 600;
+  @apply text-sm font-semibold;
   color: var(--color-text-primary, #111827);
 }
 
 .theme-options {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  @apply flex flex-col gap-1;
 }
 
 .theme-option {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border: none;
+  @apply flex items-center gap-3 py-2.5 px-3 border-none rounded-lg cursor-pointer relative;
+  @apply transition-all duration-200 ease-in-out text-left w-full;
   background: transparent;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-  width: 100%;
-  position: relative;
 }
 
 .theme-option:hover {
+  @apply translate-x-0.5;
   background: var(--color-background, #f9fafb);
-  transform: translateX(2px);
 }
 
 .theme-option.active {
+  @apply text-white font-semibold;
   background: var(--theme-primary, var(--color-primary, #3b82f6));
-  color: white;
 }
 
 .theme-option.active .theme-name {
-  color: white;
-  font-weight: 600;
+  @apply text-white font-semibold;
 }
 
 .theme-color-preview {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
+  @apply w-6 h-6 rounded-md flex-shrink-0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-  flex-shrink: 0;
 }
 
 .theme-name {
-  flex: 1;
-  font-size: 14px;
+  @apply flex-1 text-sm transition-colors duration-200;
   color: var(--color-text-primary, #111827);
-  transition: color 0.2s ease;
 }
 
 .check-icon {
-  font-size: 16px;
-  font-weight: bold;
-  color: white;
+  @apply text-base font-bold text-white;
 }
 
 /* 过渡动画 - 图标 */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  @apply transition-all duration-200 ease-in-out;
 }
 
 .fade-enter-from {
-  opacity: 0;
-  transform: scale(0.8) rotate(-90deg);
+  @apply opacity-0 scale-80 -rotate-90;
 }
 
 .fade-leave-to {
-  opacity: 0;
-  transform: scale(0.8) rotate(90deg);
+  @apply opacity-0 scale-80 rotate-90;
 }
 
 /* 过渡动画 - 菜单 */
@@ -229,41 +187,37 @@ const selectTheme = (themeId) => {
 }
 
 .slide-fade-enter-from {
-  opacity: 0;
-  transform: translateY(-8px) scale(0.95);
+  @apply opacity-0 -translate-y-2 scale-95;
 }
 
 .slide-fade-leave-to {
-  opacity: 0;
-  transform: translateY(-4px) scale(0.98);
+  @apply opacity-0 -translate-y-1 scale-98;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
   .theme-toggle-btn {
-    width: 44px;
-    height: 44px;
+    @apply w-11 h-11;
   }
 
   .theme-icon {
-    font-size: 20px;
+    @apply text-xl;
   }
 
   .theme-menu {
-    min-width: 200px;
+    @apply min-w-[200px];
   }
 
   .theme-option {
-    padding: 8px 10px;
+    @apply py-2 px-2.5;
   }
 
   .theme-color-preview {
-    width: 20px;
-    height: 20px;
+    @apply w-5 h-5;
   }
 
   .theme-name {
-    font-size: 13px;
+    @apply text-[13px];
   }
 }
 </style>

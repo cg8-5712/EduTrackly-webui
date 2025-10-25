@@ -162,13 +162,13 @@ const chartOption = computed(() => {
 </script>
 
 <style scoped>
+/* 已转换为 Tailwind: w-full h-full */
 .attendance-chart {
-  width: 100%;
-  height: 100%;
+  @apply w-full h-full;
 }
 
 .chart-container {
-  width: 100%;
+  @apply w-full;
   height: 350px;
 }
 </style>

@@ -117,23 +117,16 @@ export default {
 
 <style scoped>
 .class-switch-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 280px;
-  border-radius: 0.5rem;
+  @apply relative w-full max-w-[280px] rounded-lg;
 }
 
 .class-switch-container {
-  position: relative;
-  display: flex;
-  align-items: center;
+  @apply relative flex items-center p-2 overflow-hidden;
+  @apply transition-all duration-300 ease-in-out;
   background-color: var(--color-surface);
   border: 2px solid var(--color-border);
   border-radius: 0.5rem;
-  padding: 0.5rem;
   box-shadow: var(--shadow-md);
-  overflow: hidden;
-  transition: all 0.3s ease;
 }
 
 .class-switch-container:hover {
@@ -142,43 +135,33 @@ export default {
 }
 
 .search-input {
-  flex: 1;
+  @apply flex-1 px-2 py-2 rounded-lg outline-none w-full;
+  @apply transition-colors duration-300;
   background: transparent;
   border: none;
   color: var(--color-text-primary);
   font-size: 1.25rem;
-  padding: 0.5rem;
-  outline: none;
-  width: 100%;
-  border-radius: 0.5rem;
-  transition: color 0.3s ease;
 }
 
 .search-input::placeholder {
+  @apply opacity-70;
   color: var(--color-text-tertiary);
-  opacity: 0.7;
 }
 
 .class-select {
-  flex: 1;
+  @apply flex-1 px-2 py-2 rounded-lg outline-none w-full cursor-pointer;
+  @apply transition-colors duration-300;
   background: transparent;
   border: none;
   color: var(--color-text-primary);
   font-size: 1.25rem;
-  padding: 0.5rem;
-  outline: none;
-  width: 100%;
-  cursor: pointer;
-  border-radius: 0.5rem;
   appearance: none;
-  transition: color 0.3s ease;
 }
 
 .class-select option {
+  @apply py-2 px-2 rounded-lg;
   background-color: var(--color-surface);
   color: var(--color-text-primary);
-  padding: 0.5rem;
-  border-radius: 0.5rem;
 }
 
 .class-select option:hover {
@@ -186,28 +169,26 @@ export default {
 }
 
 .search-button {
+  @apply px-2 py-1 rounded cursor-pointer;
+  @apply transition-all duration-200 ease-in-out;
   background: transparent;
   border: none;
   color: var(--color-primary);
   font-size: 1.5rem;
-  padding: 0.25rem 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-radius: 0.25rem;
 }
 
 .search-button:hover {
+  @apply scale-110;
   color: var(--color-secondary);
-  transform: scale(1.1);
 }
 
 .search-button:active {
-  transform: scale(0.95);
+  @apply scale-95;
 }
 
 /* 自定义滚动条样式 */
 select::-webkit-scrollbar {
-  width: 8px;
+  @apply w-2;
 }
 
 select::-webkit-scrollbar-track {
@@ -215,9 +196,9 @@ select::-webkit-scrollbar-track {
 }
 
 select::-webkit-scrollbar-thumb {
+  @apply rounded-lg;
+  @apply transition-colors duration-300;
   background: var(--color-border);
-  border-radius: 8px;
-  transition: background 0.3s ease;
 }
 
 select::-webkit-scrollbar-thumb:hover {
@@ -227,16 +208,16 @@ select::-webkit-scrollbar-thumb:hover {
 /* 响应式设计 */
 @media (max-width: 640px) {
   .class-switch-wrapper {
-    max-width: 100%;
+    @apply max-w-full;
   }
 
   .search-input,
   .class-select {
-    font-size: 1rem;
+    @apply text-base;
   }
 
   .search-button {
-    font-size: 1.25rem;
+    @apply text-xl;
   }
 }
 </style>
