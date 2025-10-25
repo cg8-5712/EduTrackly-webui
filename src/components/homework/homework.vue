@@ -167,11 +167,13 @@ const subjectsWithContent = computed(() => {
   Object.keys(subjectConfig.value).forEach(key => {
     const content = homeworkContent[key]
     if (content && content.trim()) {
+      // 先将字符串形式的 \n 替换为真正的换行符，然后再分割
+      const normalizedContent = content.trim().replace(/\\n/g, '\n')
       subjects.push({
         key,
         name: subjectConfig.value[key],
-        content: content.trim(),
-        lines: content.trim().split('\n')
+        content: normalizedContent,
+        lines: normalizedContent.split('\n').filter(line => line.trim() !== '')
       })
     }
   })

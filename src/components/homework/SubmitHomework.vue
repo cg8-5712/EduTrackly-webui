@@ -93,10 +93,11 @@ async function fetchTodayHomework(cid) {
       // 新API格式直接是对象，无需解析
       const apiHomeworkContent = res.data.data.homework_content;
 
-      // 将API返回的内容填充到表单中
+      // 将API返回的内容填充到表单中，并处理换行符
       allSubjects.value.forEach(subject => {
         if (apiHomeworkContent[subject.key]) {
-          homeworkContent[subject.key] = apiHomeworkContent[subject.key];
+          // 将字符串形式的 \n 替换为真正的换行符
+          homeworkContent[subject.key] = apiHomeworkContent[subject.key].replace(/\\n/g, '\n');
         }
       });
     }
