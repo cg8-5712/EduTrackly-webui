@@ -35,14 +35,24 @@
     </div>
 
     <!-- 主要内容区域 -->
-    <div class="main-content">
+    <div class="main-content" ref="mainContentRef">
       <!-- 左侧考勤信息 -->
-      <div class="content-card">
+      <div class="content-card" :style="{ width: leftWidth }">
         <AttendanceDisplay ref="studentsComponent" :selected-date="selectedDate" :selected-cid="selectedCid" />
       </div>
 
+      <!-- 可拖动分隔条 -->
+      <div
+        class="resizer"
+        @mousedown="startResize"
+        @touchstart="startResize"
+        :class="{ 'resizing': isResizing }"
+      >
+        <div class="resizer-line"></div>
+      </div>
+
       <!-- 右侧作业信息 -->
-      <div class="content-card">
+      <div class="content-card" :style="{ width: rightWidth }">
         <div class="homework-header">
           <h2 class="homework-title">{{ $t('homework.homeworkContent') }}</h2>
           <span class="homework-date">{{ selectedDateText }}</span>
@@ -60,7 +70,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AttendanceDisplay from '@/components/student/AttendanceDisplay.vue'
 import Homework from '@/components/homework/homework.vue'
@@ -83,6 +93,35 @@ const isFullscreen = ref(false)
 
 // 班级相关
 const selectedCid = ref(null)
+
+// 可调整大小相关
+const mainContentRef = ref(null)
+const isResizing = ref(false)
+const leftWidth = ref('40%')
+const rightWidth = ref('calc(60% - 8px)') // 减去分隔条宽度
+const leftPercentage = ref(40) // 保存左侧百分比
+
+// 从 localStorage 加载保存的比例
+const loadSavedRatio = () => {
+  const saved = localStorage.getItem('home-split-ratio')
+  if (saved) {
+    const ratio = parseFloat(saved)
+    if (ratio >= 20 && ratio <= 80) {
+      leftPercentage.value = ratio
+      updateWidths(ratio)
+    }
+  }
+}
+
+// 更新宽度
+const updateWidths = (percentage) => {
+  leftPercentage.value = percentage
+  leftWidth.value = `${percentage}%`
+  rightWidth.value = `calc(${100 - percentage}% - 8px)` // 减去分隔条宽度
+
+  // 保存到 localStorage
+  localStorage.setItem('home-split-ratio', percentage.toString())
+}
 
 // 计算属性
 const formattedSelectedDate = computed(() => {
@@ -143,6 +182,46 @@ const handleGlobalClick = (event) => {
   }
 }
 
+// 开始调整大小
+const startResize = (e) => {
+  e.preventDefault()
+  isResizing.value = true
+  document.body.style.cursor = 'col-resize'
+  document.body.style.userSelect = 'none'
+
+  const handleMove = (e) => {
+    if (!isResizing.value || !mainContentRef.value) return
+
+    const containerRect = mainContentRef.value.getBoundingClientRect()
+    const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX
+    const offsetX = clientX - containerRect.left
+    const containerWidth = containerRect.width
+
+    // 计算新的百分比
+    let newPercentage = (offsetX / containerWidth) * 100
+
+    // 限制范围在 20% - 80% 之间
+    newPercentage = Math.max(20, Math.min(80, newPercentage))
+
+    updateWidths(newPercentage)
+  }
+
+  const handleEnd = () => {
+    isResizing.value = false
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+    document.removeEventListener('mousemove', handleMove)
+    document.removeEventListener('mouseup', handleEnd)
+    document.removeEventListener('touchmove', handleMove)
+    document.removeEventListener('touchend', handleEnd)
+  }
+
+  document.addEventListener('mousemove', handleMove)
+  document.addEventListener('mouseup', handleEnd)
+  document.addEventListener('touchmove', handleMove)
+  document.addEventListener('touchend', handleEnd)
+}
+
 // 监听班级变化刷新学生和作业
 watch(selectedCid, (newCid) => {
   if (!newCid) return
@@ -163,6 +242,15 @@ onMounted(() => {
   document.addEventListener('fullscreenchange', () => {
     isFullscreen.value = !!document.fullscreenElement
   })
+
+  // 加载保存的比例
+  loadSavedRatio()
+})
+
+onUnmounted(() => {
+  // 清理可能残留的样式
+  document.body.style.cursor = ''
+  document.body.style.userSelect = ''
 })
 </script>
 
@@ -360,8 +448,8 @@ onMounted(() => {
 /* 主内容区域 */
 .main-content {
   flex: 1;
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
   min-height: 0;
   padding: 0.5rem 0;
@@ -370,7 +458,8 @@ onMounted(() => {
 
 @media (min-width: 768px) {
   .main-content {
-    grid-template-columns: 0.8fr 1.2fr;
+    flex-direction: row;
+    gap: 0;
   }
 }
 
@@ -383,6 +472,77 @@ onMounted(() => {
   overflow-x: hidden;
   min-height: 0;
   transition: background-color var(--transition-base);
+}
+
+@media (min-width: 768px) {
+  .content-card {
+    flex-shrink: 0;
+  }
+}
+
+/* 可拖动分隔条 */
+.resizer {
+  width: 8px;
+  cursor: col-resize;
+  background-color: transparent;
+  position: relative;
+  display: none;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease;
+}
+
+@media (min-width: 768px) {
+  .resizer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.resizer:hover {
+  background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.1);
+}
+
+.resizer.resizing {
+  background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.2);
+}
+
+.resizer-line {
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--color-border) 10%,
+    var(--color-border) 90%,
+    transparent 100%
+  );
+  transition: all 0.2s ease;
+  border-radius: 1px;
+}
+
+.resizer:hover .resizer-line {
+  width: 3px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--color-primary) 10%,
+    var(--color-primary) 90%,
+    transparent 100%
+  );
+  box-shadow: 0 0 8px rgba(var(--color-primary-rgb, 59, 130, 246), 0.5);
+}
+
+.resizer.resizing .resizer-line {
+  width: 4px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--color-primary) 10%,
+    var(--color-primary) 90%,
+    transparent 100%
+  );
+  box-shadow: 0 0 12px rgba(var(--color-primary-rgb, 59, 130, 246), 0.8);
 }
 
 /* 作业区域 */
