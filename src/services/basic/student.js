@@ -92,9 +92,8 @@ class StudentService extends ApiPrefix {
   }
 
   // 提交学生事件
-  async submitStudentEvents(events, date) {
+  async submitStudentEvents(events) {
     try {
-      if (!date) throw new Error(t('error.dateRequired'));
       if (!Array.isArray(events) || events.length === 0) {
         throw new Error(t('error.eventDataEmpty'));
       }

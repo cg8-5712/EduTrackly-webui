@@ -68,6 +68,7 @@ import Popup from '@/components/common/popup.vue'
 import StudentService from '@/services/basic/student'
 import AnalysisService from '@/services/basic/analysis'
 import notificationService from '@/services/common/notification'
+import { formatDateToYYYYMMDD } from '@/utils/formatDate.js'
 
 const props = defineProps({ cid: Number })
 const students = ref([])
@@ -121,10 +122,12 @@ const submitEvents = async () => {
   }))
   try {
     loading.value = true
-    await StudentService.submitStudentEvents(eventsArray)
+    const today = formatDateToYYYYMMDD(new Date())
+    await StudentService.submitStudentEvents(eventsArray, today)
     notificationService.notify('提交成功', 'success')
     await fetchStudents()
-  } catch {
+  } catch (error) {
+    console.error('提交学生事件失败:', error)
     notificationService.notify('提交失败', 'error')
   } finally {
     loading.value = false
