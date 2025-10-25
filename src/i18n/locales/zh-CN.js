@@ -590,6 +590,77 @@ export default {
     build: '构建'
   },
 
+  // 关于页面
+  about: {
+    title: '关于 EduTrackly',
+    backToHome: '返回首页',
+    teamSection: '开发团队',
+    techStackSection: '技术栈',
+    versionSection: '版本信息',
+    licenseSection: '许可证信息',
+
+    // 技术栈分类
+    techStack: {
+      frontend: '前端技术',
+      backend: '后端技术',
+      devops: '开发运维',
+      vue: 'Vue.js 3',
+      vueRouter: 'Vue Router',
+      i18n: 'Vue I18n',
+      tailwind: 'Tailwind CSS',
+      vite: 'Vite',
+      axios: 'Axios',
+      echarts: 'ECharts',
+      springBoot: 'Spring Boot',
+      myBatis: 'MyBatis-Plus',
+      mysql: 'MySQL',
+      redis: 'Redis',
+      docker: 'Docker',
+      nginx: 'Nginx',
+      jenkins: 'Jenkins',
+      git: 'Git'
+    },
+
+    // 版本信息
+    version: {
+      current: '当前版本',
+      buildTime: '构建时间',
+      gitCommit: 'Git 提交',
+      environment: '运行环境'
+    },
+
+    // 许可证
+    license: {
+      title: 'GNU General Public License v3.0',
+      description: '本项目采用 GNU 通用公共许可证 v3.0 进行许可',
+      freedom: '自由使用',
+      freedomDesc: '可以自由运行、研究、修改和分发软件',
+      copyleft: 'Copyleft',
+      copyleftDesc: '衍生作品必须使用相同的许可证',
+      disclosure: '源代码公开',
+      disclosureDesc: '分发时必须提供源代码',
+      viewLicense: '查看完整许可证'
+    },
+
+    // 项目统计
+    stats: {
+      title: '项目统计',
+      commits: '提交次数',
+      contributors: '贡献者',
+      stars: 'Stars',
+      forks: 'Forks'
+    },
+
+    // 加入我们
+    joinUs: {
+      title: '加入我们',
+      description: '欢迎贡献代码、报告问题或提出建议',
+      github: 'GitHub 仓库',
+      issues: '问题反馈',
+      pullRequests: '拉取请求'
+    }
+  },
+
   // 额外的 UI 文本
   extraUI: {
     // AttendanceDisplay

@@ -590,6 +590,77 @@ export default {
     build: 'Build'
   },
 
+  // About page
+  about: {
+    title: 'About EduTrackly',
+    backToHome: 'Back to Home',
+    teamSection: 'Development Team',
+    techStackSection: 'Tech Stack',
+    versionSection: 'Version Information',
+    licenseSection: 'License Information',
+
+    // Tech stack categories
+    techStack: {
+      frontend: 'Frontend Technologies',
+      backend: 'Backend Technologies',
+      devops: 'DevOps',
+      vue: 'Vue.js 3',
+      vueRouter: 'Vue Router',
+      i18n: 'Vue I18n',
+      tailwind: 'Tailwind CSS',
+      vite: 'Vite',
+      axios: 'Axios',
+      echarts: 'ECharts',
+      springBoot: 'Spring Boot',
+      myBatis: 'MyBatis-Plus',
+      mysql: 'MySQL',
+      redis: 'Redis',
+      docker: 'Docker',
+      nginx: 'Nginx',
+      jenkins: 'Jenkins',
+      git: 'Git'
+    },
+
+    // Version info
+    version: {
+      current: 'Current Version',
+      buildTime: 'Build Time',
+      gitCommit: 'Git Commit',
+      environment: 'Environment'
+    },
+
+    // License
+    license: {
+      title: 'GNU General Public License v3.0',
+      description: 'This project is licensed under the GNU General Public License v3.0',
+      freedom: 'Freedom',
+      freedomDesc: 'Freedom to run, study, modify, and distribute the software',
+      copyleft: 'Copyleft',
+      copyleftDesc: 'Derivative works must use the same license',
+      disclosure: 'Source Disclosure',
+      disclosureDesc: 'Source code must be provided when distributed',
+      viewLicense: 'View Full License'
+    },
+
+    // Project stats
+    stats: {
+      title: 'Project Statistics',
+      commits: 'Commits',
+      contributors: 'Contributors',
+      stars: 'Stars',
+      forks: 'Forks'
+    },
+
+    // Join us
+    joinUs: {
+      title: 'Join Us',
+      description: 'Welcome to contribute code, report issues, or make suggestions',
+      github: 'GitHub Repository',
+      issues: 'Issue Tracker',
+      pullRequests: 'Pull Requests'
+    }
+  },
+
   // Extra UI text
   extraUI: {
     // AttendanceDisplay

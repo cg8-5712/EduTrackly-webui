@@ -590,6 +590,77 @@ export default {
     build: 'ビルド'
   },
 
+  // About ページ
+  about: {
+    title: 'EduTrackly について',
+    backToHome: 'ホームに戻る',
+    teamSection: '開発チーム',
+    techStackSection: '技術スタック',
+    versionSection: 'バージョン情報',
+    licenseSection: 'ライセンス情報',
+
+    // 技術スタック分類
+    techStack: {
+      frontend: 'フロントエンド技術',
+      backend: 'バックエンド技術',
+      devops: 'DevOps',
+      vue: 'Vue.js 3',
+      vueRouter: 'Vue Router',
+      i18n: 'Vue I18n',
+      tailwind: 'Tailwind CSS',
+      vite: 'Vite',
+      axios: 'Axios',
+      echarts: 'ECharts',
+      springBoot: 'Spring Boot',
+      myBatis: 'MyBatis-Plus',
+      mysql: 'MySQL',
+      redis: 'Redis',
+      docker: 'Docker',
+      nginx: 'Nginx',
+      jenkins: 'Jenkins',
+      git: 'Git'
+    },
+
+    // バージョン情報
+    version: {
+      current: '現在のバージョン',
+      buildTime: 'ビルド時刻',
+      gitCommit: 'Git コミット',
+      environment: '実行環境'
+    },
+
+    // ライセンス
+    license: {
+      title: 'GNU General Public License v3.0',
+      description: 'このプロジェクトは GNU 一般公衆ライセンス v3.0 の下で提供されています',
+      freedom: '自由',
+      freedomDesc: 'ソフトウェアを実行、研究、変更、配布する自由',
+      copyleft: 'コピーレフト',
+      copyleftDesc: '派生作品は同じライセンスを使用する必要があります',
+      disclosure: 'ソースコード開示',
+      disclosureDesc: '配布時にソースコードを提供する必要があります',
+      viewLicense: '完全なライセンスを表示'
+    },
+
+    // プロジェクト統計
+    stats: {
+      title: 'プロジェクト統計',
+      commits: 'コミット数',
+      contributors: '貢献者',
+      stars: 'Stars',
+      forks: 'Forks'
+    },
+
+    // 参加する
+    joinUs: {
+      title: '参加する',
+      description: 'コードの貢献、問題報告、提案を歓迎します',
+      github: 'GitHub リポジトリ',
+      issues: '問題トラッカー',
+      pullRequests: 'プルリクエスト'
+    }
+  },
+
   // 追加の UI テキスト
   extraUI: {
     // AttendanceDisplay

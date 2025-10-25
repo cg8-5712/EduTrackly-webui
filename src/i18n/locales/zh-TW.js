@@ -590,6 +590,77 @@ export default {
     build: '建置'
   },
 
+  // 關於頁面
+  about: {
+    title: '關於 EduTrackly',
+    backToHome: '返回首頁',
+    teamSection: '開發團隊',
+    techStackSection: '技術棧',
+    versionSection: '版本資訊',
+    licenseSection: '授權資訊',
+
+    // 技術棧分類
+    techStack: {
+      frontend: '前端技術',
+      backend: '後端技術',
+      devops: '開發維運',
+      vue: 'Vue.js 3',
+      vueRouter: 'Vue Router',
+      i18n: 'Vue I18n',
+      tailwind: 'Tailwind CSS',
+      vite: 'Vite',
+      axios: 'Axios',
+      echarts: 'ECharts',
+      springBoot: 'Spring Boot',
+      myBatis: 'MyBatis-Plus',
+      mysql: 'MySQL',
+      redis: 'Redis',
+      docker: 'Docker',
+      nginx: 'Nginx',
+      jenkins: 'Jenkins',
+      git: 'Git'
+    },
+
+    // 版本資訊
+    version: {
+      current: '目前版本',
+      buildTime: '建置時間',
+      gitCommit: 'Git 提交',
+      environment: '執行環境'
+    },
+
+    // 授權
+    license: {
+      title: 'GNU General Public License v3.0',
+      description: '本專案採用 GNU 通用公共授權條款 v3.0 授權',
+      freedom: '自由使用',
+      freedomDesc: '可以自由執行、研究、修改和散布軟體',
+      copyleft: 'Copyleft',
+      copyleftDesc: '衍生作品必須使用相同的授權條款',
+      disclosure: '原始碼公開',
+      disclosureDesc: '散布時必須提供原始碼',
+      viewLicense: '查看完整授權條款'
+    },
+
+    // 專案統計
+    stats: {
+      title: '專案統計',
+      commits: '提交次數',
+      contributors: '貢獻者',
+      stars: 'Stars',
+      forks: 'Forks'
+    },
+
+    // 加入我們
+    joinUs: {
+      title: '加入我們',
+      description: '歡迎貢獻程式碼、回報問題或提出建議',
+      github: 'GitHub 儲存庫',
+      issues: '問題回報',
+      pullRequests: '拉取請求'
+    }
+  },
+
   // 額外的 UI 文字
   extraUI: {
     // AttendanceDisplay
