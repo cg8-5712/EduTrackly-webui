@@ -63,12 +63,15 @@ const selectLanguage = (locale) => {
 }
 
 .language-toggle-btn {
-  @apply w-10 h-10 border-none rounded-lg cursor-pointer;
+  @apply border-none rounded-lg cursor-pointer;
   @apply flex items-center justify-center;
   @apply transition-all duration-300 ease-in-out;
+  width: 48px;  /* 固定宽度 */
+  height: 48px; /* 固定高度 */
   background: var(--color-surface);
   color: var(--color-text-primary);
   box-shadow: var(--shadow-sm);
+  border: 2px solid var(--color-border); /* 添加边框 */
 }
 
 .language-toggle-btn:hover {
@@ -76,15 +79,18 @@ const selectLanguage = (locale) => {
   background: var(--color-primary);
   color: white;
   box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
 }
 
 .language-icon {
-  @apply text-sm font-semibold select-none;
+  @apply font-bold select-none;
+  font-size: 1.125rem; /* 增加字体大小 */
+  line-height: 1;
 }
 
 /* 语言菜单 */
 .language-menu {
-  @apply absolute right-0 min-w-[160px] rounded-xl p-2 z-[1000];
+  @apply absolute right-0 min-w-[180px] rounded-xl p-2 z-[1000];
   top: calc(100% + 8px);
   background: var(--color-surface);
   box-shadow: var(--shadow-lg);

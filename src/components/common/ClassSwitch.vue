@@ -117,16 +117,18 @@ export default {
 
 <style scoped>
 .class-switch-wrapper {
-  @apply relative w-full max-w-[280px] rounded-lg;
+  @apply relative w-full rounded-lg;
+  max-width: 400px; /* 从 280px 增加到 400px */
 }
 
 .class-switch-container {
-  @apply relative flex items-center p-2 overflow-hidden;
+  @apply relative flex items-center overflow-hidden;
   @apply transition-all duration-300 ease-in-out;
   background-color: var(--color-surface);
   border: 2px solid var(--color-border);
-  border-radius: 0.5rem;
+  border-radius: 0.75rem; /* 从 0.5rem 增加到 0.75rem */
   box-shadow: var(--shadow-md);
+  padding: 0.75rem 1rem; /* 从 p-2 增加内边距 */
 }
 
 .class-switch-container:hover {
@@ -135,12 +137,14 @@ export default {
 }
 
 .search-input {
-  @apply flex-1 px-2 py-2 rounded-lg outline-none w-full;
+  @apply flex-1 rounded-lg outline-none w-full;
   @apply transition-colors duration-300;
   background: transparent;
   border: none;
   color: var(--color-text-primary);
-  font-size: 1.25rem;
+  font-size: 1.5rem; /* 从 1.25rem 增加到 1.5rem */
+  padding: 0.5rem 0.75rem; /* 增加内边距 */
+  font-weight: 600; /* 增加字重 */
 }
 
 .search-input::placeholder {
@@ -149,19 +153,22 @@ export default {
 }
 
 .class-select {
-  @apply flex-1 px-2 py-2 rounded-lg outline-none w-full cursor-pointer;
+  @apply flex-1 rounded-lg outline-none w-full cursor-pointer;
   @apply transition-colors duration-300;
   background: transparent;
   border: none;
   color: var(--color-text-primary);
-  font-size: 1.25rem;
+  font-size: 1.5rem; /* 从 1.25rem 增加到 1.5rem */
+  padding: 0.5rem 0.75rem; /* 增加内边距 */
+  font-weight: 600; /* 增加字重 */
   appearance: none;
 }
 
 .class-select option {
-  @apply py-2 px-2 rounded-lg;
+  @apply py-2 px-3 rounded-lg; /* 增加内边距 */
   background-color: var(--color-surface);
   color: var(--color-text-primary);
+  font-size: 1.125rem; /* 增加选项字体大小 */
 }
 
 .class-select option:hover {
@@ -169,12 +176,13 @@ export default {
 }
 
 .search-button {
-  @apply px-2 py-1 rounded cursor-pointer;
+  @apply rounded cursor-pointer;
   @apply transition-all duration-200 ease-in-out;
   background: transparent;
   border: none;
   color: var(--color-primary);
-  font-size: 1.5rem;
+  font-size: 1.75rem; /* 从 1.5rem 增加到 1.75rem */
+  padding: 0.5rem; /* 增加内边距 */
 }
 
 .search-button:hover {
@@ -213,7 +221,7 @@ select::-webkit-scrollbar-thumb:hover {
 
   .search-input,
   .class-select {
-    @apply text-base;
+    @apply text-lg; /* 移动端稍小 */
   }
 
   .search-button {

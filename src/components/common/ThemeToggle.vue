@@ -73,8 +73,10 @@ const selectTheme = (themeId) => {
 }
 
 .theme-toggle-btn {
-  @apply flex items-center justify-center w-12 h-12 rounded-xl cursor-pointer relative overflow-hidden;
+  @apply flex items-center justify-center rounded-xl cursor-pointer relative overflow-hidden;
   @apply transition-all duration-300 ease-out;
+  width: 48px;  /* 固定宽度，与 LanguageToggle 一致 */
+  height: 48px; /* 固定高度 */
   border: 2px solid var(--color-border, #e5e7eb);
   background: var(--color-surface, #ffffff);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -97,8 +99,10 @@ const selectTheme = (themeId) => {
 }
 
 .theme-icon {
-  @apply text-2xl leading-none flex items-center justify-center;
+  @apply flex items-center justify-center;
   @apply transition-transform duration-300 ease-out;
+  font-size: 1.5rem; /* 增加图标大小 */
+  line-height: 1;
 }
 
 .theme-toggle-btn:hover .theme-icon {
@@ -197,11 +201,12 @@ const selectTheme = (themeId) => {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .theme-toggle-btn {
-    @apply w-11 h-11;
+    width: 44px;
+    height: 44px;
   }
 
   .theme-icon {
-    @apply text-xl;
+    font-size: 1.25rem;
   }
 
   .theme-menu {
