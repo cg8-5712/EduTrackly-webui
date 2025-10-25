@@ -7,7 +7,7 @@ class SystemService extends ApiPrefix {
 
     async getSystemInfo() {
         try {
-            const response = await this.api.get(`/system`);
+            const response = await this.adminGet(`/system`);
             console.log('System info retrieved successfully:', response.data.message);
 
             if (response.data.code !== 0) {
