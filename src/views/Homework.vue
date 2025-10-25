@@ -47,7 +47,22 @@
     </div>
 
     <footer v-if="!isFullscreen" class="footer">
-      <p>© 2024 Edutrackly. All rights reserved.</p>
+      <div class="footer-content">
+        <div class="copyright">
+          <router-link to="/about" class="copyright-link">
+            <p>© 2025 EduTrackly. All rights reserved.</p>
+            <p class="license-text">Licensed under CC BY-NC-ND 4.0</p>
+          </router-link>
+        </div>
+        <div class="version-info-wrapper">
+          <VersionInfo :compact="true" />
+        </div>
+        <div class="team-info">
+          <router-link to="/about" class="team-link">
+            Team: Cg8-5712 & Contributors
+          </router-link>
+        </div>
+      </div>
     </footer>
   </div>
 </template>
@@ -60,6 +75,7 @@ import Calendar from '@/components/common/calendar.vue'
 import ClassSwitch from '@/components/common/ClassSwitch.vue'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import LanguageToggle from '@/components/common/LanguageToggle.vue'
+import VersionInfo from '@/components/VersionInfo.vue'
 import { formatYYYYMMDDToDate } from '@/utils/formatDate'
 
 const { t: $t } = useI18n()
@@ -298,17 +314,90 @@ onMounted(() => {
 }
 
 .footer {
-  text-align: center;
   background-color: var(--color-surface);
   color: var(--color-text-tertiary);
-  padding: 0.25rem 0.5rem;
-  font-size: 1.25rem;
+  padding: 0.75rem 1rem;
   margin-top: auto;
   transition: background-color var(--transition-base);
+  border-top: 1px solid var(--color-border);
 }
 
-.footer p {
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.copyright {
+  flex: 1;
+  min-width: 200px;
+}
+
+.copyright-link {
+  text-decoration: none;
+  color: var(--color-text-tertiary);
+  transition: color 0.2s ease;
+  display: block;
+}
+
+.copyright-link:hover {
+  color: var(--color-primary);
+}
+
+.copyright p {
   margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.license-text {
+  font-size: 0.75rem !important;
+  opacity: 0.7;
+  margin-top: 0.25rem !important;
+}
+
+.version-info-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  min-width: 200px;
+}
+
+.team-info {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  min-width: 200px;
+}
+
+.team-link {
+  color: var(--color-text-tertiary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color 0.2s ease;
+}
+
+.team-link:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .copyright,
+  .version-info-wrapper,
+  .team-info {
+    justify-content: center;
+    min-width: 100%;
+  }
 }
 
 /* 自定义滚动条样式 */
