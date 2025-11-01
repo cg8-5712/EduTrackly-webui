@@ -51,15 +51,7 @@
         <div class="copyright">
           <router-link to="/about" class="copyright-link">
             <p>© 2025 EduTrackly. All rights reserved.</p>
-            <p class="license-text">Licensed under CC BY-NC-ND 4.0</p>
-          </router-link>
-        </div>
-        <div class="version-info-wrapper">
-          <VersionInfo :compact="true" />
-        </div>
-        <div class="team-info">
-          <router-link to="/about" class="team-link">
-            Team: Cg8-5712 & Contributors
+            <p class="license-text">Licensed under GNU General Public License v3.0</p>
           </router-link>
         </div>
       </div>
