@@ -10,9 +10,9 @@
           </span>
         </div>
         <div class="relative">
-          <button @click="showCalendar = !showCalendar" class="calendar-button">
+          <button @click.stop="showCalendar = !showCalendar" class="calendar-button">
           📅
-        </button>
+          </button>
           <div v-if="showCalendar" class="calendar-popup">
             <Calendar mode="single" @select-date="onDateSelect" />
           </div>
@@ -85,7 +85,6 @@ import Calendar from '@/components/common/calendar.vue'
 import ClassSwitch from '@/components/common/ClassSwitch.vue'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import LanguageToggle from '@/components/common/LanguageToggle.vue'
-import VersionInfo from '@/components/VersionInfo.vue'
 import { formatYYYYMMDDToDate } from '@/utils/formatDate'
 
 const { t: $t } = useI18n()
@@ -185,7 +184,7 @@ const toggleFullscreen = () => {
 
 // 点击空白关闭日历
 const handleGlobalClick = (event) => {
-  if (showCalendar.value && !event.target.closest('.calendar-popup') && !event.target.closest('.calendar-btn')) {
+  if (showCalendar.value && !event.target.closest('.calendar-popup') && !event.target.closest('.calendar-button')) {
     showCalendar.value = false
   }
 }
@@ -234,7 +233,6 @@ const startResize = (e) => {
 watch(selectedCid, (newCid) => {
   if (!newCid) return
 
-  const cid = Number(newCid)
   if (studentsComponent.value?.fetchAttendance) {
     studentsComponent.value.fetchAttendance()
   }
