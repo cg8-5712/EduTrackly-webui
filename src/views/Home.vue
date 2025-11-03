@@ -10,9 +10,9 @@
           </span>
         </div>
         <div class="relative">
-          <button @click="showCalendar = !showCalendar" class="text-4xl md:text-5xl p-1 rounded-lg transition-all duration-200 border-none bg-transparent cursor-pointer hover:scale-110 active:scale-95">
-            📅
-          </button>
+          <button @click="showCalendar = !showCalendar" class="calendar-button">
+          📅
+        </button>
           <div v-if="showCalendar" class="calendar-popup">
             <Calendar mode="single" @select-date="onDateSelect" />
           </div>
