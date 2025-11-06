@@ -13,7 +13,7 @@
           <button @click.stop="showCalendar = !showCalendar" class="calendar-button">
           📅
           </button>
-          <div v-if="showCalendar" class="calendar-popup">
+          <div v-if="showCalendar" class="calendar-popup" @click.stop>
             <Calendar mode="single" @select-date="onDateSelect" />
           </div>
         </div>

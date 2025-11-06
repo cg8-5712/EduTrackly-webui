@@ -1,5 +1,5 @@
 <template>
-  <div class="inline-block">
+  <div class="inline-block" ref="wrapperRef">
     <slot name="reference" :open="open"></slot>
 
     <teleport to="body">
@@ -9,6 +9,8 @@
           ref="popupRef"
           class="bg-gray-600 border border-gray-500 rounded-lg p-2 min-w-30 text-center text-white shadow-lg"
           :style="positionStyle"
+          @mouseenter="onPopupEnter"
+          @mouseleave="onPopupLeave"
         >
           <slot />
         </div>
@@ -23,15 +25,47 @@ import { ref, nextTick, onMounted, onBeforeUnmount } from 'vue'
 const isOpen = ref(false)
 const positionStyle = ref({})
 const popupRef = ref(null)
+const wrapperRef = ref(null)
 let triggerEl = null
+let isHoveringPopup = false
+let closeTimer = null
 
 const open = async (event) => {
+  // 清除可能存在的关闭定时器
+  if (closeTimer) {
+    clearTimeout(closeTimer)
+    closeTimer = null
+  }
+
   triggerEl = event.currentTarget
   if (!isOpen.value) {
     isOpen.value = true
     await nextTick()
     updatePosition()
   }
+}
+
+const close = () => {
+  // 延迟关闭，给时间让鼠标移动到popup上
+  closeTimer = setTimeout(() => {
+    if (!isHoveringPopup) {
+      isOpen.value = false
+      triggerEl = null
+    }
+  }, 100)
+}
+
+const onPopupEnter = () => {
+  isHoveringPopup = true
+  if (closeTimer) {
+    clearTimeout(closeTimer)
+    closeTimer = null
+  }
+}
+
+const onPopupLeave = () => {
+  isHoveringPopup = false
+  close()
 }
 
 // 点击外部关闭 popup
@@ -56,23 +90,24 @@ const updatePosition = () => {
   const popupRect = popupEl.getBoundingClientRect()
   const margin = 8
 
-  let top = triggerRect.bottom + window.scrollY + margin
-  let left = triggerRect.left + window.scrollX + triggerRect.width / 2
+  // 默认显示在元素下方，居中对齐
+  let top = triggerRect.bottom + margin
+  let left = triggerRect.left + triggerRect.width / 2 - popupRect.width / 2
 
-  // 保证不超出屏幕左右
-  left = Math.max(popupRect.width / 2 + 8, left)
-  left = Math.min(window.innerWidth - popupRect.width / 2 - 8, left)
+  // 保证不超出屏幕左右边界
+  const minLeft = 8
+  const maxLeft = window.innerWidth - popupRect.width - 8
+  left = Math.max(minLeft, Math.min(maxLeft, left))
 
-  // 超出底部屏幕显示在上方
-  if (top + popupRect.height > window.scrollY + window.innerHeight) {
-    top = triggerRect.top + window.scrollY - popupRect.height - margin
+  // 如果超出底部屏幕，显示在上方
+  if (top + popupRect.height > window.innerHeight) {
+    top = triggerRect.top - popupRect.height - margin
   }
 
   positionStyle.value = {
-    position: 'absolute',
+    position: 'fixed',
     top: `${top}px`,
     left: `${left}px`,
-    transform: 'translateX(-50%)',
     zIndex: 9999
   }
 }
@@ -80,13 +115,16 @@ const updatePosition = () => {
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
   window.addEventListener('resize', updatePosition)
-  window.addEventListener('scroll', updatePosition)
+  window.addEventListener('scroll', updatePosition, true)
 })
 
 onBeforeUnmount(() => {
+  if (closeTimer) {
+    clearTimeout(closeTimer)
+  }
   document.removeEventListener('click', handleClickOutside)
   window.removeEventListener('resize', updatePosition)
-  window.removeEventListener('scroll', updatePosition)
+  window.removeEventListener('scroll', updatePosition, true)
 })
 </script>
 
