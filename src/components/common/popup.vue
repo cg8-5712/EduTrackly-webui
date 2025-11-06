@@ -122,25 +122,43 @@ const handleClickOutside = (event) => {
 const updatePosition = () => {
   if (!triggerEl || !popupRef.value) return
 
+  // 获取学生姓名元素的位置信息
   const triggerRect = triggerEl.getBoundingClientRect()
   const popupEl = popupRef.value
   const popupRect = popupEl.getBoundingClientRect()
-  const margin = 8
 
-  // 默认显示在元素下方，居中对齐
-  let top = triggerRect.bottom + margin
-  let left = triggerRect.left + triggerRect.width / 2 - popupRect.width / 2
+  const gap = 8 // 弹窗与触发元素之间的间距
 
-  // 保证不超出屏幕左右边界
-  const minLeft = 8
-  const maxLeft = window.innerWidth - popupRect.width - 8
-  left = Math.max(minLeft, Math.min(maxLeft, left))
+  // 计算弹窗位置：
+  // 1. 垂直位置：默认显示在学生姓名的正下方
+  let top = triggerRect.bottom + gap
 
-  // 如果超出底部屏幕，显示在上方
-  if (top + popupRect.height > window.innerHeight) {
-    top = triggerRect.top - popupRect.height - margin
+  // 2. 水平位置：弹窗中心对齐学生姓名中心
+  let left = triggerRect.left + (triggerRect.width / 2) - (popupRect.width / 2)
+
+  // 边界检查和调整：
+  // 检查是否超出屏幕右边
+  const screenPadding = 8
+  if (left + popupRect.width > window.innerWidth - screenPadding) {
+    left = window.innerWidth - popupRect.width - screenPadding
   }
 
+  // 检查是否超出屏幕左边
+  if (left < screenPadding) {
+    left = screenPadding
+  }
+
+  // 检查是否超出屏幕底部，如果超出则显示在学生姓名上方
+  if (top + popupRect.height > window.innerHeight - screenPadding) {
+    top = triggerRect.top - popupRect.height - gap
+  }
+
+  // 检查是否超出屏幕顶部
+  if (top < screenPadding) {
+    top = screenPadding
+  }
+
+  // 应用计算好的位置
   positionStyle.value = {
     position: 'fixed',
     top: `${top}px`,
