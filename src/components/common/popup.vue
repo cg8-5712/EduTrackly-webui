@@ -29,6 +29,7 @@ const wrapperRef = ref(null)
 let triggerEl = null
 let isHoveringPopup = false
 let closeTimer = null
+let scrollContainer = null
 
 const open = async (event) => {
   // 清除可能存在的关闭定时器
@@ -41,7 +42,15 @@ const open = async (event) => {
   if (!isOpen.value) {
     isOpen.value = true
     await nextTick()
-    updatePosition()
+    // 使用 requestAnimationFrame 确保 DOM 完全渲染后再计算位置
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        updatePosition()
+      })
+    })
+
+    // 找到滚动容器并添加监听
+    findScrollContainer()
   }
 }
 
@@ -51,6 +60,7 @@ const close = () => {
     if (!isHoveringPopup) {
       isOpen.value = false
       triggerEl = null
+      removeScrollListener()
     }
   }, 100)
 }
@@ -68,6 +78,32 @@ const onPopupLeave = () => {
   close()
 }
 
+// 找到滚动容器
+const findScrollContainer = () => {
+  if (!triggerEl) return
+
+  let element = triggerEl.parentElement
+  while (element) {
+    const overflow = window.getComputedStyle(element).overflow
+    const overflowY = window.getComputedStyle(element).overflowY
+
+    if (overflow === 'auto' || overflow === 'scroll' || overflowY === 'auto' || overflowY === 'scroll') {
+      scrollContainer = element
+      scrollContainer.addEventListener('scroll', updatePosition)
+      break
+    }
+    element = element.parentElement
+  }
+}
+
+// 移除滚动监听
+const removeScrollListener = () => {
+  if (scrollContainer) {
+    scrollContainer.removeEventListener('scroll', updatePosition)
+    scrollContainer = null
+  }
+}
+
 // 点击外部关闭 popup
 const handleClickOutside = (event) => {
   if (!popupRef.value || !triggerEl) return
@@ -80,6 +116,7 @@ const handleClickOutside = (event) => {
 
   isOpen.value = false
   triggerEl = null
+  removeScrollListener()
 }
 
 const updatePosition = () => {
@@ -115,16 +152,15 @@ const updatePosition = () => {
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
   window.addEventListener('resize', updatePosition)
-  window.addEventListener('scroll', updatePosition, true)
 })
 
 onBeforeUnmount(() => {
   if (closeTimer) {
     clearTimeout(closeTimer)
   }
+  removeScrollListener()
   document.removeEventListener('click', handleClickOutside)
   window.removeEventListener('resize', updatePosition)
-  window.removeEventListener('scroll', updatePosition, true)
 })
 </script>
 
