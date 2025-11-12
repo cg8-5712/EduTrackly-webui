@@ -1,4 +1,7 @@
 import ApiPrefix from '@/utils/ApiPrefix';
+import i18n from '@/i18n';
+
+const t = (key) => i18n.global.t(key);
 
 class StudentService extends ApiPrefix {
   constructor() {
@@ -92,14 +95,14 @@ class StudentService extends ApiPrefix {
   }
 
   // 提交学生事件
-  async submitStudentEvents(events) {
+  async submitStudentEvents(events, date) {
     try {
       if (!Array.isArray(events) || events.length === 0) {
         throw new Error(t('error.eventDataEmpty'));
       }
 
       const url = `/student/event?date=${date}`;
-      const data = await this.adminPut(url, events);
+      const data = await this.put(url, events);
       console.log(t('service.submittingStudentEvents') + ':', data.message);
 
       if (data.code !== 0) {
