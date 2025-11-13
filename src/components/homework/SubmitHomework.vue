@@ -18,19 +18,6 @@
       </div>
     </div>
 
-    <!-- 单独的"其他"科目 -->
-    <div class="other-subject-section">
-      <div class="other-subject-item">
-        <label class="subject-label">{{ otherSubject.name }}</label>
-        <textarea
-            v-model="homeworkContent[otherSubject.key]"
-            @input="resizeTextarea($event)"
-            :placeholder="$t('homework.pleaseEnterContent') + otherSubject.name"
-            rows="2"
-            class="subject-textarea"
-        ></textarea>
-      </div>
-    </div>
     <button @click="submitHomework" class="submit-button">{{ $t('homework.submit') }}</button>
   </div>
 </template>
@@ -60,7 +47,8 @@ const mainSubjects = computed(() => [
   { key: 'biology', name: $t('homework.subjects.biology') },
   { key: 'history', name: $t('homework.subjects.history') },
   { key: 'geography', name: $t('homework.subjects.geography') },
-  { key: 'politics', name: $t('homework.subjects.politics') }
+  { key: 'politics', name: $t('homework.subjects.politics') },
+  { key: 'others', name: $t('homework.subjects.others') }
 ]);
 
 // 其他科目配置
@@ -149,7 +137,7 @@ async function submitHomework() {
     );
 
     if (!hasContent) {
-      alert($t('homework.pleaseEnterContent'));
+      notificationService.notify($t('homework.pleaseEnterContent'));
       return;
     }
 
@@ -172,18 +160,18 @@ async function submitHomework() {
     console.log('提交响应:', res.data);
 
     if (res.data.code === 0) {
-      alert($t('homework.submitSuccess'));
+      notificationService.success($t('homework.submitSuccess'));
       resetHomework();
       fetchTodayHomework(props.cid); // 重新加载
     } else {
-      alert(`${$t('homework.submitFailed')}：${res.data.message}`);
+      notificationService.error(`${$t('homework.submitFailed')}：${res.data.message}`, 'error');
     }
   } catch (err) {
     console.error('提交作业失败:', err);
     if (err.response?.data?.message) {
-      alert(`${$t('homework.submitFailed')}：${err.response.data.message}`);
+      notificationService.error(`${$t('homework.submitFailed')}：${err.response.data.message}`, 'error');
     } else {
-      alert($t('homework.submitFailed'));
+      notificationService.error($t('homework.submitFailed'), 'error');
     }
   }
 }
