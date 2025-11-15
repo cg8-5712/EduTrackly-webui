@@ -1,28 +1,28 @@
 <template>
   <!-- 登录表单 -->
-  <div v-if="!isAuthenticated" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="w-[520px]">
+  <div v-if="!isAuthenticated" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-[520px]">
       <!-- 登录卡片 - 宽高比约3:4 -->
-      <div class="bg-white rounded-3xl shadow-2xl p-12 space-y-8 aspect-[3/4]">
+      <div class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-12 space-y-6 sm:space-y-8 aspect-[3/4]">
         <!-- 标题区域 -->
         <div class="text-center">
-          <div class="mx-auto h-16 w-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg transform hover:scale-105 transition-transform duration-200">
-            <svg class="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="mx-auto h-12 w-12 sm:h-16 sm:w-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 shadow-lg transform hover:scale-105 transition-transform duration-200">
+            <svg class="h-7 w-7 sm:h-10 sm:w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <h2 class="text-3xl font-bold text-gray-900 mb-2">
+          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             {{ $t('admin.login') }}
           </h2>
-          <p class="text-sm text-gray-600">
+          <p class="text-xs sm:text-sm text-gray-600">
             {{ $t('admin.pleaseEnterPassword') }}
           </p>
         </div>
 
         <!-- 登录表单 -->
-        <form class="space-y-6 flex-1 flex flex-col justify-center" @submit.prevent="handleLogin">
+        <form class="space-y-4 sm:space-y-6 flex-1 flex flex-col justify-center" @submit.prevent="handleLogin">
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+            <label for="password" class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
               {{ $t('common.password') }}
             </label>
             <input
@@ -31,7 +31,7 @@
               type="password"
               autocomplete="current-password"
               required
-              class="appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              class="appearance-none rounded-lg relative block w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 placeholder-gray-400 text-gray-900 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
               :placeholder="$t('admin.pleaseEnterPassword')"
               v-model="password"
               :disabled="isLogging"
@@ -39,8 +39,8 @@
           </div>
 
           <!-- 错误提示 -->
-          <div v-if="loginError" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
-            <svg class="h-5 w-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <div v-if="loginError" class="bg-red-50 border border-red-200 text-red-700 px-3 py-2 sm:px-4 sm:py-3 rounded-lg text-xs sm:text-sm flex items-center gap-2">
+            <svg class="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
             </svg>
             <span>{{ loginError }}</span>
@@ -51,14 +51,14 @@
             <button
               type="submit"
               :disabled="isLogging"
-              class="group relative w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 active:scale-98 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+              class="group relative w-full flex justify-center items-center gap-2 py-2.5 sm:py-3 px-4 border border-transparent text-xs sm:text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 active:scale-98 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               <template v-if="isLogging">
                 <LoadingSpinner :size="20" color="#ffffff" message="" />
                 <span>{{ $t('common.loading') }}</span>
               </template>
               <template v-else>
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
                 <span>{{ $t('common.login') }}</span>
@@ -69,41 +69,43 @@
       </div>
 
       <!-- 底部提示 -->
-      <p class="mt-4 text-center text-xs text-gray-300">
+      <p class="mt-4 text-center text-[10px] sm:text-xs text-gray-300">
         {{ $t('common.passwordSafetyWarning') }}
       </p>
     </div>
   </div>
 
   <!-- 管理界面 -->
-  <div v-else class="flex h-screen overflow-hidden">
-    <div class="w-60 min-w-60 bg-slate-700 text-white flex flex-col shadow-lg">
-      <div class="p-5 border-b border-slate-600 bg-slate-800">
-        <h3 class="m-0 text-lg font-semibold text-center">{{ $t('admin.dashboard') }}</h3>
+  <div v-else class="flex flex-col md:flex-row h-screen overflow-hidden">
+    <!-- 移动端横向滚动导航 + 桌面端侧边栏 -->
+    <div class="bg-slate-700 text-white md:w-60 md:min-w-60 flex flex-col shadow-lg">
+      <div class="p-3 sm:p-5 border-b border-slate-600 bg-slate-800">
+        <h3 class="m-0 text-base sm:text-lg font-semibold text-center">{{ $t('admin.dashboard') }}</h3>
       </div>
-      <div class="flex-1 overflow-y-auto pt-2">
-        <ul class="list-none p-0 m-0">
+      <!-- 移动端横向滚动 -->
+      <div class="flex-1 md:overflow-y-auto overflow-x-auto md:overflow-x-visible md:pt-2">
+        <ul class="list-none p-0 m-0 flex md:block whitespace-nowrap md:whitespace-normal">
           <li
               v-for="(item, index) in navigation"
               :key="index"
               @click="changeComponent(item)"
               @keydown.enter="changeComponent(item)"
-              :class="{'bg-slate-600 border-l-cyan-400 font-semibold': item.current}"
-              class="py-4 px-5 cursor-pointer flex items-center transition-all duration-300 border-l-4 border-l-transparent hover:bg-slate-600 hover:border-l-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-inset"
+              :class="{'bg-slate-600 border-b-cyan-400 md:border-l-cyan-400 md:border-b-transparent font-semibold': item.current}"
+              class="py-3 px-4 md:py-4 md:px-5 cursor-pointer flex items-center transition-all duration-300 border-b-4 md:border-b-0 md:border-l-4 border-transparent hover:bg-slate-600 hover:border-b-cyan-400 md:hover:border-l-cyan-400 md:hover:border-b-transparent focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-inset inline-flex md:flex"
               tabindex="0"
               role="button"
               :aria-label="$t(item.nameKey)"
               :aria-current="item.current ? 'page' : undefined"
           >
-            <component :is="item.icon" class="w-5 h-5 mr-3 flex-shrink-0" />
-            {{ $t(item.nameKey) }}
+            <component :is="item.icon" class="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3 flex-shrink-0" />
+            <span class="text-xs sm:text-sm md:text-base">{{ $t(item.nameKey) }}</span>
           </li>
         </ul>
       </div>
-      <div class="p-4 border-t border-slate-600">
+      <div class="p-3 sm:p-4 border-t border-slate-600">
         <button
           @click="handleLogout"
-          class="w-full py-2 px-4 bg-red-600 hover:bg-red-700 active:scale-95 text-white text-sm rounded-md transition-all duration-200"
+          class="w-full py-2 px-3 sm:px-4 bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs sm:text-sm rounded-md transition-all duration-200"
         >
           {{ $t('common.logout') }}
         </button>
@@ -111,14 +113,14 @@
     </div>
 
     <div class="flex-1 flex flex-col bg-gray-50 overflow-hidden">
-      <div class="bg-white py-5 px-8 border-b border-gray-200 shadow-sm z-10 flex justify-between items-center">
-        <h2 class="m-0 text-2xl font-semibold text-slate-700">{{ currentMenuName }}</h2>
-        <div class="flex items-center gap-3">
+      <div class="bg-white py-3 sm:py-4 md:py-5 px-4 sm:px-6 md:px-8 border-b border-gray-200 shadow-sm z-10 flex justify-between items-center">
+        <h2 class="m-0 text-lg sm:text-xl md:text-2xl font-semibold text-slate-700">{{ currentMenuName }}</h2>
+        <div class="flex items-center gap-2 sm:gap-3">
           <LanguageToggle />
           <ThemeToggle />
         </div>
       </div>
-      <div class="flex-1 p-8 overflow-y-auto overflow-x-hidden">
+      <div class="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto overflow-x-hidden">
         <component :is="currentComponent" />
       </div>
     </div>
@@ -129,6 +131,7 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AuthService from '@/services/common/auth'
+import notificationService from '@/services/common/notification'
 
 const { t: $t } = useI18n()
 
@@ -144,6 +147,17 @@ import LanguageToggle from '@/components/common/LanguageToggle.vue'
 
 // 引入图标组件（你需要根据实际使用的图标库调整）
 import { AcademicCapIcon, BookOpenIcon, UsersIcon, Cog8ToothIcon } from '@heroicons/vue/24/outline'
+
+// 检测微信浏览器
+const checkWechatBrowser = () => {
+  const ua = navigator.userAgent.toLowerCase()
+  return /micromessenger/i.test(ua)
+}
+
+// 检查是否已经显示过提示
+const hasShownWechatTip = () => {
+  return sessionStorage.getItem('wechat-tip-shown') === 'true'
+}
 
 // 登录相关状态
 const isAuthenticated = ref(false)
@@ -270,6 +284,14 @@ const changeComponent = (item) => {
 // 组件挂载时检查登录状态
 onMounted(() => {
   startAuthCheck()
+
+  // 检测微信浏览器并显示提示
+  if (checkWechatBrowser() && !hasShownWechatTip()) {
+    setTimeout(() => {
+      notificationService.notify($t('wechatTip.message'), 'info')
+      sessionStorage.setItem('wechat-tip-shown', 'true')
+    }, 1000) // 延迟1秒显示，避免干扰页面加载
+  }
 })
 
 // 组件卸载时清理定时器
