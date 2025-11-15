@@ -18,28 +18,20 @@ const PROGRESS_UPDATE_INTERVAL = 50 // 每50ms更新一次进度条
 
 const VALID_TYPES = ['info', 'success', 'error', 'warn']
 
-/**
- * 显示通知
- * @param {string} message - 消息内容
- * @param {string} type - 消息类型 info | success | error | warn
- */
 const notify = (message, type = 'info') => {
     if (!VALID_TYPES.includes(type)) {
         console.warn(t('error.notificationTypeNotSupported', { type }))
         type = 'info'
     }
 
-    // 清除已有定时器
     clearTimers()
 
-    // 更新状态
     state.message = message
     state.type = type
     state.show = true
     state.progress = 100
     state.isPaused = false
 
-    // 启动进度条动画
     startProgressAnimation()
 }
 
@@ -52,10 +44,9 @@ const startProgressAnimation = () => {
             if (pausedTime === 0) {
                 pausedTime = Date.now()
             }
-            return // 暂停时不更新进度
+            return
         }
 
-        // 如果从暂停状态恢复，调整开始时间
         if (pausedTime > 0) {
             startTime += Date.now() - pausedTime
             pausedTime = 0
@@ -97,10 +88,15 @@ const close = () => {
     state.isPaused = false
 }
 
-export default {
+const notification = {
     state,
-    notify,
+    success: (message) => notify(message, 'success'),
+    info: (message) => notify(message, 'info'),
+    error: (message) => notify(message, 'error'),
+    warn: (message) => notify(message, 'warn'),
     close,
     pause,
     resume
 }
+
+export default notification
