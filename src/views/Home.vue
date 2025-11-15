@@ -1,47 +1,60 @@
 <template>
-  <div class="h-screen w-full bg-background flex flex-col p-4 box-border overflow-hidden transition-[background-color] duration-200" @click="handleGlobalClick">
+  <div class="h-screen w-full bg-background flex flex-col p-2 sm:p-4 box-border overflow-hidden transition-[background-color] duration-200" @click="handleGlobalClick">
     <!-- 顶部栏 -->
     <div class="top-bar">
-      <div class="relative flex items-center gap-4 text-2xl font-semibold">
-        <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
-          <span class="date-text">{{ $t('common.today') }}：{{ todayDate }}</span>
-          <span v-if="selectedDate && selectedDate !== todayDateInt" class="date-text selected-date">
-            {{ $t('datetime.selectDate') }}：{{ formattedSelectedDate }}
-          </span>
-        </div>
-        <div class="relative">
-          <button @click.stop="showCalendar = !showCalendar" class="calendar-button">
-          📅
-          </button>
-          <div v-if="showCalendar" class="calendar-popup" @click.stop>
-            <Calendar mode="single" @select-date="onDateSelect" />
+      <!-- 第一行：日期和日历 -->
+      <div class="top-bar-row">
+        <div class="relative flex items-center gap-2 sm:gap-4 text-2xl font-semibold flex-1">
+          <div class="flex flex-col sm:flex-row gap-1 sm:gap-4">
+            <span class="date-text">{{ $t('common.today') }}：{{ todayDate }}</span>
+            <span v-if="selectedDate && selectedDate !== todayDateInt" class="date-text selected-date">
+              {{ $t('datetime.selectDate') }}：{{ formattedSelectedDate }}
+            </span>
           </div>
+          <div class="relative">
+            <button @click.stop="showCalendar = !showCalendar" class="calendar-button">
+            📅
+            </button>
+            <div v-if="showCalendar" class="calendar-popup" @click.stop>
+              <Calendar mode="single" @select-date="onDateSelect" />
+            </div>
+          </div>
+        </div>
+        
+        <!-- 移动端：时间显示在第一行右侧 -->
+        <div class="time-display md:hidden">
+          {{ currentTime }}
         </div>
       </div>
 
-      <!-- 替换原有班级选择为新组件 -->
-      <ClassSwitch v-model:cid="selectedCid" />
+      <!-- 第二行：班级选择和操作按钮 -->
+      <div class="top-bar-row">
+        <!-- 替换原有班级选择为新组件 -->
+        <ClassSwitch v-model:cid="selectedCid" class="flex-1 md:flex-initial" />
 
-      <div class="flex items-center gap-3 sm:gap-6">
-        <LanguageToggle />
-        <ThemeToggle />
-        <div class="time-display">
-          {{ currentTime }}
+        <div class="flex items-center gap-2 sm:gap-3 md:gap-6">
+          <LanguageToggle />
+          <ThemeToggle />
+          <!-- 桌面端：时间显示 -->
+          <div class="time-display hidden md:block">
+            {{ currentTime }}
+          </div>
+          <button @click.stop="toggleFullscreen" class="fullscreen-btn">
+            <span class="hidden sm:inline">{{ isFullscreen ? $t('common.exitFullscreen') : $t('common.fullscreen') }}</span>
+            <span class="sm:hidden">{{ isFullscreen ? '退出' : '全屏' }}</span>
+          </button>
         </div>
-        <button @click.stop="toggleFullscreen" class="fullscreen-btn">
-          {{ isFullscreen ? $t('common.exitFullscreen') : $t('common.fullscreen') }}
-        </button>
       </div>
     </div>
 
     <!-- 主要内容区域 -->
-    <div class="flex-1 flex flex-col md:flex-row gap-4 md:gap-0 min-h-0 py-2 mt-2" ref="mainContentRef">
-      <!-- 左侧考勤信息 -->
-      <div class="content-card" :style="{ width: leftWidth }">
+    <div class="flex-1 flex flex-col md:flex-row gap-3 md:gap-0 min-h-0 py-2 mt-2" ref="mainContentRef">
+      <!-- 考勤信息（移动端在上，桌面端在左） -->
+      <div class="content-card" :style="mobileOrDesktopStyle('attendance')">
         <AttendanceDisplay ref="studentsComponent" :selected-date="selectedDate" :selected-cid="selectedCid" />
       </div>
 
-      <!-- 可拖动分隔条 -->
+      <!-- 可拖动分隔条（仅桌面端显示） -->
       <div
           class="resizer"
           @mousedown="startResize"
@@ -51,8 +64,8 @@
         <div class="resizer-line"></div>
       </div>
 
-      <!-- 右侧作业信息 -->
-      <div class="content-card" :style="{ width: rightWidth }">
+      <!-- 作业信息（移动端在下，桌面端在右） -->
+      <div class="content-card" :style="mobileOrDesktopStyle('homework')">
         <div class="homework-header">
           <h2 class="homework-title">{{ $t('homework.homeworkContent') }}</h2>
           <span class="homework-date">{{ selectedDateText }}</span>
@@ -128,6 +141,22 @@ const updateWidths = (percentage) => {
 
   // 保存到 localStorage
   localStorage.setItem('home-split-ratio', percentage.toString())
+}
+
+// 移动端/桌面端样式切换
+const mobileOrDesktopStyle = (section) => {
+  // 移动端使用固定高度，桌面端使用百分比宽度
+  if (section === 'attendance') {
+    return {
+      width: window.innerWidth < 768 ? '100%' : leftWidth.value,
+      height: window.innerWidth < 768 ? '45%' : 'auto'
+    }
+  } else {
+    return {
+      width: window.innerWidth < 768 ? '100%' : rightWidth.value,
+      height: window.innerWidth < 768 ? '55%' : 'auto'
+    }
+  }
 }
 
 // 计算属性
@@ -264,29 +293,76 @@ onUnmounted(() => {
 /* 顶部栏 */
 .top-bar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
   background-color: var(--color-header-footer);
   border-radius: 0.75rem;
   box-shadow: var(--shadow-lg);
   transition: background-color var(--transition-base);
 }
 
+@media (min-width: 768px) {
+  .top-bar {
+    padding: 1rem;
+  }
+}
+
+/* 顶部栏行 */
+.top-bar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .top-bar-row {
+    gap: 1rem;
+  }
+}
+
+/* 日历按钮 */
+.calendar-button {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  transition: transform 0.2s;
+}
+
+.calendar-button:hover {
+  transform: scale(1.1);
+}
+
+@media (min-width: 768px) {
+  .calendar-button {
+    font-size: 2rem;
+  }
+}
+
 /* 日期文本 */
 .date-text {
-  font-size: 1.5rem;
+  font-size: 1.125rem;
   font-weight: bold;
   color: var(--color-primary);
 }
 
 .selected-date {
   color: var(--color-secondary);
+  font-size: 1rem;
 }
 
 @media (min-width: 640px) {
   .date-text {
-    font-size: 1.875rem;
+    font-size: 1.5rem;
+  }
+  
+  .selected-date {
+    font-size: 1.25rem;
   }
 }
 
@@ -294,18 +370,23 @@ onUnmounted(() => {
   .date-text {
     font-size: 3rem;
   }
+  
+  .selected-date {
+    font-size: 2.5rem;
+  }
 }
 
 /* 时间显示 */
 .time-display {
-  font-size: 1.875rem;
+  font-size: 1.5rem;
   font-weight: 900;
   color: var(--color-primary);
+  white-space: nowrap;
 }
 
 @media (min-width: 640px) {
   .time-display {
-    font-size: 3rem;
+    font-size: 2rem;
   }
 }
 
@@ -320,12 +401,13 @@ onUnmounted(() => {
   background-color: var(--color-surface);
   color: var(--color-primary);
   border: 2px solid var(--color-border);
-  padding: 0.5rem 1rem;
+  padding: 0.375rem 0.75rem;
   border-radius: 0.5rem;
-  font-size: 1.125rem;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .fullscreen-btn:hover {
@@ -340,13 +422,14 @@ onUnmounted(() => {
 
 @media (min-width: 640px) {
   .fullscreen-btn {
-    padding: 1rem 2rem;
-    font-size: 1.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 1.125rem;
   }
 }
 
 @media (min-width: 768px) {
   .fullscreen-btn {
+    padding: 1rem 2rem;
     font-size: 1.875rem;
   }
 }
@@ -379,7 +462,7 @@ onUnmounted(() => {
 .content-card {
   background-color: var(--color-surface);
   border-radius: 0.75rem;
-  padding: 1.5rem;
+  padding: 0.75rem;
   box-shadow: var(--shadow-lg);
   overflow-y: auto;
   overflow-x: hidden;
@@ -387,9 +470,16 @@ onUnmounted(() => {
   transition: background-color var(--transition-base);
 }
 
+@media (min-width: 640px) {
+  .content-card {
+    padding: 1rem;
+  }
+}
+
 @media (min-width: 768px) {
   .content-card {
     flex-shrink: 0;
+    padding: 1.5rem;
   }
 }
 
@@ -463,18 +553,36 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin: 0;
   padding: 0.125rem 0;
-  margin-bottom: 1rem;
-  margin-top: 1.125rem;
-  margin-left: 1rem;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .homework-header {
+    margin-bottom: 1rem;
+    margin-top: 1.125rem;
+    margin-left: 1rem;
+    margin-right: 0;
+  }
 }
 
 .homework-title {
-  font-size: 2.25rem;
+  font-size: 1.5rem;
   font-weight: bold;
   color: var(--color-primary);
   margin: 0;
+}
+
+@media (min-width: 640px) {
+  .homework-title {
+    font-size: 2rem;
+  }
 }
 
 @media (min-width: 768px) {
@@ -484,30 +592,48 @@ onUnmounted(() => {
 }
 
 .homework-date {
-  font-size: 1.875rem;
+  font-size: 1.25rem;
   color: var(--color-secondary);
-  margin-right: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .homework-date {
+    font-size: 1.5rem;
+  }
 }
 
 @media (min-width: 768px) {
   .homework-date {
     font-size: 2.25rem;
+    margin-right: 1.25rem;
   }
 }
 
 .homework-content {
-  margin-top: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .homework-content {
+    margin-top: 1.5rem;
+  }
 }
 
 /* 页脚 */
 .footer {
   background-color: var(--color-header-footer);
   color: var(--color-text-tertiary);
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
   margin-top: auto;
   transition: background-color var(--transition-base);
   border-top: 1px solid var(--color-border);
-  border-radius: 0.375rem; /* 圆角大小：0.75rem = 12px */
+  border-radius: 0.375rem;
+}
+
+@media (min-width: 768px) {
+  .footer {
+    padding: 0.75rem 1rem;
+  }
 }
 
 .footer-content {
@@ -537,17 +663,29 @@ onUnmounted(() => {
 
 .copyright p {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 
+@media (min-width: 768px) {
+  .copyright p {
+    font-size: 0.875rem;
+  }
+}
+
 .license-text {
-  font-size: 0.75rem !important;
+  font-size: 0.625rem !important;
   opacity: 0.7;
   margin-top: 0.25rem !important;
 }
 
-@media (max-width: 768px) {
+@media (min-width: 768px) {
+  .license-text {
+    font-size: 0.75rem !important;
+  }
+}
+
+@media (max-width: 767px) {
   .footer-content {
     flex-direction: column;
     align-items: center;
