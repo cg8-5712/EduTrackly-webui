@@ -82,6 +82,11 @@ export default {
     ja: '日本語'
   },
 
+  // WeChatブラウザのヒント
+  wechatTip: {
+    message: 'WeChatブラウザを検出しました。右上の「...」をタップして「ブラウザで開く」を選択すると、より良い体験が得られます'
+  },
+
   // 生徒管理
   student: {
     title: '生徒管理',

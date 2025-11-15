@@ -82,6 +82,11 @@ export default {
     ja: '日本語'
   },
 
+  // WeChat Browser Tip
+  wechatTip: {
+    message: 'WeChat browser detected. Tap "..." in top right and select "Open in Browser" for better experience'
+  },
+
   // Student Management
   student: {
     title: 'Student Management',

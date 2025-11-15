@@ -1,53 +1,45 @@
 <template>
-  <div class="homework-page" @click="handleGlobalClick">
+  <div class="h-screen w-full bg-[var(--color-background)] text-[var(--color-text-primary)] flex flex-col p-2 md:p-4 box-border overflow-hidden transition-colors duration-200" @click="handleGlobalClick">
     <!-- 顶部栏 -->
-    <div class="top-bar">
-      <!-- 第一行：日期和日历 -->
-      <div class="top-bar-row">
-        <div class="date-section">
-          <div class="date-display">
-            <span class="date-text">{{ $t('common.today') }}：{{ todayDate }}</span>
-            <span v-if="selectedDate && selectedDate !== todayDateInt" class="date-text-selected">
-              {{ $t('datetime.selectDate') }}：{{ formattedSelectedDate }}
-            </span>
-          </div>
-          <button @click="showCalendar = !showCalendar" class="calendar-button">
-            📅
-          </button>
-          <div v-if="showCalendar" class="calendar-popup">
-            <Calendar mode="single" @select-date="onDateSelect" />
-          </div>
+    <div class="flex flex-wrap md:flex-nowrap justify-between items-center gap-3 md:gap-4 p-3 md:p-4 md:pt-8 bg-[var(--color-surface)] rounded-xl shadow-lg transition-colors duration-200">
+      <!-- 日期和日历 -->
+      <div class="relative flex items-center gap-2 md:gap-4 text-2xl md:text-4xl font-semibold text-[var(--color-primary)]">
+        <div class="flex flex-col gap-1 md:gap-2">
+          <span class="text-lg sm:text-[1.875rem] md:text-5xl font-bold text-[var(--color-primary)] transition-colors duration-200">{{ $t('common.today') }}：{{ todayDate }}</span>
+          <span v-if="selectedDate && selectedDate !== todayDateInt" class="text-base sm:text-2xl md:text-[2.5rem] text-[var(--color-secondary)] transition-colors duration-200">
+            {{ $t('datetime.selectDate') }}：{{ formattedSelectedDate }}
+          </span>
         </div>
-        
-        <!-- 移动端：时间显示在第一行右侧 -->
-        <div class="time-display md:hidden">{{ currentTime }}</div>
+        <button @click="showCalendar = !showCalendar" class="bg-transparent border-none text-2xl md:text-5xl cursor-pointer p-1 rounded-lg transition-transform duration-200 hover:scale-110">
+          📅
+        </button>
+        <div v-if="showCalendar" class="absolute top-full left-0 mt-2 z-50 bg-[var(--color-surface)] rounded-xl shadow-lg transition-colors duration-200 animate-fade-in">
+          <Calendar mode="single" @select-date="onDateSelect" />
+        </div>
       </div>
 
-      <!-- 第二行：班级选择和操作按钮 -->
-      <div class="top-bar-row">
-        <!-- 替换原有班级选择为新组件 -->
-        <ClassSwitch v-model:cid="selectedCid" class="flex-1 md:flex-initial" />
+      <!-- 班级选择 -->
+      <ClassSwitch v-model:cid="selectedCid" class="w-full md:w-auto" />
 
-        <div class="action-section">
-          <LanguageToggle />
-          <ThemeToggle />
-          <!-- 桌面端：时间显示 -->
-          <div class="time-display hidden md:block">{{ currentTime }}</div>
-          <button @click.stop="toggleFullscreen" class="fullscreen-button">
-            <span class="hidden sm:inline">{{ isFullscreen ? $t('common.exitFullscreen') : $t('common.fullscreen') }}</span>
-            <span class="sm:hidden">{{ isFullscreen ? '退出' : '全屏' }}</span>
-          </button>
-        </div>
+      <!-- 操作按钮区 -->
+      <div class="flex items-center gap-2 sm:gap-4 md:gap-6 w-full md:w-auto justify-end">
+        <LanguageToggle />
+        <ThemeToggle />
+        <div class="text-2xl sm:text-[2rem] md:text-[3.75rem] font-black text-[var(--color-primary)] transition-colors duration-200 whitespace-nowrap">{{ currentTime }}</div>
+        <button @click.stop="toggleFullscreen" class="bg-[var(--color-surface)] text-[var(--color-primary)] border-2 border-[var(--color-border)] px-3 py-1.5 sm:px-4 sm:py-2 md:px-8 md:py-4 rounded-lg text-sm sm:text-lg md:text-[1.875rem] cursor-pointer transition-all duration-200 font-semibold whitespace-nowrap hover:bg-[var(--color-primary)] hover:text-[var(--color-surface)]">
+          <span class="hidden sm:inline">{{ isFullscreen ? $t('common.exitFullscreen') : $t('common.fullscreen') }}</span>
+          <span class="sm:hidden">{{ isFullscreen ? '退出' : '全屏' }}</span>
+        </button>
       </div>
     </div>
 
     <!-- 主要内容区域 -->
-    <div class="main-content">
+    <div class="flex-1 grid grid-cols-1 gap-2 md:gap-4 min-h-0 py-1 md:py-2 mt-2">
       <!-- 右侧作业信息 -->
-      <div class="homework-container">
-        <div class="homework-header">
-          <h2 class="homework-title">{{ $t('homework.homeworkContent') }}</h2>
-          <span class="homework-date">{{ selectedDateText }}</span>
+      <div class="bg-[var(--color-surface)] rounded-xl p-3 sm:p-4 md:p-6 shadow-lg overflow-y-auto overflow-x-hidden min-h-0 transition-colors duration-200">
+        <div class="flex justify-between items-center flex-wrap gap-2 m-0 py-1">
+          <h2 class="text-2xl sm:text-4xl md:text-[3.75rem] font-bold text-[var(--color-primary)] m-0 transition-colors duration-200">{{ $t('homework.homeworkContent') }}</h2>
+          <span class="text-xl sm:text-[1.875rem] md:text-5xl text-[var(--color-secondary)] transition-colors duration-200">{{ selectedDateText }}</span>
         </div>
         <Homework
             :selected-date="selectedDate"
@@ -57,12 +49,12 @@
       </div>
     </div>
 
-    <footer v-if="!isFullscreen" class="footer">
-      <div class="footer-content">
-        <div class="copyright">
-          <router-link to="/about" class="copyright-link">
-            <p>© 2025 EduTrackly. All rights reserved.</p>
-            <p class="license-text">Licensed under GNU General Public License v3.0</p>
+    <footer v-if="!isFullscreen" class="bg-[var(--color-surface)] text-[var(--color-text-tertiary)] p-2 px-3 md:p-3 md:px-4 mt-auto transition-colors duration-200 border-t border-[var(--color-border)]">
+      <div class="flex justify-between items-center max-w-full gap-4 flex-wrap max-md:flex-col max-md:items-center max-md:text-center">
+        <div class="flex-1 min-w-[200px] max-md:justify-center max-md:min-w-full">
+          <router-link to="/about" class="no-underline text-[var(--color-text-tertiary)] transition-colors duration-200 block hover:text-[var(--color-primary)]">
+            <p class="m-0 text-xs md:text-sm leading-6">© 2025 EduTrackly. All rights reserved.</p>
+            <p class="text-[0.625rem] md:text-xs opacity-70 mt-1">Licensed under GNU General Public License v3.0</p>
           </router-link>
         </div>
       </div>
@@ -80,8 +72,20 @@ import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import LanguageToggle from '@/components/common/LanguageToggle.vue'
 import VersionInfo from '@/components/VersionInfo.vue'
 import { formatYYYYMMDDToDate } from '@/utils/formatDate'
+import notificationService from '@/services/common/notification'
 
 const { t: $t } = useI18n()
+
+// 检测微信浏览器
+const checkWechatBrowser = () => {
+  const ua = navigator.userAgent.toLowerCase()
+  return /micromessenger/i.test(ua)
+}
+
+// 检查是否已经显示过提示
+const hasShownWechatTip = () => {
+  return sessionStorage.getItem('wechat-tip-shown') === 'true'
+}
 
 const currentTime = ref('')
 const todayDate = ref('')
@@ -159,416 +163,32 @@ onMounted(() => {
   document.addEventListener('fullscreenchange', () => {
     isFullscreen.value = !!document.fullscreenElement
   })
+
+  // 检测微信浏览器并显示提示
+  if (checkWechatBrowser() && !hasShownWechatTip()) {
+    setTimeout(() => {
+      notificationService.notify($t('wechatTip.message'), 'info')
+      sessionStorage.setItem('wechat-tip-shown', 'true')
+    }, 1000) // 延迟1秒显示，避免干扰页面加载
+  }
 })
 </script>
 
 <style scoped>
-.homework-page {
-  height: 100vh;
-  width: 100%;
-  background-color: var(--color-background);
-  color: var(--color-text-primary);
-  display: flex;
-  flex-direction: column;
-  padding: 0.5rem;
-  box-sizing: border-box;
-  overflow: hidden;
-  transition: background-color var(--transition-base), color var(--transition-base);
-}
-
-@media (min-width: 768px) {
-  .homework-page {
-    padding: 1rem;
+/* 日历弹出动画 */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.top-bar {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background-color: var(--color-surface);
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-lg);
-  transition: background-color var(--transition-base);
-}
-
-@media (min-width: 768px) {
-  .top-bar {
-    padding: 1rem;
-    padding-top: 2rem;
-  }
-}
-
-.top-bar-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-  .top-bar-row {
-    gap: 1rem;
-  }
-}
-
-.date-section {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--color-primary);
-}
-
-@media (min-width: 768px) {
-  .date-section {
-    gap: 1rem;
-    font-size: 2.25rem;
-  }
-}
-
-.date-display {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-@media (min-width: 768px) {
-  .date-display {
-    gap: 0.5rem;
-  }
-}
-
-.date-text {
-  font-size: 1.125rem;
-  font-weight: bold;
-  color: var(--color-primary);
-  transition: color var(--transition-base);
-}
-
-.date-text-selected {
-  color: var(--color-secondary);
-  font-size: 1rem;
-  transition: color var(--transition-base);
-}
-
-@media (min-width: 640px) {
-  .date-text {
-    font-size: 1.875rem;
-  }
-  
-  .date-text-selected {
-    font-size: 1.5rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .date-text {
-    font-size: 3rem;
-  }
-  
-  .date-text-selected {
-    font-size: 2.5rem;
-  }
-}
-
-.calendar-button {
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 0.5rem;
-  transition: transform 0.2s;
-}
-
-.calendar-button:hover {
-  transform: scale(1.1);
-}
-
-@media (min-width: 768px) {
-  .calendar-button {
-    font-size: 3rem;
-  }
-}
-
-.calendar-popup {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 0.5rem;
-  z-index: 50;
-  background-color: var(--color-surface);
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-lg);
-  transition: background-color var(--transition-base);
-}
-
-.action-section {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-@media (min-width: 640px) {
-  .action-section {
-    gap: 1rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .action-section {
-    gap: 1.5rem;
-  }
-}
-
-.time-display {
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: var(--color-primary);
-  transition: color var(--transition-base);
-  white-space: nowrap;
-}
-
-@media (min-width: 640px) {
-  .time-display {
-    font-size: 2rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .time-display {
-    font-size: 3.75rem;
-  }
-}
-
-.fullscreen-button {
-  background-color: var(--color-surface);
-  color: var(--color-primary);
-  border: 2px solid var(--color-border);
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.fullscreen-button:hover {
-  background-color: var(--color-primary);
-  color: var(--color-surface);
-}
-
-@media (min-width: 640px) {
-  .fullscreen-button {
-    padding: 0.5rem 1rem;
-    font-size: 1.125rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .fullscreen-button {
-    padding: 1rem 2rem;
-    font-size: 1.875rem;
-  }
-}
-
-.main-content {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.5rem;
-  min-height: 0;
-  padding: 0.25rem 0;
-  margin-top: 0.5rem;
-}
-
-@media (min-width: 768px) {
-  .main-content {
-    gap: 1rem;
-    padding: 0.5rem 0;
-  }
-}
-
-.homework-container {
-  background-color: var(--color-surface);
-  border-radius: 0.75rem;
-  padding: 0.75rem;
-  box-shadow: var(--shadow-lg);
-  overflow-y: auto;
-  overflow-x: hidden;
-  min-height: 0;
-  transition: background-color var(--transition-base);
-}
-
-@media (min-width: 640px) {
-  .homework-container {
-    padding: 1rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .homework-container {
-    padding: 1.5rem;
-  }
-}
-
-.homework-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0.25rem 0;
-}
-
-.homework-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--color-primary);
-  margin: 0;
-  transition: color var(--transition-base);
-}
-
-@media (min-width: 640px) {
-  .homework-title {
-    font-size: 2.25rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .homework-title {
-    font-size: 3.75rem;
-  }
-}
-
-.homework-date {
-  font-size: 1.25rem;
-  color: var(--color-secondary);
-  transition: color var(--transition-base);
-}
-
-@media (min-width: 640px) {
-  .homework-date {
-    font-size: 1.875rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .homework-date {
-    font-size: 3rem;
-  }
-}
-
-.footer {
-  background-color: var(--color-surface);
-  color: var(--color-text-tertiary);
-  padding: 0.5rem 0.75rem;
-  margin-top: auto;
-  transition: background-color var(--transition-base);
-  border-top: 1px solid var(--color-border);
-}
-
-@media (min-width: 768px) {
-  .footer {
-    padding: 0.75rem 1rem;
-  }
-}
-
-.footer-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 100%;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.copyright {
-  flex: 1;
-  min-width: 200px;
-}
-
-.copyright-link {
-  text-decoration: none;
-  color: var(--color-text-tertiary);
-  transition: color 0.2s ease;
-  display: block;
-}
-
-.copyright-link:hover {
-  color: var(--color-primary);
-}
-
-.copyright p {
-  margin: 0;
-  font-size: 0.75rem;
-  line-height: 1.5;
-}
-
-@media (min-width: 768px) {
-  .copyright p {
-    font-size: 0.875rem;
-  }
-}
-
-.license-text {
-  font-size: 0.625rem !important;
-  opacity: 0.7;
-  margin-top: 0.25rem !important;
-}
-
-@media (min-width: 768px) {
-  .license-text {
-    font-size: 0.75rem !important;
-  }
-}
-
-.version-info-wrapper {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  min-width: 200px;
-}
-
-.team-info {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  min-width: 200px;
-}
-
-.team-link {
-  color: var(--color-text-tertiary);
-  text-decoration: none;
-  font-size: 0.875rem;
-  transition: color 0.2s ease;
-}
-
-.team-link:hover {
-  color: var(--color-primary);
-  text-decoration: underline;
-}
-
-@media (max-width: 767px) {
-  .footer-content {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .copyright,
-  .version-info-wrapper,
-  .team-info {
-    justify-content: center;
-    min-width: 100%;
-  }
+.animate-fade-in {
+  animation: fade-in 0.2s ease-in-out;
 }
 
 /* 自定义滚动条样式 */
@@ -589,11 +209,5 @@ onMounted(() => {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-tertiary);
-}
-
-@media (max-width: 768px) {
-  .main-content {
-    grid-template-columns: 1fr;
-  }
 }
 </style>

@@ -1,87 +1,82 @@
 <template>
-  <div class="h-screen w-full bg-background flex flex-col p-2 sm:p-4 box-border overflow-hidden transition-[background-color] duration-200" @click="handleGlobalClick">
+  <div class="h-screen w-full bg-[var(--color-background)] flex flex-col p-2 sm:p-4 box-border overflow-hidden transition-colors duration-200" @click="handleGlobalClick">
     <!-- 顶部栏 -->
-    <div class="top-bar">
-      <!-- 第一行：日期和日历 -->
-      <div class="top-bar-row">
-        <div class="relative flex items-center gap-2 sm:gap-4 text-2xl font-semibold flex-1">
-          <div class="flex flex-col sm:flex-row gap-1 sm:gap-4">
-            <span class="date-text">{{ $t('common.today') }}：{{ todayDate }}</span>
-            <span v-if="selectedDate && selectedDate !== todayDateInt" class="date-text selected-date">
-              {{ $t('datetime.selectDate') }}：{{ formattedSelectedDate }}
-            </span>
-          </div>
-          <div class="relative">
-            <button @click.stop="showCalendar = !showCalendar" class="calendar-button">
-            📅
-            </button>
-            <div v-if="showCalendar" class="calendar-popup" @click.stop>
-              <Calendar mode="single" @select-date="onDateSelect" />
-            </div>
-          </div>
+    <div class="flex flex-wrap md:flex-nowrap justify-between items-center gap-3 md:gap-4 p-3 md:p-4 bg-[var(--color-header-footer)] rounded-xl shadow-lg transition-colors duration-200">
+      <!-- 日期和日历 -->
+      <div class="relative flex items-center gap-2 sm:gap-4 text-2xl font-semibold">
+        <div class="flex flex-col sm:flex-row gap-1 sm:gap-4">
+          <span class="text-lg sm:text-2xl md:text-5xl font-bold text-[var(--color-primary)]">{{ $t('common.today') }}：{{ todayDate }}</span>
+          <span v-if="selectedDate && selectedDate !== todayDateInt" class="text-base sm:text-xl md:text-[2.5rem] text-[var(--color-secondary)]">
+            {{ $t('datetime.selectDate') }}：{{ formattedSelectedDate }}
+          </span>
         </div>
-        
-        <!-- 移动端：时间显示在第一行右侧 -->
-        <div class="time-display md:hidden">
-          {{ currentTime }}
+        <div class="relative">
+          <button @click.stop="showCalendar = !showCalendar" class="bg-transparent border-none text-2xl md:text-[2rem] cursor-pointer p-1 rounded-lg transition-transform duration-200 hover:scale-110">
+          📅
+          </button>
+          <div v-if="showCalendar" class="absolute top-full right-0 mt-2 z-[1000] bg-[var(--color-surface)] rounded-xl shadow-lg animate-fade-in" @click.stop>
+            <Calendar mode="single" @select-date="onDateSelect" />
+          </div>
         </div>
       </div>
 
-      <!-- 第二行：班级选择和操作按钮 -->
-      <div class="top-bar-row">
-        <!-- 替换原有班级选择为新组件 -->
-        <ClassSwitch v-model:cid="selectedCid" class="flex-1 md:flex-initial" />
+      <!-- 班级选择 -->
+      <ClassSwitch v-model:cid="selectedCid" class="w-full md:w-auto" />
 
-        <div class="flex items-center gap-2 sm:gap-3 md:gap-6">
-          <LanguageToggle />
-          <ThemeToggle />
-          <!-- 桌面端：时间显示 -->
-          <div class="time-display hidden md:block">
-            {{ currentTime }}
-          </div>
-          <button @click.stop="toggleFullscreen" class="fullscreen-btn">
-            <span class="hidden sm:inline">{{ isFullscreen ? $t('common.exitFullscreen') : $t('common.fullscreen') }}</span>
-            <span class="sm:hidden">{{ isFullscreen ? '退出' : '全屏' }}</span>
-          </button>
+      <!-- 操作按钮区 -->
+      <div class="flex items-center gap-2 sm:gap-3 md:gap-6 w-full md:w-auto justify-end">
+        <LanguageToggle />
+        <ThemeToggle />
+        <div class="text-2xl sm:text-[2rem] md:text-[3.75rem] font-black text-[var(--color-primary)] whitespace-nowrap">
+          {{ currentTime }}
         </div>
+        <button @click.stop="toggleFullscreen" class="bg-[var(--color-surface)] text-[var(--color-primary)] border-2 border-[var(--color-border)] px-3 py-1.5 sm:px-4 sm:py-2 md:px-8 md:py-4 rounded-lg text-sm sm:text-lg md:text-[1.875rem] cursor-pointer transition-all duration-200 font-semibold whitespace-nowrap hover:bg-[var(--color-primary)] hover:text-[var(--color-surface)] hover:border-[var(--color-primary)] active:scale-95">
+          <span class="hidden sm:inline">{{ isFullscreen ? $t('common.exitFullscreen') : $t('common.fullscreen') }}</span>
+          <span class="sm:hidden">{{ isFullscreen ? '退出' : '全屏' }}</span>
+        </button>
       </div>
     </div>
 
     <!-- 主要内容区域 -->
     <div class="flex-1 flex flex-col md:flex-row gap-3 md:gap-0 min-h-0 py-2 mt-2" ref="mainContentRef">
       <!-- 考勤信息（移动端在上，桌面端在左） -->
-      <div class="content-card" :style="mobileOrDesktopStyle('attendance')">
+      <div class="bg-[var(--color-surface)] rounded-xl p-3 sm:p-4 md:p-6 shadow-lg overflow-y-auto overflow-x-hidden min-h-0 transition-colors duration-200 md:flex-shrink-0" :style="mobileOrDesktopStyle('attendance')">
         <AttendanceDisplay ref="studentsComponent" :selected-date="selectedDate" :selected-cid="selectedCid" />
       </div>
 
       <!-- 可拖动分隔条（仅桌面端显示） -->
       <div
-          class="resizer"
+          class="hidden md:flex items-center justify-center w-2 cursor-col-resize bg-transparent relative flex-shrink-0 transition-colors duration-200 hover:bg-[rgba(var(--color-primary-rgb,59,130,246),0.1)]"
           @mousedown="startResize"
           @touchstart="startResize"
-          :class="{ 'resizing': isResizing }"
+          :class="{ 'bg-[rgba(var(--color-primary-rgb,59,130,246),0.2)]': isResizing }"
       >
-        <div class="resizer-line"></div>
+        <div class="w-0.5 h-full rounded-sm transition-all duration-200 bg-gradient-to-b from-transparent via-[var(--color-border)] to-transparent [background-size:100%_80%] [background-position:center]"
+             :class="{ 
+               'w-1 !bg-gradient-to-b !from-transparent !via-[var(--color-primary)] !to-transparent shadow-[0_0_12px_rgba(var(--color-primary-rgb,59,130,246),0.8)]': isResizing,
+               'hover:w-[3px] hover:!bg-gradient-to-b hover:!from-transparent hover:!via-[var(--color-primary)] hover:!to-transparent hover:shadow-[0_0_8px_rgba(var(--color-primary-rgb,59,130,246),0.5)]': !isResizing
+             }">
+        </div>
       </div>
 
       <!-- 作业信息（移动端在下，桌面端在右） -->
-      <div class="content-card" :style="mobileOrDesktopStyle('homework')">
-        <div class="homework-header">
-          <h2 class="homework-title">{{ $t('homework.homeworkContent') }}</h2>
-          <span class="homework-date">{{ selectedDateText }}</span>
+      <div class="bg-[var(--color-surface)] rounded-xl p-3 sm:p-4 md:p-6 shadow-lg overflow-y-auto overflow-x-hidden min-h-0 transition-colors duration-200 md:flex-shrink-0" :style="mobileOrDesktopStyle('homework')">
+        <div class="flex justify-between items-center flex-wrap gap-2 m-0 p-0.5 mb-2 mt-2 mx-2 md:mb-4 md:mt-[1.125rem] md:ml-4 md:mr-0">
+          <h2 class="text-2xl sm:text-[2rem] md:text-5xl font-bold text-[var(--color-primary)] m-0">{{ $t('homework.homeworkContent') }}</h2>
+          <span class="text-xl sm:text-2xl md:text-4xl text-[var(--color-secondary)] md:mr-5">{{ selectedDateText }}</span>
         </div>
-        <div class="homework-content">
+        <div class="mt-2 md:mt-6">
           <Homework :selected-date="selectedDate" :selected-cid="selectedCid" ref="homeworkComponent" :columns="1"/>
         </div>
       </div>
     </div>
 
-    <footer v-if="!isFullscreen" class="footer">
-      <div class="footer-content">
-        <div class="copyright">
-          <router-link to="/about" class="copyright-link">
-            <p class="m-0 text-sm leading-6">© 2025 EduTrackly. All rights reserved.</p>
-            <p class="license-text">Licensed under GNU General Public License v3.0</p>
+    <footer v-if="!isFullscreen" class="bg-[var(--color-header-footer)] text-[var(--color-text-tertiary)] p-2 px-3 md:p-3 md:px-4 mt-auto transition-colors duration-200 border-t border-[var(--color-border)] rounded-md">
+      <div class="flex justify-between items-center max-w-full gap-4 flex-wrap">
+        <div class="flex-1 min-w-[200px]">
+          <router-link to="/about" class="no-underline text-[var(--color-text-tertiary)] transition-colors duration-200 block hover:text-[var(--color-primary)]">
+            <p class="m-0 text-xs md:text-sm leading-6">© 2025 EduTrackly. All rights reserved.</p>
+            <p class="text-[0.625rem] md:text-xs opacity-70 mt-1">Licensed under GNU General Public License v3.0</p>
           </router-link>
         </div>
       </div>
@@ -99,8 +94,20 @@ import ClassSwitch from '@/components/common/ClassSwitch.vue'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import LanguageToggle from '@/components/common/LanguageToggle.vue'
 import { formatYYYYMMDDToDate } from '@/utils/formatDate'
+import notificationService from '@/services/common/notification'
 
 const { t: $t } = useI18n()
+
+// 检测微信浏览器
+const checkWechatBrowser = () => {
+  const ua = navigator.userAgent.toLowerCase()
+  return /micromessenger/i.test(ua)
+}
+
+// 检查是否已经显示过提示
+const hasShownWechatTip = () => {
+  return sessionStorage.getItem('wechat-tip-shown') === 'true'
+}
 
 const currentTime = ref('')
 const todayDate = ref('')
@@ -280,6 +287,14 @@ onMounted(() => {
 
   // 加载保存的比例
   loadSavedRatio()
+
+  // 检测微信浏览器并显示提示
+  if (checkWechatBrowser() && !hasShownWechatTip()) {
+    setTimeout(() => {
+      notificationService.notify($t('wechatTip.message'), 'info')
+      sessionStorage.setItem('wechat-tip-shown', 'true')
+    }, 1000) // 延迟1秒显示，避免干扰页面加载
+  }
 })
 
 onUnmounted(() => {
@@ -290,164 +305,8 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* 顶部栏 */
-.top-bar {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background-color: var(--color-header-footer);
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-lg);
-  transition: background-color var(--transition-base);
-}
-
-@media (min-width: 768px) {
-  .top-bar {
-    padding: 1rem;
-  }
-}
-
-/* 顶部栏行 */
-.top-bar-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-  .top-bar-row {
-    gap: 1rem;
-  }
-}
-
-/* 日历按钮 */
-.calendar-button {
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 0.5rem;
-  transition: transform 0.2s;
-}
-
-.calendar-button:hover {
-  transform: scale(1.1);
-}
-
-@media (min-width: 768px) {
-  .calendar-button {
-    font-size: 2rem;
-  }
-}
-
-/* 日期文本 */
-.date-text {
-  font-size: 1.125rem;
-  font-weight: bold;
-  color: var(--color-primary);
-}
-
-.selected-date {
-  color: var(--color-secondary);
-  font-size: 1rem;
-}
-
-@media (min-width: 640px) {
-  .date-text {
-    font-size: 1.5rem;
-  }
-  
-  .selected-date {
-    font-size: 1.25rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .date-text {
-    font-size: 3rem;
-  }
-  
-  .selected-date {
-    font-size: 2.5rem;
-  }
-}
-
-/* 时间显示 */
-.time-display {
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: var(--color-primary);
-  white-space: nowrap;
-}
-
-@media (min-width: 640px) {
-  .time-display {
-    font-size: 2rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .time-display {
-    font-size: 3.75rem;
-  }
-}
-
-/* 全屏按钮 */
-.fullscreen-btn {
-  background-color: var(--color-surface);
-  color: var(--color-primary);
-  border: 2px solid var(--color-border);
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.fullscreen-btn:hover {
-  background-color: var(--color-primary);
-  color: var(--color-surface);
-  border-color: var(--color-primary);
-}
-
-.fullscreen-btn:active {
-  transform: scale(0.95);
-}
-
-@media (min-width: 640px) {
-  .fullscreen-btn {
-    padding: 0.5rem 1rem;
-    font-size: 1.125rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .fullscreen-btn {
-    padding: 1rem 2rem;
-    font-size: 1.875rem;
-  }
-}
-
 /* 日历弹出动画 */
-.calendar-popup {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 0.5rem;
-  z-index: 1000;
-  background-color: var(--color-surface);
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-lg);
-  animation: fadeIn 0.2s ease-in-out;
-}
-
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
     opacity: 0;
     transform: translateY(-8px);
@@ -458,244 +317,8 @@ onUnmounted(() => {
   }
 }
 
-/* 内容卡片 */
-.content-card {
-  background-color: var(--color-surface);
-  border-radius: 0.75rem;
-  padding: 0.75rem;
-  box-shadow: var(--shadow-lg);
-  overflow-y: auto;
-  overflow-x: hidden;
-  min-height: 0;
-  transition: background-color var(--transition-base);
-}
-
-@media (min-width: 640px) {
-  .content-card {
-    padding: 1rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .content-card {
-    flex-shrink: 0;
-    padding: 1.5rem;
-  }
-}
-
-/* 可拖动分隔条 */
-.resizer {
-  width: 8px;
-  cursor: col-resize;
-  background-color: transparent;
-  position: relative;
-  display: none;
-  flex-shrink: 0;
-  transition: background-color 0.2s ease;
-}
-
-@media (min-width: 768px) {
-  .resizer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
-.resizer:hover {
-  background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.1);
-}
-
-.resizer.resizing {
-  background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.2);
-}
-
-.resizer-line {
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    var(--color-border) 10%,
-    var(--color-border) 90%,
-    transparent 100%
-  );
-  transition: all 0.2s ease;
-  border-radius: 1px;
-}
-
-.resizer:hover .resizer-line {
-  width: 3px;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    var(--color-primary) 10%,
-    var(--color-primary) 90%,
-    transparent 100%
-  );
-  box-shadow: 0 0 8px rgba(var(--color-primary-rgb, 59, 130, 246), 0.5);
-}
-
-.resizer.resizing .resizer-line {
-  width: 4px;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    var(--color-primary) 10%,
-    var(--color-primary) 90%,
-    transparent 100%
-  );
-  box-shadow: 0 0 12px rgba(var(--color-primary-rgb, 59, 130, 246), 0.8);
-}
-
-/* 作业区域 */
-.homework-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0.125rem 0;
-  margin-bottom: 0.5rem;
-  margin-top: 0.5rem;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-}
-
-@media (min-width: 768px) {
-  .homework-header {
-    margin-bottom: 1rem;
-    margin-top: 1.125rem;
-    margin-left: 1rem;
-    margin-right: 0;
-  }
-}
-
-.homework-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--color-primary);
-  margin: 0;
-}
-
-@media (min-width: 640px) {
-  .homework-title {
-    font-size: 2rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .homework-title {
-    font-size: 3rem;
-  }
-}
-
-.homework-date {
-  font-size: 1.25rem;
-  color: var(--color-secondary);
-}
-
-@media (min-width: 640px) {
-  .homework-date {
-    font-size: 1.5rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .homework-date {
-    font-size: 2.25rem;
-    margin-right: 1.25rem;
-  }
-}
-
-.homework-content {
-  margin-top: 0.5rem;
-}
-
-@media (min-width: 768px) {
-  .homework-content {
-    margin-top: 1.5rem;
-  }
-}
-
-/* 页脚 */
-.footer {
-  background-color: var(--color-header-footer);
-  color: var(--color-text-tertiary);
-  padding: 0.5rem 0.75rem;
-  margin-top: auto;
-  transition: background-color var(--transition-base);
-  border-top: 1px solid var(--color-border);
-  border-radius: 0.375rem;
-}
-
-@media (min-width: 768px) {
-  .footer {
-    padding: 0.75rem 1rem;
-  }
-}
-
-.footer-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 100%;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.copyright {
-  flex: 1;
-  min-width: 200px;
-}
-
-.copyright-link {
-  text-decoration: none;
-  color: var(--color-text-tertiary);
-  transition: color 0.2s ease;
-  display: block;
-}
-
-.copyright-link:hover {
-  color: var(--color-primary);
-}
-
-.copyright p {
-  margin: 0;
-  font-size: 0.75rem;
-  line-height: 1.5;
-}
-
-@media (min-width: 768px) {
-  .copyright p {
-    font-size: 0.875rem;
-  }
-}
-
-.license-text {
-  font-size: 0.625rem !important;
-  opacity: 0.7;
-  margin-top: 0.25rem !important;
-}
-
-@media (min-width: 768px) {
-  .license-text {
-    font-size: 0.75rem !important;
-  }
-}
-
-@media (max-width: 767px) {
-  .footer-content {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .copyright {
-    justify-content: center;
-    min-width: 100%;
-  }
+.animate-fade-in {
+  animation: fade-in 0.2s ease-in-out;
 }
 
 /* 自定义滚动条样式 */
