@@ -138,7 +138,7 @@ async function submitHomework() {
     );
 
     if (!hasContent) {
-      notificationService.notify($t('homework.pleaseEnterContent'));
+      notificationService.info($t('homework.pleaseEnterContent'));
       return;
     }
 
