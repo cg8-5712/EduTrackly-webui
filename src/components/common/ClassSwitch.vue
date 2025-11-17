@@ -56,6 +56,8 @@ export default {
       selectedCid: "",    // 当前选中班级 cid
       loading: true,      // 是否加载中
       isSearching: false, // 是否在搜索
+      STORAGE_KEY: 'edutrackly-cg8-5712-last-selected-class', // 班级记忆的存储键名
+      DEFAULT_CID: 1,     // 默认班级ID
     };
   },
 
@@ -70,15 +72,65 @@ export default {
   },
 
   methods: {
+    /**
+     * 获取用户最后选择的班级ID
+     * @returns {number} 班级ID，如果没有记录则返回默认值1
+     */
+    getLastSelectedClass() {
+      try {
+        const savedCid = localStorage.getItem(this.STORAGE_KEY);
+        if (savedCid) {
+          const cid = parseInt(savedCid, 10);
+          if (!isNaN(cid) && cid > 0) {
+            console.log(`[ClassSwitch] Loaded last selected class: ${cid}`);
+            return cid;
+          }
+        }
+      } catch (error) {
+        console.error('[ClassSwitch] Failed to load class:', error);
+      }
+      console.log(`[ClassSwitch] Using default class: ${this.DEFAULT_CID}`);
+      return this.DEFAULT_CID;
+    },
+
+    /**
+     * 保存用户选择的班级ID
+     * @param {number} cid - 班级ID
+     */
+    saveLastSelectedClass(cid) {
+      try {
+        if (cid) {
+          localStorage.setItem(this.STORAGE_KEY, String(cid));
+          console.log(`[ClassSwitch] Saved last selected class: ${cid}`);
+        }
+      } catch (error) {
+        console.error('[ClassSwitch] Failed to save class:', error);
+      }
+    },
+
     async fetchClasses() {
       try {
         this.loading = true;
         this.classes = await ClassService.getAllClasses();
 
-        // ✅ 初次加载默认选择 cid 最小的班级
         if (this.classes.length > 0) {
-          const minCidClass = this.classes.reduce((prev, curr) => prev.cid < curr.cid ? prev : curr);
-          this.selectedCid = minCidClass.cid;
+          // 获取上次记忆的班级ID
+          const rememberedCid = this.getLastSelectedClass();
+
+          // 检查记忆的班级是否存在于当前班级列表中
+          const rememberedClass = this.classes.find(cls => cls.cid === rememberedCid);
+
+          if (rememberedClass) {
+            // 如果记忆的班级存在，使用它
+            this.selectedCid = rememberedCid;
+          } else {
+            // 如果记忆的班级不存在，选择cid最小的班级
+            const minCidClass = this.classes.reduce((prev, curr) => prev.cid < curr.cid ? prev : curr);
+            this.selectedCid = minCidClass.cid;
+            // 保存新的选择
+            this.saveLastSelectedClass(this.selectedCid);
+          }
+
           this.$emit("update:cid", this.selectedCid);
         }
       } catch (error) {
@@ -91,6 +143,8 @@ export default {
     },
 
     onClassChange() {
+      // 保存用户的班级选择
+      this.saveLastSelectedClass(this.selectedCid);
       this.$emit("update:cid", this.selectedCid);
     },
 
