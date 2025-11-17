@@ -7,7 +7,7 @@ import i18n from '@/i18n'
  */
 class LanguageStorage {
   constructor() {
-    this.STORAGE_KEY = 'edu-trackly-language'
+    this.STORAGE_KEY = 'edutrackly-cg8-5712-edu-trackly-language'
   }
 
   /**

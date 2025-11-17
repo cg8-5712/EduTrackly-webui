@@ -10,8 +10,8 @@ const t = (key) => i18n.global.t(key)
  */
 class ThemeStorage {
   constructor() {
-    this.STORAGE_KEY = 'edu-trackly-theme'
-    this.ADMIN_STORAGE_KEY = 'edu-trackly-theme-admin'
+    this.STORAGE_KEY = 'edutrackly-cg8-5712-edu-trackly-theme'
+    this.ADMIN_STORAGE_KEY = 'edutrackly-cg8-5712-edu-trackly-theme-admin'
   }
 
   /**

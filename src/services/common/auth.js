@@ -8,6 +8,9 @@ class AuthService {
         // 初始化时获取API URL
         this.apiUrl = getApiUrl();
         console.log(`[AuthService] Initialized with API URL: ${this.apiUrl}`);
+
+        // 定义存储键名前缀
+        this.STORAGE_PREFIX = 'edutrackly-cg8-5712-';
     }
 
     /**
@@ -28,7 +31,7 @@ class AuthService {
             })
             .then(response => {
                 if (response.data.access_token) {
-                    localStorage.setItem('access_token', response.data.access_token);
+                    localStorage.setItem(`${this.STORAGE_PREFIX}access_token`, response.data.access_token);
                 }
                 return response.data;
             });
@@ -44,15 +47,15 @@ class AuthService {
                     const { access_token, aid, expires_in, last_login_time, last_login_ip } = response.data.data;
 
                     // 统一使用 access_token
-                    localStorage.setItem('access_token', access_token);
-                    localStorage.setItem('admin_aid', aid);
-                    localStorage.setItem('admin_last_login_time', last_login_time);
-                    localStorage.setItem('admin_last_login_ip', last_login_ip);
+                    localStorage.setItem(`${this.STORAGE_PREFIX}access_token`, access_token);
+                    localStorage.setItem(`${this.STORAGE_PREFIX}admin_aid`, aid);
+                    localStorage.setItem(`${this.STORAGE_PREFIX}admin_last_login_time`, last_login_time);
+                    localStorage.setItem(`${this.STORAGE_PREFIX}admin_last_login_ip`, last_login_ip);
 
                     // 计算过期时间戳并存储
                     const currentTime = Math.floor(Date.now() / 1000);
                     const expiresAtTimestamp = currentTime + expires_in;
-                    localStorage.setItem('admin_expires_in', expiresAtTimestamp);
+                    localStorage.setItem(`${this.STORAGE_PREFIX}admin_expires_in`, expiresAtTimestamp);
                 }
                 return response.data;
             })
@@ -63,24 +66,24 @@ class AuthService {
     }
 
     logout() {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('admin_aid');
-        localStorage.removeItem('admin_expires_in');
-        localStorage.removeItem('admin_last_login_time');
-        localStorage.removeItem('admin_last_login_ip');
+        localStorage.removeItem(`${this.STORAGE_PREFIX}access_token`);
+        localStorage.removeItem(`${this.STORAGE_PREFIX}admin_aid`);
+        localStorage.removeItem(`${this.STORAGE_PREFIX}admin_expires_in`);
+        localStorage.removeItem(`${this.STORAGE_PREFIX}admin_last_login_time`);
+        localStorage.removeItem(`${this.STORAGE_PREFIX}admin_last_login_ip`);
     }
 
     getToken() {
-        return localStorage.getItem('access_token');
+        return localStorage.getItem(`${this.STORAGE_PREFIX}access_token`);
     }
 
     getAdminInfo() {
         return {
-            aid: localStorage.getItem('admin_aid'),
-            token: localStorage.getItem('access_token'),
-            expiresIn: localStorage.getItem('admin_expires_in'),
-            lastLoginTime: localStorage.getItem('admin_last_login_time'),
-            lastLoginIp: localStorage.getItem('admin_last_login_ip')
+            aid: localStorage.getItem(`${this.STORAGE_PREFIX}admin_aid`),
+            token: localStorage.getItem(`${this.STORAGE_PREFIX}access_token`),
+            expiresIn: localStorage.getItem(`${this.STORAGE_PREFIX}admin_expires_in`),
+            lastLoginTime: localStorage.getItem(`${this.STORAGE_PREFIX}admin_last_login_time`),
+            lastLoginIp: localStorage.getItem(`${this.STORAGE_PREFIX}admin_last_login_ip`)
         };
     }
 
@@ -95,6 +98,7 @@ class AuthService {
             const currentTime = Date.now() / 1000;
             if (decoded.exp < currentTime) {
                 NotificationService.notify('Session expired, please login again', 'error');
+                notification.error('Session expired, please login again');
                 this.logout();
                 return false;
             }
@@ -117,6 +121,7 @@ class AuthService {
 
             if (decoded.exp < currentTime) {
                 NotificationService.notify('Admin session expired, please login again', 'error');
+                notification.error('Admin session expired, please login again');
                 this.logout();
                 return false;
             }
@@ -129,6 +134,7 @@ class AuthService {
 
                 if (currentTimestamp >= expiresInTimestamp) {
                     NotificationService.notify('Admin session expired, please login again', 'error');
+                    notification.error('Admin session expired, please login again');
                     this.logout();
                     return false;
                 }

@@ -84,7 +84,7 @@ const checkWechatBrowser = () => {
 
 // 检查是否已经显示过提示
 const hasShownWechatTip = () => {
-  return sessionStorage.getItem('wechat-tip-shown') === 'true'
+  return sessionStorage.getItem('edutrackly-cg8-5712-wechat-tip-shown') === 'true'
 }
 
 const currentTime = ref('')
@@ -168,7 +168,7 @@ onMounted(() => {
   if (checkWechatBrowser() && !hasShownWechatTip()) {
     setTimeout(() => {
       notificationService.notify($t('wechatTip.message'), 'info')
-      sessionStorage.setItem('wechat-tip-shown', 'true')
+      sessionStorage.setItem('edutrackly-cg8-5712-wechat-tip-shown', 'true')
     }, 1000) // 延迟1秒显示，避免干扰页面加载
   }
 })

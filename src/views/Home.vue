@@ -106,7 +106,7 @@ const checkWechatBrowser = () => {
 
 // 检查是否已经显示过提示
 const hasShownWechatTip = () => {
-  return sessionStorage.getItem('wechat-tip-shown') === 'true'
+  return sessionStorage.getItem('edutrackly-cg8-5712-wechat-tip-shown') === 'true'
 }
 
 const currentTime = ref('')
@@ -130,7 +130,7 @@ const leftPercentage = ref(40) // 保存左侧百分比
 
 // 从 localStorage 加载保存的比例
 const loadSavedRatio = () => {
-  const saved = localStorage.getItem('home-split-ratio')
+  const saved = localStorage.getItem('edutrackly-cg8-5712-home-split-ratio')
   if (saved) {
     const ratio = parseFloat(saved)
     if (ratio >= 20 && ratio <= 80) {
@@ -147,7 +147,7 @@ const updateWidths = (percentage) => {
   rightWidth.value = `calc(${100 - percentage}% - 8px)` // 减去分隔条宽度
 
   // 保存到 localStorage
-  localStorage.setItem('home-split-ratio', percentage.toString())
+  localStorage.setItem('edutrackly-cg8-5712-home-split-ratio', percentage.toString())
 }
 
 // 移动端/桌面端样式切换
