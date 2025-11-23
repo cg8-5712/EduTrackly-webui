@@ -109,7 +109,7 @@ const fetchStudents = async () => {
     selectedEvents.value = { ...existingEvents }
   } catch (err) {
     console.error(err)
-    notificationService.notify('获取学生列表失败', 'error')
+    notificationService.error('获取学生列表失败')
   } finally {
     loading.value = false
   }
@@ -124,11 +124,11 @@ const submitEvents = async () => {
     loading.value = true
     const today = formatDateToYYYYMMDD(new Date())
     await StudentService.submitStudentEvents(eventsArray, today)
-    notificationService.notify('提交成功', 'success')
+    notificationService.success('提交成功')
     await fetchStudents()
   } catch (error) {
     console.error('提交学生事件失败:', error)
-    notificationService.notify('提交失败', 'error')
+    notificationService.error('提交失败')
   } finally {
     loading.value = false
   }

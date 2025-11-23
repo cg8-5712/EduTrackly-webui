@@ -18,23 +18,6 @@ const PROGRESS_UPDATE_INTERVAL = 50 // 每50ms更新一次进度条
 
 const VALID_TYPES = ['info', 'success', 'error', 'warn']
 
-const notify = (message, type = 'info') => {
-    if (!VALID_TYPES.includes(type)) {
-        console.warn(t('error.notificationTypeNotSupported', { type }))
-        type = 'info'
-    }
-
-    clearTimers()
-
-    state.message = message
-    state.type = type
-    state.show = true
-    state.progress = 100
-    state.isPaused = false
-
-    startProgressAnimation()
-}
-
 const startProgressAnimation = () => {
     let startTime = Date.now()
     let pausedTime = 0
@@ -90,13 +73,45 @@ const close = () => {
 
 const notification = {
     state,
-    success: (message) => notify(message, 'success'),
-    info: (message) => notify(message, 'info'),
-    error: (message) => notify(message, 'error'),
-    warn: (message) => notify(message, 'warn'),
+    success: (message) => {
+        clearTimers()
+        state.message = message
+        state.type = 'success'
+        state.show = true
+        state.progress = 100
+        state.isPaused = false
+        startProgressAnimation()
+    },
+    info: (message) => {
+        clearTimers()
+        state.message = message
+        state.type = 'info'
+        state.show = true
+        state.progress = 100
+        state.isPaused = false
+        startProgressAnimation()
+    },
+    error: (message) => {
+        clearTimers()
+        state.message = message
+        state.type = 'error'
+        state.show = true
+        state.progress = 100
+        state.isPaused = false
+        startProgressAnimation()
+    },
+    warn: (message) => {
+        clearTimers()
+        state.message = message
+        state.type = 'warn'
+        state.show = true
+        state.progress = 100
+        state.isPaused = false
+        startProgressAnimation()
+    },
     close,
     pause,
     resume
 }
 
-export default notification
+export default NotificationService;

@@ -290,24 +290,24 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 删除确认对话框 -->
-    <div v-if="showDeleteDialog" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showDeleteDialog = false">
-      <div class="bg-white rounded-2xl w-[90%] max-w-md max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200">
-          <h3 class="m-0 text-xl font-bold text-gray-800">{{ $t('ui.confirmDelete') }}</h3>
-          <button @click="showDeleteDialog = false" class="bg-none border-none text-lg cursor-pointer p-1 rounded transition-colors hover:bg-gray-100">✖️</button>
-        </div>
-        <div class="p-6">
-          <p>{{ $t('ui.confirmDeleteClass', { className: selectedClass?.class_name }) }}</p>
-          <p class="text-red-600 text-sm mt-2">{{ $t('ui.cannotUndo') }}</p>
-        </div>
-        <div class="flex gap-3 justify-end p-6 border-t border-gray-200">
-          <button @click="showDeleteDialog = false" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-gray-100 text-gray-700 border-none hover:bg-gray-200">{{ $t('common.cancel') }}</button>
-          <button @click="deleteClass" :disabled="deleting" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-red-600 text-white border-none hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed">
-            {{ deleting ? $t('ui.deleting') : $t('ui.confirmDeleteButton') }}
-          </button>
+      <!-- 删除确认对话框 -->
+      <div v-if="showDeleteDialog" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showDeleteDialog = false">
+        <div class="bg-white rounded-2xl w-[90%] max-w-md max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div class="flex justify-between items-center p-6 border-b border-gray-200">
+            <h3 class="m-0 text-xl font-bold text-gray-800">{{ $t('ui.confirmDelete') }}</h3>
+            <button @click="showDeleteDialog = false" class="bg-none border-none text-lg cursor-pointer p-1 rounded transition-colors hover:bg-gray-100">✖️</button>
+          </div>
+          <div class="p-6">
+            <p>{{ $t('ui.confirmDeleteClass', { className: selectedClass?.class_name }) }}</p>
+            <p class="text-red-600 text-sm mt-2">{{ $t('ui.cannotUndo') }}</p>
+          </div>
+          <div class="flex gap-3 justify-end p-6 border-t border-gray-200">
+            <button @click="showDeleteDialog = false" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-gray-100 text-gray-700 border-none hover:bg-gray-200">{{ $t('common.cancel') }}</button>
+            <button @click="deleteClass" :disabled="deleting" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-red-600 text-white border-none hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed">
+              {{ deleting ? $t('ui.deleting') : $t('ui.confirmDeleteButton') }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -562,11 +562,11 @@ const createClass = async () => {
     await fetchClasses()
 
     // 显示成功通知
-    notificationService.notify(t('component.classCreatedSuccess'), 'success')
+    notificationService.success(t('component.classCreatedSuccess'))
 
   } catch (err) {
     error.value = err.message || t('component.createClassFailed')
-    notificationService.notify(err.message || t('component.createClassFailed'), 'error')
+    notificationService.error(err.message || t('component.createClassFailed'))
     console.error(t('component.createClassFailed') + ':', err)
   } finally {
     creating.value = false
@@ -620,11 +620,11 @@ const deleteClass = async () => {
     await fetchClasses()
 
     // 显示成功通知
-    notificationService.notify(t('component.classDeletedSuccess'), 'success')
+    notificationService.success(t('component.classDeletedSuccess'))
 
   } catch (err) {
     error.value = err.message || t('component.deleteClassFailed')
-    notificationService.notify(err.message || t('component.deleteClassFailed'), 'error')
+    notificationService.error(err.message || t('component.deleteClassFailed'))
     console.error(t('component.deleteClassFailed') + ':', err)
   } finally {
     deleting.value = false

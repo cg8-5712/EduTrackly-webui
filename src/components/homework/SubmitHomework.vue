@@ -138,7 +138,7 @@ async function submitHomework() {
     );
 
     if (!hasContent) {
-      notificationService.notify($t('homework.pleaseEnterContent'));
+      notificationService.info($t('homework.pleaseEnterContent'));
       return;
     }
 
@@ -165,14 +165,14 @@ async function submitHomework() {
       resetHomework();
       fetchTodayHomework(props.cid); // 重新加载
     } else {
-      notificationService.error(`${$t('homework.submitFailed')}：${res.data.message}`, 'error');
+      notificationService.error(`${$t('homework.submitFailed')}：${res.data.message}`);
     }
   } catch (err) {
     console.error('提交作业失败:', err);
     if (err.response?.data?.message) {
-      notificationService.error(`${$t('homework.submitFailed')}：${err.response.data.message}`, 'error');
+      notificationService.error(`${$t('homework.submitFailed')}：${err.response.data.message}`);
     } else {
-      notificationService.error($t('homework.submitFailed'), 'error');
+      notificationService.error($t('homework.submitFailed'));
     }
   }
 }

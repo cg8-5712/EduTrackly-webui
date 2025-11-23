@@ -583,7 +583,7 @@ const loadAnalysisData = async () => {
   } catch (err) {
     console.error('加载学生分析数据失败:', err)
     error.value = err.message || '获取分析数据失败'
-    notificationService.notify(error.value, 'error')
+    notificationService.error(error.value);
   } finally {
     loading.value = false
   }
@@ -612,13 +612,12 @@ const updateAttendance = async (attendance) => {
     }
 
     const studentName = analysisData.value ? analysisData.value.student_name : props.student.student_name
-    notificationService.notify(
+    notificationService.success(
       `${studentName} 状态已更改为 ${attendance ? '在校' : '离校'}`,
-      'success'
     )
   } catch (err) {
     console.error('更改出勤状态失败:', err)
-    notificationService.notify(err.message || '更改出勤状态失败', 'error')
+    notificationService.error(err.message || '更改出勤状态失败');
   } finally {
     updatingAttendance.value = false
   }
@@ -657,13 +656,13 @@ const onDateSelect = (dateInt) => {
 // 提交事件记录
 const submitEvent = async () => {
   if (!eventForm.date || !eventForm.eventType) {
-    notificationService.notify('请选择日期和事件类型', 'warning')
+    notificationService.warn('请选择日期和事件类型');
     return
   }
 
   // 检查在校学生不能选择临时外出
   if (eventForm.eventType === 'temp' && isStudentPresent.value) {
-    notificationService.notify('在校学生不能选择临时外出', 'error')
+    notificationService.error('在校学生不能选择临时外出');
     return
   }
 
@@ -679,7 +678,7 @@ const submitEvent = async () => {
     // 提交事件（date 已经是 YYYYMMDD 整数格式）
     await StudentAdminService.submitStudentEvents(events, parseInt(eventForm.date))
 
-    notificationService.notify('历史记录添加成功', 'success')
+    notificationService.success('历史记录添加成功')
 
     // 重置表单
     eventForm.date = ''
@@ -691,7 +690,7 @@ const submitEvent = async () => {
 
   } catch (err) {
     console.error('提交事件记录失败:', err)
-    notificationService.notify(err.message || '提交事件记录失败', 'error')
+    notificationService.error(err.message || '提交事件记录失败');
   } finally {
     submittingEvent.value = false
   }

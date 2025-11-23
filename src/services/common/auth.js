@@ -97,8 +97,7 @@ class AuthService {
             const decoded = jwtDecode(token);
             const currentTime = Date.now() / 1000;
             if (decoded.exp < currentTime) {
-                NotificationService.notify('Session expired, please login again', 'error');
-                notification.error('Session expired, please login again');
+                NotificationService.error('Session expired, please login again');
                 this.logout();
                 return false;
             }
@@ -120,8 +119,7 @@ class AuthService {
             const currentTime = Date.now() / 1000;
 
             if (decoded.exp < currentTime) {
-                NotificationService.notify('Admin session expired, please login again', 'error');
-                notification.error('Admin session expired, please login again');
+                NotificationService.error('Admin session expired, please login again');
                 this.logout();
                 return false;
             }
@@ -133,8 +131,7 @@ class AuthService {
                 const currentTimestamp = Date.now() / 1000;
 
                 if (currentTimestamp >= expiresInTimestamp) {
-                    NotificationService.notify('Admin session expired, please login again', 'error');
-                    notification.error('Admin session expired, please login again');
+                    NotificationService.error('Admin session expired, please login again');
                     this.logout();
                     return false;
                 }

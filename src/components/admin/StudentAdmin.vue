@@ -546,7 +546,7 @@ const fetchClassList = async () => {
     classList.value = response || []
   } catch (error) {
     console.error($t('component.getClassListFailed') + ':', error)
-    notificationService.notify(error.message || $t('component.getClassListFailed'), 'error')
+    notificationService.error(error.message || $t('component.getClassListFailed'));
     classList.value = []
   } finally {
     classLoading.value = false
@@ -577,7 +577,7 @@ const fetchStudents = async () => {
         return []
       } catch (error) {
         console.error($t('component.getStudentsForClassFailed', { className: cid }) + ':', error)
-        notificationService.notify($t('component.getStudentsForClassFailed', { className: getClassName(cid) }), 'warning')
+        notificationService.warn($t('component.getStudentsForClassFailed', { className: getClassName(cid) }));
         return []
       }
     })
@@ -590,7 +590,7 @@ const fetchStudents = async () => {
     students.value = allStudents
   } catch (error) {
     console.error($t('component.getStudentListFailed') + ':', error)
-    notificationService.notify($t('component.getStudentListFailed'), 'error')
+    notificationService.error($t('component.getStudentListFailed'));
     students.value = []
   } finally {
     loading.value = false
@@ -606,13 +606,12 @@ const toggleAttendance = async (student) => {
     // 更新本地状态
     student.attendance = newAttendance
 
-    notificationService.notify(
+    notificationService.success(
       `${student.student_name} ${$t('component.statusChangedTo')} ${newAttendance ? $t('ui.inSchool') : $t('ui.leftSchool')}`,
-      'success'
     )
   } catch (error) {
     console.error($t('component.changeAttendanceStatusFailed') + ':', error)
-    notificationService.notify(error.message || $t('component.changeAttendanceStatusFailed'), 'error')
+    notificationService.error(error.message || $t('component.changeAttendanceStatusFailed'));
   }
 }
 
@@ -631,10 +630,10 @@ const deleteStudent = async (student) => {
       students.value.splice(index, 1)
     }
 
-    notificationService.notify($t('component.deleteStudentSuccess', { studentName: student.student_name }), 'success')
+    notificationService.success($t('component.deleteStudentSuccess', { studentName: student.student_name }))
   } catch (error) {
     console.error($t('component.deleteStudentFailed') + ':', error)
-    notificationService.notify(error.message || $t('component.deleteStudentFailed'), 'error')
+    notificationService.error(error.message || $t('component.deleteStudentFailed'));
   }
 }
 

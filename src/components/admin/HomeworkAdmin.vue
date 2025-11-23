@@ -800,7 +800,7 @@ const createHomework = async () => {
 
     // 如果所有科目都为空，提示用户
     if (Object.keys(filteredSubjects).length === 0) {
-      notificationService.notify('请至少填写一个科目的作业', 'error')
+      notificationService.info('请至少填写一个科目的作业')
       return
     }
 
@@ -827,11 +827,11 @@ const createHomework = async () => {
     await fetchHomeworkList()
 
     // 显示成功通知
-    notificationService.notify('作业创建成功', 'success')
+    notificationService.success('作业创建成功')
 
   } catch (err) {
     error.value = err.message || '创建作业失败'
-    notificationService.notify(err.message || '创建作业失败', 'error')
+    notificationService.error(err.message || '创建作业失败')
     console.error('创建作业失败:', err)
   } finally {
     creating.value = false
@@ -898,11 +898,11 @@ const saveHomework = async () => {
     await fetchHomeworkList()
 
     // 显示成功通知
-    notificationService.notify('作业更新成功', 'success')
+    notificationService.success('作业更新成功')
 
   } catch (err) {
     error.value = err.message || '更新作业失败'
-    notificationService.notify(err.message || '更新作业失败', 'error')
+    notificationService.error(err.message || '更新作业失败')
     console.error('更新作业失败:', err)
   } finally {
     updating.value = false
@@ -928,11 +928,11 @@ const deleteHomework = async () => {
     await fetchHomeworkList()
 
     // 显示成功通知
-    notificationService.notify('作业删除成功', 'success')
+    notificationService.success('作业删除成功')
 
   } catch (err) {
     error.value = err.message || '删除作业失败'
-    notificationService.notify(err.message || '删除作业失败', 'error')
+    notificationService.error(err.message || '删除作业失败')
     console.error('删除作业失败:', err)
   } finally {
     deleting.value = false

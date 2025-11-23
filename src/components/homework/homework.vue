@@ -141,7 +141,7 @@ const fetchHomework = async () => {
   } catch (err) {
     console.error('获取作业失败:', err)
     error.value = $t('homework.fetchFailed')
-    notificationService.notify($t('homework.fetchFailed'), 'error')
+    notificationService.error($t('homework.fetchFailed'))
   } finally {
     loading.value = false
   }

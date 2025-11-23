@@ -252,7 +252,7 @@ const handleFileUpload = async (event) => {
   const isTextOrCsv = fileName.endsWith('.txt') || fileName.endsWith('.csv')
 
   if (!isExcel && !isTextOrCsv) {
-    notificationService.notify(t('error.fileTypesSupported'), 'error')
+    notificationService.error(t('error.fileTypesSupported'))
     // 清空文件输入
     if (fileInput.value) {
       fileInput.value.value = ''
@@ -263,7 +263,7 @@ const handleFileUpload = async (event) => {
   // 检查文件大小（限制为 5MB）
   const maxSize = 5 * 1024 * 1024 // 5MB
   if (file.size > maxSize) {
-    notificationService.notify(t('error.fileSizeLimit'), 'error')
+    notificationService.error(t('error.fileSizeLimit'))
     if (fileInput.value) {
       fileInput.value.value = ''
     }
@@ -298,7 +298,7 @@ const handleFileUpload = async (event) => {
             if (firstLine.includes('班级') || firstLine.includes('姓名') || firstLine.includes('出勤') ||
                 firstLine.includes('class') || firstLine.includes('name') || firstLine.includes('attendance')) {
               startIndex = 1 // 跳过表头
-              notificationService.notify(t('error.headerRowSkipped'), 'info')
+              notificationService.info(t('error.headerRowSkipped'))
             }
           }
 
@@ -308,19 +308,19 @@ const handleFileUpload = async (event) => {
           // 填充到文本框
           batchNames.value = dataLines.join('\n')
 
-          notificationService.notify(t('error.excelLoadSuccess', { filename: file.name, count: dataLines.length }), 'success')
+          notificationService.success(t('error.excelLoadSuccess', { filename: file.name, count: dataLines.length }))
 
           // 清空错误信息
           errors.student_name = ''
         } catch (error) {
           console.error('解析 Excel 文件错误:', error)
-          notificationService.notify(t('error.excelParseFailed'), 'error')
+          notificationService.error(t('error.excelParseFailed'))
           uploadedFileName.value = ''
         }
       }
 
       reader.onerror = () => {
-        notificationService.notify(t('error.excelReadFailed'), 'error')
+        notificationService.error(t('error.excelReadFailed'))
         uploadedFileName.value = ''
       }
 
@@ -366,14 +366,14 @@ const handleFileUpload = async (event) => {
         // 将内容填充到文本框
         batchNames.value = processedContent.trim()
 
-        notificationService.notify(t('error.fileLoadSuccess', { filename: file.name }), 'success')
+        notificationService.success(t('error.fileLoadSuccess', { filename: file.name }))
 
         // 清空错误信息
         errors.student_name = ''
       }
 
       reader.onerror = () => {
-        notificationService.notify(t('error.fileReadFailed'), 'error')
+        notificationService.error(t('error.fileReadFailed'))
         uploadedFileName.value = ''
       }
 
@@ -383,7 +383,7 @@ const handleFileUpload = async (event) => {
 
   } catch (error) {
     console.error('文件上传错误:', error)
-    notificationService.notify(t('error.fileUpload'), 'error')
+    notificationService.error(t('error.fileUpload'))
     uploadedFileName.value = ''
   }
 }

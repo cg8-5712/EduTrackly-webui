@@ -136,7 +136,7 @@ export default {
       } catch (error) {
         console.error("加载班级列表失败:", error);
         this.classes = [];
-        notificationService.notify(this.t('class.noClasses'), 'error');
+        notificationService.error(this.t('class.noClasses'));
       } finally {
         this.loading = false;
       }

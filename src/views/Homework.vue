@@ -167,7 +167,7 @@ onMounted(() => {
   // 检测微信浏览器并显示提示
   if (checkWechatBrowser() && !hasShownWechatTip()) {
     setTimeout(() => {
-      notificationService.notify($t('wechatTip.message'), 'info')
+      notificationService.info($t('wechatTip.message'));
       sessionStorage.setItem('edutrackly-cg8-5712-wechat-tip-shown', 'true')
     }, 1000) // 延迟1秒显示，避免干扰页面加载
   }
