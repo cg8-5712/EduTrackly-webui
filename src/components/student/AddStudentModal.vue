@@ -630,6 +630,7 @@ const handleBackdropClick = () => {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .mode-switch-group {
   @apply bg-gray-200;
 }

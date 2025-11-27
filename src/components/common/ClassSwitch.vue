@@ -170,6 +170,7 @@ export default {
 
 
 <style scoped>
+@reference "tailwindcss";
 .class-switch-wrapper {
   @apply relative w-full rounded-lg;
   max-width: 400px; /* 从 280px 增加到 400px */

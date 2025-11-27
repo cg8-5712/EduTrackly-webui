@@ -40,6 +40,7 @@ const buildTimeString = computed(() => getBuildTimeString());
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .version-info {
     @apply font-mono text-xs text-gray-600;
 }

@@ -71,7 +71,7 @@ const close = () => {
     state.isPaused = false
 }
 
-const notification = {
+const NotificationService = {
     state,
     success: (message) => {
         clearTimers()
@@ -114,4 +114,4 @@ const notification = {
     resume
 }
 
-export default NotificationService;
+export default NotificationService
