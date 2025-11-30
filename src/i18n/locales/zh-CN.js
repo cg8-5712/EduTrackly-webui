@@ -57,7 +57,9 @@ export default {
     currentadmin: '当前状态',
     classadmin: '班级管理',
     studentadmin: '学生管理',
-    homeworkadmin: '作业管理'
+    homeworkadmin: '作业管理',
+    countdownadmin: '倒计时管理',
+    settingadmin: '显示设置'
   },
 
   // 主题
@@ -585,7 +587,49 @@ export default {
     page: '页',
     confirm: '确定',
     unknownClass: '未知班级({cid})',
-    allClasses: '全部班级 ({count}个)'
+    allClasses: '全部班级 ({count}个)',
+
+    // CountdownAdmin
+    countdownManagement: '倒计时管理',
+    manageCountdownInfo: '管理所有班级倒计时事件，查看截止日期和剩余天数',
+    createCountdown: '创建倒计时',
+    classFilter: '班级筛选',
+    sort: '排序',
+    dateDesc: '日期降序',
+    dateAsc: '日期升序',
+    foundCountdownsInfo: '共找到 {total} 个倒计时',
+    countdownContent: '倒计时内容',
+    deadline: '截止日期',
+    daysRemaining: '剩余天数',
+    edit: '编辑',
+    noCountdowns: '暂无倒计时',
+    editCountdown: '编辑倒计时',
+    enterCountdownContent: '请输入倒计时内容',
+    create: '创建',
+    pleaseFillAllFields: '请填写所有必填项',
+    createFailed: '创建失败',
+    updateFailed: '更新失败',
+    deleteFailed: '删除失败',
+    loadFailed: '加载失败',
+    expired: '已过期',
+    daysCount: '还有 {count} 天',
+    pleaseSelect: '请选择',
+
+    // SettingAdmin
+    displaySettings: '显示设置',
+    manageDisplaySettings: '管理各班级的内容展示设置',
+    displayStatus: '显示状态',
+    countdownDisplayed: '倒计时已显示',
+    sloganDisplayed: '标语已显示',
+    foundSettingsInfo: '共找到 {total} 个设置',
+    countdownDisplay: '倒计时显示',
+    sloganDisplay: '标语显示',
+    noSettings: '暂无设置',
+    editSettings: '编辑设置',
+    countdownDisplayDesc: '是否在首页显示倒计时',
+    sloganDisplayDesc: '是否在首页显示标语',
+    cancel: '取消',
+    save: '保存'
   },
 
   // 页脚

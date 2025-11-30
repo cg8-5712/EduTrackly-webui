@@ -57,7 +57,9 @@ export default {
     currentadmin: '目前狀態',
     classadmin: '班級管理',
     studentadmin: '學生管理',
-    homeworkadmin: '作業管理'
+    homeworkadmin: '作業管理',
+    countdownadmin: '倒數計時管理',
+    settingadmin: '顯示設定'
   },
 
   // 主題

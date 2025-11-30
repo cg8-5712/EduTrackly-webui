@@ -57,7 +57,9 @@ export default {
     currentadmin: 'Current Status',
     classadmin: 'Class Management',
     studentadmin: 'Student Management',
-    homeworkadmin: 'Homework Management'
+    homeworkadmin: 'Homework Management',
+    countdownadmin: 'Countdown Management',
+    settingadmin: 'Display Settings'
   },
 
   // Theme
