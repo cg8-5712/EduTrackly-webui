@@ -1,5 +1,8 @@
 <template>
   <div class="h-screen w-full bg-[var(--color-background)] text-[var(--color-text-primary)] flex flex-col p-2 md:p-4 box-border overflow-hidden transition-colors duration-200" @click="handleGlobalClick">
+    <!-- 可拖动的倒计时组件 -->
+    <FloatingCountdown :selected-cid="selectedCid" />
+
     <!-- 顶部栏 -->
     <div class="flex flex-wrap md:flex-nowrap justify-between items-center gap-3 md:gap-4 p-3 md:p-4 md:pt-8 bg-[var(--color-surface)] rounded-xl shadow-lg transition-colors duration-200">
       <!-- 日期和日历 -->
@@ -70,6 +73,7 @@ import Calendar from '@/components/common/calendar.vue'
 import ClassSwitch from '@/components/common/ClassSwitch.vue'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import LanguageToggle from '@/components/common/LanguageToggle.vue'
+import FloatingCountdown from '@/components/common/FloatingCountdown.vue'
 import VersionInfo from '@/components/VersionInfo.vue'
 import { formatYYYYMMDDToDate } from '@/utils/formatDate'
 import notificationService from '@/services/common/notification'
