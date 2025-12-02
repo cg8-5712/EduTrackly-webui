@@ -5,11 +5,9 @@
     :style="floatingStyle"
     @mousedown="startDrag"
     @touchstart="startDrag"
+    @dblclick="closeCountdown"
+    :title="$t('ui.countdownContent') + ' (' + $t('common.close') + ')'"
   >
-    <div class="countdown-header">
-      <span class="countdown-title">📅 {{ $t('ui.countdownContent') }}</span>
-      <button @click="closeCountdown" class="close-btn" :title="$t('common.close')">✕</button>
-    </div>
     <div class="countdown-content">
       <!-- 加载中状态 -->
       <div v-if="loading" class="countdown-loading">
@@ -65,6 +63,9 @@ const position = ref({ x: 20, y: 100 })
 const isDragging = ref(false)
 const dragOffset = ref({ x: 0, y: 0 })
 const displaySettings = ref(null)
+const dragStartPos = ref({ x: 0, y: 0 }) // 记录拖动起始位置
+const hasMoved = ref(false) // 记录是否发生了拖动
+const animationFrameId = ref(null) // 用于 requestAnimationFrame
 
 // 计算属性
 const displayCountdowns = computed(() => {
@@ -202,61 +203,93 @@ const getDaysClass = (days) => {
 
 // 拖动相关
 const startDrag = (event) => {
-  // 如果点击的是关闭按钮，不触发拖动
-  if (event.target.classList.contains('close-btn')) return
-
-  isDragging.value = true
-
   const clientX = event.type === 'touchstart' ? event.touches[0].clientX : event.clientX
   const clientY = event.type === 'touchstart' ? event.touches[0].clientY : event.clientY
+
+  // 记录起始位置
+  dragStartPos.value = { x: clientX, y: clientY }
+  hasMoved.value = false
 
   dragOffset.value = {
     x: clientX - position.value.x,
     y: clientY - position.value.y
   }
 
-  document.addEventListener('mousemove', onDrag)
-  document.addEventListener('touchmove', onDrag)
+  // 使用更高效的事件监听
+  document.addEventListener('mousemove', onDrag, { passive: false })
+  document.addEventListener('touchmove', onDrag, { passive: false })
   document.addEventListener('mouseup', stopDrag)
   document.addEventListener('touchend', stopDrag)
-
-  event.preventDefault()
 }
 
-const onDrag = (event) => {
-  if (!isDragging.value) return
-
-  const clientX = event.type === 'touchmove' ? event.touches[0].clientX : event.clientX
-  const clientY = event.type === 'touchmove' ? event.touches[0].clientY : event.clientY
-
+const updatePosition = (clientX, clientY) => {
   let newX = clientX - dragOffset.value.x
   let newY = clientY - dragOffset.value.y
 
   // 限制在视口内
-  const maxX = window.innerWidth - 300 // 假设组件宽度为300px
-  const maxY = window.innerHeight - 100
+  const componentWidth = 300 // 根据 .floating-countdown min-width 估算
+  const componentHeight = 100 // 估算值
+  const maxX = window.innerWidth - componentWidth
+  const maxY = window.innerHeight - componentHeight
 
   newX = Math.max(0, Math.min(newX, maxX))
   newY = Math.max(0, Math.min(newY, maxY))
 
   position.value = { x: newX, y: newY }
+  animationFrameId.value = null
+}
 
-  // 保存位置到 localStorage
-  localStorage.setItem('floating-countdown-position', JSON.stringify(position.value))
+const onDrag = (event) => {
+  event.preventDefault()
+
+  const clientX = event.type === 'touchmove' ? event.touches[0].clientX : event.clientX
+  const clientY = event.type === 'touchmove' ? event.touches[0].clientY : event.clientY
+
+  // 计算移动距离
+  const deltaX = Math.abs(clientX - dragStartPos.value.x)
+  const deltaY = Math.abs(clientY - dragStartPos.value.y)
+
+  // 只有移动超过5px才认为是拖动（防止误触）
+  if (!hasMoved.value && (deltaX > 5 || deltaY > 5)) {
+    isDragging.value = true
+    hasMoved.value = true
+  }
+
+  if (hasMoved.value) {
+    if (animationFrameId.value) {
+      cancelAnimationFrame(animationFrameId.value)
+    }
+    animationFrameId.value = requestAnimationFrame(() => updatePosition(clientX, clientY))
+  }
 }
 
 const stopDrag = () => {
+  if (animationFrameId.value) {
+    cancelAnimationFrame(animationFrameId.value)
+    animationFrameId.value = null
+  }
+
   isDragging.value = false
+
+  // 如果发生了拖动，保存位置
+  if (hasMoved.value) {
+    localStorage.setItem('floating-countdown-position', JSON.stringify(position.value))
+  }
+
   document.removeEventListener('mousemove', onDrag)
   document.removeEventListener('touchmove', onDrag)
   document.removeEventListener('mouseup', stopDrag)
   document.removeEventListener('touchend', stopDrag)
 }
 
-// 关闭倒计时
-const closeCountdown = () => {
+// 关闭倒计时 - 只有在没有拖动时才触发
+const closeCountdown = (event) => {
+  // 如果刚刚发生了拖动，不触发关闭
+  if (hasMoved.value) {
+    return
+  }
+
   isVisible.value = false
-  // 保存关闭状态到 sessionStorage
   sessionStorage.setItem('floating-countdown-closed', 'true')
 }
 
@@ -307,60 +340,19 @@ onUnmounted(() => {
   position: fixed;
   z-index: 9999;
   background: var(--color-surface);
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--color-primary);
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   min-width: 280px;
   max-width: 400px;
   user-select: none;
   backdrop-filter: blur(10px);
-  background: rgba(var(--color-surface-rgb, 255, 255, 255), 0.95);
-  transition: box-shadow 0.2s;
+  transition: all 0.2s;
 }
 
 .floating-countdown:hover {
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
-}
-
-.countdown-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--color-border);
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-  border-radius: 10px 10px 0 0;
-  color: white;
-}
-
-.countdown-title {
-  font-weight: 600;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.close-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  transition: all 0.2s;
-  padding: 0;
-  line-height: 1;
-}
-
-.close-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
+  border-color: var(--color-secondary);
 }
 
 .countdown-content {
@@ -389,7 +381,7 @@ onUnmounted(() => {
 }
 
 .countdown-item.expired {
-  opacity: 0.6;
+  opacity: 0.5;
   background: var(--color-background);
 }
 
@@ -419,34 +411,62 @@ onUnmounted(() => {
   padding: 4px 10px;
   border-radius: 12px;
   white-space: nowrap;
+  color: white;
 }
 
+/* 使用主题色彩系统的倒计时状态 */
 .countdown-days.expired {
-  background: #f3f4f6;
-  color: #9ca3af;
+  background: var(--color-text-tertiary);
+  color: var(--color-surface);
+  opacity: 0.7;
 }
 
 .countdown-days.today {
-  background: #fef3c7;
-  color: #d97706;
+  background: var(--color-warning);
+  color: white;
+  animation: pulse 2s ease-in-out infinite;
 }
 
 .countdown-days.urgent {
-  background: #fee2e2;
-  color: #dc2626;
+  background: var(--color-error);
+  color: white;
+  animation: urgent-pulse 1.5s ease-in-out infinite;
 }
 
 .countdown-days.warning {
-  background: #fef3c7;
-  color: #f59e0b;
+  background: var(--color-warning);
+  color: white;
 }
 
 .countdown-days.normal {
-  background: #dbeafe;
-  color: #2563eb;
+  background: var(--color-primary);
+  color: white;
 }
 
-/* 滚动条样式 */
+/* 动画效果 */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes urgent-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.08);
+  }
+}
+
+/* 滚动条样式 - 使用主题色 */
 .countdown-content::-webkit-scrollbar {
   width: 6px;
 }
@@ -459,6 +479,7 @@ onUnmounted(() => {
 .countdown-content::-webkit-scrollbar-thumb {
   background: var(--color-border);
   border-radius: 3px;
+  transition: background 0.2s;
 }
 
 .countdown-content::-webkit-scrollbar-thumb:hover {
@@ -470,14 +491,6 @@ onUnmounted(() => {
   .floating-countdown {
     min-width: 240px;
     max-width: 90vw;
-  }
-
-  .countdown-header {
-    padding: 10px 12px;
-  }
-
-  .countdown-title {
-    font-size: 14px;
   }
 
   .countdown-content {
@@ -493,7 +506,7 @@ onUnmounted(() => {
   }
 }
 
-/* 加载中状态 */
+/* 加载中状态 - 使用主题色 */
 .countdown-loading {
   display: flex;
   flex-direction: column;
@@ -520,7 +533,7 @@ onUnmounted(() => {
   }
 }
 
-/* 空状态 */
+/* 空状态 - 使用主题色 */
 .countdown-empty {
   display: flex;
   align-items: center;
