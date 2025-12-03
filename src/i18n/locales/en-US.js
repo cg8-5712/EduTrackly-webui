@@ -57,7 +57,9 @@ export default {
     currentadmin: 'Current Status',
     classadmin: 'Class Management',
     studentadmin: 'Student Management',
-    homeworkadmin: 'Homework Management'
+    homeworkadmin: 'Homework Management',
+    countdownadmin: 'Countdown Management',
+    settingadmin: 'Display Settings'
   },
 
   // Theme
@@ -586,6 +588,48 @@ export default {
     confirm: 'Confirm',
     unknownClass: 'Unknown Class({cid})',
     allClasses: 'All Classes ({count})',
+
+    // CountdownAdmin
+    countdownManagement: 'Countdown Management',
+    manageCountdownInfo: 'Manage all class countdown events, view deadlines and days remaining',
+    createCountdown: 'Create Countdown',
+    classFilter: 'Class Filter',
+    sort: 'Sort',
+    dateDesc: 'Date Descending',
+    dateAsc: 'Date Ascending',
+    foundCountdownsInfo: 'Found {total} countdowns',
+    countdownContent: 'Countdown Content',
+    deadline: 'Deadline',
+    daysRemaining: 'Days Remaining',
+    edit: 'Edit',
+    noCountdowns: 'No countdowns',
+    editCountdown: 'Edit Countdown',
+    enterCountdownContent: 'Please enter countdown content',
+    create: 'Create',
+    pleaseFillAllFields: 'Please fill in all required fields',
+    createFailed: 'Create failed',
+    updateFailed: 'Update failed',
+    deleteFailed: 'Delete failed',
+    loadFailed: 'Load failed',
+    expired: 'Expired',
+    daysCount: '{count} days left',
+    pleaseSelect: 'Please select',
+
+    // SettingAdmin
+    displaySettings: 'Display Settings',
+    manageDisplaySettings: 'Manage content display settings for each class',
+    displayStatus: 'Display Status',
+    countdownDisplayed: 'Countdown Displayed',
+    sloganDisplayed: 'Slogan Displayed',
+    foundSettingsInfo: 'Found {total} settings',
+    countdownDisplay: 'Countdown Display',
+    sloganDisplay: 'Slogan Display',
+    noSettings: 'No settings',
+    editSettings: 'Edit Settings',
+    countdownDisplayDesc: 'Whether to display countdown on homepage',
+    sloganDisplayDesc: 'Whether to display slogan on homepage',
+    cancel: 'Cancel',
+    save: 'Save'
   },
 
   // Footer

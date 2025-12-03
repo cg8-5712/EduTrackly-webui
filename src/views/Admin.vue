@@ -140,13 +140,15 @@ import CurrentAdmin from '@/components/admin/CurrentAdmin.vue'
 import ClassAdmin from '@/components/admin/ClassAdmin.vue'
 import StudentAdmin from '@/components/admin/StudentAdmin.vue'
 import HomeworkAdmin from '@/components/admin/HomeworkAdmin.vue'
+import CountdownAdmin from '@/components/admin/CountdownAdmin.vue'
+import SettingAdmin from '@/components/admin/SettingAdmin.vue'
 import System from '@/components/admin/System.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import LanguageToggle from '@/components/common/LanguageToggle.vue'
 
 // 引入图标组件（你需要根据实际使用的图标库调整）
-import { AcademicCapIcon, BookOpenIcon, UsersIcon, Cog8ToothIcon } from '@heroicons/vue/24/outline'
+import { AcademicCapIcon, BookOpenIcon, UsersIcon, Cog8ToothIcon, ClockIcon, AdjustmentsHorizontalIcon } from '@heroicons/vue/24/outline'
 
 // 检测微信浏览器
 const checkWechatBrowser = () => {
@@ -174,6 +176,8 @@ const components = {
   classadmin: ClassAdmin,
   studentadmin: StudentAdmin,
   homeworkadmin: HomeworkAdmin,
+  countdownadmin: CountdownAdmin,
+  settingadmin: SettingAdmin,
   system: System
 }
 
@@ -183,6 +187,8 @@ const navigation = ref([
   { nameKey: 'nav.classadmin', href: '#', icon: UsersIcon, current: false, componentName: 'classadmin'  },
   { nameKey: 'nav.studentadmin', href: '#', icon: UsersIcon, current: false, componentName: 'studentadmin'  },
   { nameKey: 'nav.homeworkadmin', href: '#', icon: BookOpenIcon, current: false, componentName: 'homeworkadmin'  },
+  { nameKey: 'nav.countdownadmin', href: '#', icon: ClockIcon, current: false, componentName: 'countdownadmin'  },
+  { nameKey: 'nav.settingadmin', href: '#', icon: AdjustmentsHorizontalIcon, current: false, componentName: 'settingadmin'  },
   { nameKey: 'nav.system', href: '#', icon: Cog8ToothIcon, current: false, componentName: 'system'  }
 ])
 
