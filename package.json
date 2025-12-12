@@ -24,7 +24,7 @@
     "vue-advanced-cropper": "^2.8.9",
     "vue-chartjs": "^5.3.2",
     "vue-cropperjs": "^5.0.0",
-    "vue-echarts": "^7.0.3",
+    "vue-echarts": "^8.0.1",
     "vue-i18n": "^11.1.5",
     "vue-router": "4",
     "xlsx": "^0.18.5",
