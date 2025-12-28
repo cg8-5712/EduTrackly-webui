@@ -1,43 +1,52 @@
 <template>
-  <div class="attendance-container">
+  <div class="p-4 min-h-full rounded-xl transition-colors duration-300"
+       style="background-color: var(--color-surface); color: var(--color-text-primary);">
     <!-- 加载中 -->
-    <div v-if="loading" class="loading-container">
+    <div v-if="loading" class="flex justify-center items-center h-40">
       <LoadingSpinner />
     </div>
 
     <!-- 错误提示 -->
-    <div v-else-if="error" class="error-message">
+    <div v-else-if="error" class="text-center text-lg" style="color: var(--color-error);">
       {{ error }}
     </div>
 
     <!-- 展示出勤数据 -->
-    <div v-else-if="attendance.class_name" class="attendance-content">
+    <div v-else-if="attendance.class_name" class="flex flex-col gap-6">
       <!-- 出勤统计 -->
-      <div class="stats-container">
-        <div class="stat-card">
-          <span class="stat-label">{{ t('extraUI.expectedAttend') }}：</span>{{ attendance.expected_attend }}{{ t('extraUI.peopleUnit') }}
+      <div class="flex flex-col gap-4">
+        <div class="p-4 rounded-lg text-3xl transition-colors duration-300"
+             style="background-color: var(--color-background); color: var(--color-text-primary);">
+          <span class="font-bold">{{ t('extraUI.expectedAttend') }}：</span>{{ attendance.expected_attend }}{{ t('extraUI.peopleUnit') }}
         </div>
-        <div class="stat-card">
-          <span class="stat-label">{{ t('extraUI.actualAttend') }}：</span>{{ attendance.actual_attend }}{{ t('extraUI.peopleUnit') }}
+        <div class="p-4 rounded-lg text-3xl transition-colors duration-300"
+             style="background-color: var(--color-background); color: var(--color-text-primary);">
+          <span class="font-bold">{{ t('extraUI.actualAttend') }}：</span>{{ attendance.actual_attend }}{{ t('extraUI.peopleUnit') }}
         </div>
       </div>
 
       <!-- 请假名单 -->
-      <div v-if="hasAbsentStudents" class="section">
-        <h3 class="section-title">
-          <span class="section-icon">📋</span>
+      <div v-if="hasAbsentStudents" class="mt-4">
+        <h3 class="text-4xl font-semibold mb-4 flex items-center gap-2 transition-colors duration-300"
+            style="color: var(--color-primary);">
+          <span class="text-3xl">📋</span>
           <span>{{ t('extraUI.leaveList') }}</span>
         </h3>
-        <ul class="student-list-horizontal">
+        <ul class="list-none p-0 m-0 flex flex-wrap gap-3">
           <li v-for="(event, index) in absentStudents"
               :key="index"
-              class="student-tag">
-            <span class="student-name"
+              class="px-4 py-2 rounded-lg text-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+              style="background-color: var(--color-background); color: var(--color-text-primary);">
+            <span class="cursor-pointer relative transition-colors duration-150"
+                  style="color: var(--color-primary);"
                   @mouseover="showReason(event, index)"
                   @mouseleave="hideReason">
               {{ event.student_name }}
-              <span v-if="showTooltip && currentEventId === index" class="tooltip">
-                <span class="tooltip-arrow"></span>
+              <span v-if="showTooltip && currentEventId === index"
+                    class="absolute left-full ml-3 px-4 py-2 rounded-lg text-sm whitespace-nowrap z-10 animate-fade-in"
+                    style="background-color: var(--color-surface); color: var(--color-text-primary); box-shadow: var(--shadow-xl); border: 1px solid var(--color-border);">
+                <span class="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45"
+                      style="background-color: var(--color-surface); border-left: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);"></span>
                 {{ getEventTypeText(event.event_type) }}
               </span>
             </span>
@@ -46,13 +55,17 @@
       </div>
 
       <!-- 临时参加名单 -->
-      <div v-if="tempStudents.length > 0" class="section">
-        <h3 class="section-title">
-          <span class="section-icon">✨</span>
+      <div v-if="tempStudents.length > 0" class="mt-4">
+        <h3 class="text-4xl font-semibold mb-4 flex items-center gap-2 transition-colors duration-300"
+            style="color: var(--color-primary);">
+          <span class="text-3xl">✨</span>
           <span>{{ t('extraUI.temporaryJoinList') }}</span>
         </h3>
-        <ul class="student-list-horizontal">
-          <li v-for="(event, index) in tempStudents" :key="index" class="student-tag">
+        <ul class="list-none p-0 m-0 flex flex-wrap gap-3">
+          <li v-for="(event, index) in tempStudents"
+              :key="index"
+              class="px-4 py-2 rounded-lg text-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+              style="background-color: var(--color-background); color: var(--color-text-primary);">
             {{ event.student_name }}
           </li>
         </ul>
@@ -60,7 +73,7 @@
     </div>
 
     <!-- 没有数据 -->
-    <div v-else class="no-data">
+    <div v-else class="text-center text-lg" style="color: var(--color-text-tertiary);">
       {{ t('extraUI.noAttendanceInfo') }}
     </div>
   </div>
@@ -178,143 +191,7 @@ const hideReason = () => {
 </script>
 
 <style scoped>
-.attendance-container {
-  padding: 1rem;
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  min-height: 100%;
-  border-radius: 0.75rem;
-  transition: background-color var(--transition-base), color var(--transition-base);
-}
-
-.loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 10rem;
-}
-
-.error-message {
-  color: var(--color-error);
-  text-align: center;
-  font-size: 1.125rem;
-}
-
-.attendance-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.stats-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.stat-card {
-  background-color: var(--color-background);
-  padding: 1rem;
-  border-radius: 0.5rem;
-  color: var(--color-text-primary);
-  font-size: 1.875rem;
-  transition: background-color var(--transition-base);
-}
-
-.stat-label {
-  font-weight: bold;
-}
-
-.section {
-  margin-top: 1rem;
-}
-
-.section-title {
-  font-size: 2.25rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: var(--color-primary);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: color var(--transition-base);
-}
-
-.section-icon {
-  font-size: 1.875rem;
-}
-
-.student-list-horizontal {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.student-tag {
-  padding: 0.5rem 1rem;
-  background-color: var(--color-background);
-  border-radius: 0.5rem;
-  color: var(--color-text-primary);
-  font-size: 1.5rem;
-  transition: all 0.2s;
-}
-
-.student-tag:hover {
-  background-color: var(--color-surface);
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-
-.student-name {
-  cursor: pointer;
-  color: var(--color-primary);
-  position: relative;
-  transition: color var(--transition-fast);
-}
-
-.student-name:hover {
-  color: var(--color-secondary);
-}
-
-.tooltip {
-  position: absolute;
-  left: 100%;
-  margin-left: 0.75rem;
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  white-space: nowrap;
-  box-shadow: var(--shadow-xl);
-  border: 1px solid var(--color-border);
-  animation: fadeIn 0.2s ease-in-out;
-  z-index: 10;
-}
-
-.tooltip-arrow {
-  position: absolute;
-  left: -0.25rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0.5rem;
-  height: 0.5rem;
-  background-color: var(--color-surface);
-  transform: translateY(-50%) rotate(45deg);
-  border-left: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.no-data {
-  color: var(--color-text-tertiary);
-  text-align: center;
-  font-size: 1.125rem;
-}
-
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
     opacity: 0;
     transform: translateX(-8px);
@@ -323,5 +200,9 @@ const hideReason = () => {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-in-out;
 }
 </style>

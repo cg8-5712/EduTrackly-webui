@@ -69,7 +69,8 @@ const animationFrameId = ref(null) // 用于 requestAnimationFrame
 
 // 计算属性
 const displayCountdowns = computed(() => {
-  return countdowns.value.slice(0, 5) // 最多显示5个倒计时
+  // 过滤掉已过期的，最多显示5个倒计时
+  return countdowns.value.filter(item => item.remainingDays >= 0).slice(0, 5)
 })
 
 const shouldShow = computed(() => {
