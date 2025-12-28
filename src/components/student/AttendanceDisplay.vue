@@ -28,10 +28,10 @@
           <span class="section-icon">📋</span>
           <span>{{ t('extraUI.leaveList') }}</span>
         </h3>
-        <ul class="student-list">
+        <ul class="student-list-horizontal">
           <li v-for="(event, index) in absentStudents"
               :key="index"
-              class="student-item">
+              class="student-tag">
             <span class="student-name"
                   @mouseover="showReason(event, index)"
                   @mouseleave="hideReason">
@@ -51,8 +51,8 @@
           <span class="section-icon">✨</span>
           <span>{{ t('extraUI.temporaryJoinList') }}</span>
         </h3>
-        <ul class="student-list">
-          <li v-for="(event, index) in tempStudents" :key="index" class="student-item">
+        <ul class="student-list-horizontal">
+          <li v-for="(event, index) in tempStudents" :key="index" class="student-tag">
             {{ event.student_name }}
           </li>
         </ul>
@@ -157,11 +157,11 @@ const fetchAttendance = async () => {
 
 // 同时监听日期和班级变化
 watch(
-  () => [props.selectedDate, props.selectedCid],
-  async () => {
-    await fetchAttendance()
-  },
-  { immediate: true }
+    () => [props.selectedDate, props.selectedCid],
+    async () => {
+      await fetchAttendance()
+    },
+    { immediate: true }
 )
 
 const showReason = (event, index) => {
@@ -244,25 +244,25 @@ const hideReason = () => {
   font-size: 1.875rem;
 }
 
-.student-list {
+.student-list-horizontal {
   list-style: none;
   padding-left: 0;
   margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
-.student-item {
-  padding: 1rem;
+.student-tag {
+  padding: 0.5rem 1rem;
   background-color: var(--color-background);
   border-radius: 0.5rem;
-  margin-bottom: 0.75rem;
-  display: flex;
-  justify-content: space-between;
   color: var(--color-text-primary);
   font-size: 1.5rem;
   transition: all 0.2s;
 }
 
-.student-item:hover {
+.student-tag:hover {
   background-color: var(--color-surface);
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
