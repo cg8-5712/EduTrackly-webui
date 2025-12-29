@@ -59,7 +59,8 @@ export default {
     studentadmin: '學生管理',
     homeworkadmin: '作業管理',
     countdownadmin: '倒數計時管理',
-    settingadmin: '顯示設定'
+    settingadmin: '顯示設定',
+    adminmanagement: '管理員管理'
   },
 
   // 主題
@@ -235,7 +236,37 @@ export default {
     pleaseEnterPassword: '請輸入密碼',
     loginSuccess: '登入成功',
     loginFailed: '登入失敗',
-    sessionExpired: '會話已過期，請重新登入'
+    sessionExpired: '會話已過期，請重新登入',
+    // 管理員管理
+    management: '管理員管理',
+    managementDesc: '管理系統管理員帳戶和權限',
+    role: '角色',
+    superadmin: '超級管理員',
+    admin: '管理員',
+    createAdmin: '創建管理員',
+    editAdmin: '編輯管理員',
+    deleteAdmin: '刪除管理員',
+    viewDetails: '查看詳情',
+    manageClasses: '管理班級',
+    adminId: '管理員 ID',
+    password: '密碼',
+    passwordPlaceholder: '至少 8 位字元',
+    createTime: '創建時間',
+    lastLogin: '最後登入',
+    lastLoginIp2: '最後登入 IP',
+    deleteConfirm: '確定要刪除管理員 {aid} 嗎？此操作無法撤銷。',
+    cannotDeleteSelf: '不能刪除自己的帳戶',
+    cannotDemoteSelf: '不能降級自己的角色',
+    assignedClasses: '已分配班級',
+    noClassAssigned: '尚未分配班級',
+    assignClass: '分配班級',
+    removeClass: '移除班級',
+    noAdmins: '沒有找到管理員',
+    createFirst: '創建您的第一個管理員',
+    noPassword: '留空以保持目前密碼',
+    filterByRole: '按角色篩選',
+    allRoles: '所有角色',
+    searchPlaceholder: '搜尋管理員 ID...'
   },
 
   // 系統設定
@@ -363,7 +394,13 @@ export default {
     excelParseFailed: '解析 Excel 檔案失敗，請檢查檔案格式',
     excelReadFailed: '讀取 Excel 檔案失敗',
     fileLoadSuccess: '成功載入檔案: {filename}',
-    fileReadFailed: '讀取檔案失敗'
+    fileReadFailed: '讀取檔案失敗',
+
+    // 管理員管理錯誤
+    adminIdRequired: '管理員 ID 必填',
+    passwordTooShort: '密碼至少需要 8 位字元',
+    adminIdAndClassIdRequired: '管理員 ID 和班級 ID 都必填',
+    classIdsArrayRequired: '班級 ID 必須是陣列'
   },
 
   // Service messages (console logs and operations)
@@ -406,6 +443,29 @@ export default {
     getClassAnalysisSuccess: '獲取班級分析資料成功',
     getClassAnalysisFailed: '獲取班級分析資料失敗',
     getClassesFailed: '獲取班級失敗',
+
+    // 管理員管理服務
+    getCurrentAdminSuccess: '獲取目前管理員資訊成功',
+    getCurrentAdminFailed: '獲取目前管理員資訊失敗',
+    createAdminSuccess: '創建管理員成功',
+    createAdminFailed: '創建管理員失敗',
+    getAdminSuccess: '獲取管理員成功',
+    getAdminFailed: '獲取管理員失敗',
+    getAdminListSuccess: '獲取管理員列表成功',
+    getAdminListFailed: '獲取管理員列表失敗',
+    updateAdminSuccess: '更新管理員成功',
+    updateAdminFailed: '更新管理員失敗',
+    deleteAdminSuccess: '刪除管理員成功',
+    deleteAdminFailed: '刪除管理員失敗',
+    assignClassSuccess: '分配班級成功',
+    assignClassFailed: '分配班級失敗',
+    removeClassSuccess: '移除班級成功',
+    removeClassFailed: '移除班級失敗',
+    getAdminClassesSuccess: '獲取管理員班級成功',
+    getAdminClassesFailed: '獲取管理員班級失敗',
+    replaceClassesSuccess: '替換班級成功',
+    replaceClassesFailed: '替換班級失敗',
+    batchAssignFailed: '批量分配班級失敗',
 
     // Theme service
     themeSaved: '主題已儲存',
