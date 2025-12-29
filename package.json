@@ -44,7 +44,7 @@
     "@tailwindcss/postcss": "^4.1.17",
     "@types/node": "^25.0.3",
     "@vitejs/plugin-vue": "^6.0.1",
-    "vite": "^6.3.5"
+    "vite": "^7.3.0"
   },
   "packageManager": "yarn@4.10.3"
 }
