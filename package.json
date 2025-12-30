@@ -41,7 +41,7 @@
     "zod": "^4.2.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.17",
+    "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^25.0.3",
     "@vitejs/plugin-vue": "^6.0.1",
     "vite": "^6.3.5"
