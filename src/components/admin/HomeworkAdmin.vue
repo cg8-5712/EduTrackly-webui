@@ -371,6 +371,9 @@ import AdminHomeworkService from '@/services/admin/homework'
 import AdminClassService from '@/services/admin/class'
 import notificationService from '@/services/common/notification'
 import Calendar from '@/components/common/calendar.vue'
+import { useAdminPermission } from '@/composables/useAdminPermission'
+
+const { filterManagedClasses } = useAdminPermission()
 
 // 响应式数据
 const loading = ref(false)
@@ -564,7 +567,9 @@ const fetchHomeworkList = async () => {
 const fetchClassList = async () => {
   try {
     const response = await AdminClassService.getClassList({ page: 1, size: 1000 })
-    classList.value = response.data || []
+    // 使用权限管理过滤班级列表，只显示该管理员可以管理的班级
+    const allClasses = response.data || []
+    classList.value = filterManagedClasses(allClasses)
   } catch (err) {
     console.error('获取班级列表失败:', err)
   }

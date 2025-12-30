@@ -321,8 +321,10 @@ import AdminClassService from '@/services/admin/class'
 import AttendanceChart from './AttendanceChart.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import notificationService from '@/services/common/notification'
+import { useAdminPermission } from '@/composables/useAdminPermission'
 
 const { t } = useI18n()
+const { filterManagedClasses, canManageClass, isSuperAdmin } = useAdminPermission()
 
 // 响应式数据
 const loading = ref(false)
@@ -459,8 +461,18 @@ const fetchClasses = async () => {
 
     const response = await AdminClassService.getClassList(params)
 
-    classList.value = response.data || []
-    Object.assign(pagination, response.pagination)
+    // 使用权限管理过滤班级列表，只显示该管理员可以管理的班级
+    const allClasses = response.data || []
+    classList.value = filterManagedClasses(allClasses)
+
+    // 更新分页信息（根据过滤后的结果）
+    if (!isSuperAdmin.value) {
+      // 普通管理员需要调整 total，因为过滤掉了一些班级
+      pagination.total = classList.value.length
+      pagination.pages = Math.ceil(classList.value.length / pagination.size)
+    } else {
+      Object.assign(pagination, response.pagination)
+    }
 
     // 获取每个班级的学生人数
     await fetchStudentCounts()

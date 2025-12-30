@@ -215,6 +215,9 @@ import countdownService from '@/services/admin/countdown'
 import classService from '@/services/admin/class'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import Pagination from '@/components/common/Pagination.vue'
+import { useAdminPermission } from '@/composables/useAdminPermission'
+
+const { filterManagedClasses } = useAdminPermission()
 
 const { t: $t } = useI18n()
 
@@ -258,7 +261,9 @@ const loadClassList = async () => {
   try {
     const response = await classService.getClassList({ page: 1, size: 1000 })
     if (response.code === 0) {
-      classList.value = response.data
+      // 使用权限管理过滤班级列表，只显示该管理员可以管理的班级
+      const allClasses = response.data || []
+      classList.value = filterManagedClasses(allClasses)
     }
   } catch (err) {
     console.error('Failed to load class list:', err)

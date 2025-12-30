@@ -410,8 +410,10 @@ import StudentService from '@/services/basic/student.js'
 import StudentAdminService from '@/services/admin/student.js'
 import ClassService from '@/services/basic/class.js'
 import notificationService from '@/services/common/notification.js'
+import { useAdminPermission } from '@/composables/useAdminPermission'
 
 const { t: $t } = useI18n()
+const { filterManagedClasses } = useAdminPermission()
 
 // 数据状态
 const students = ref([])
@@ -543,7 +545,9 @@ const fetchClassList = async () => {
   try {
     classLoading.value = true
     const response = await ClassService.getAllClasses()
-    classList.value = response || []
+    // 使用权限管理过滤班级列表，只显示该管理员可以管理的班级
+    const allClasses = response || []
+    classList.value = filterManagedClasses(allClasses)
   } catch (error) {
     console.error($t('component.getClassListFailed') + ':', error)
     notificationService.error(error.message || $t('component.getClassListFailed'));

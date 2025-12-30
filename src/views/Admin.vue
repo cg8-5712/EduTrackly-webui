@@ -171,8 +171,10 @@ import { useI18n } from 'vue-i18n'
 import AuthService from '@/services/common/auth'
 import AdminManagementService from '@/services/admin/admin'
 import notificationService from '@/services/common/notification'
+import { useAdminPermission } from '@/composables/useAdminPermission'
 
 const { t: $t } = useI18n()
+const { setAdminInfo, clearAdminInfo } = useAdminPermission()
 
 // 引入各个管理组件
 import CurrentAdmin from '@/components/admin/CurrentAdmin.vue'
@@ -264,11 +266,14 @@ const fetchCurrentAdminInfo = async () => {
     const response = await AdminManagementService.getCurrentAdmin()
     if (response.code === 0 && response.data) {
       currentAdminRole.value = response.data.role
+      // 设置权限管理中的管理员信息和可管理班级
+      setAdminInfo(response.data.role, response.data.classes)
     }
   } catch (error) {
     console.error('Failed to fetch current admin info:', error)
-    // 如果获取失败，默认为 admin 角色
+    // 如果获取失败，默认为 admin 角色且无可管理班级
     currentAdminRole.value = 'admin'
+    setAdminInfo('admin', [])
   }
 }
 
@@ -347,6 +352,9 @@ const handleLogout = () => {
   isAuthenticated.value = false
   password.value = ''
   loginError.value = ''
+  currentAdminRole.value = null
+  // 清空权限信息
+  clearAdminInfo()
   // 停止定期检查
   stopAuthCheck()
 }
