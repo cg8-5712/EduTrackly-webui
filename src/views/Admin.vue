@@ -169,6 +169,7 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AuthService from '@/services/common/auth'
+import AdminManagementService from '@/services/admin/admin'
 import notificationService from '@/services/common/notification'
 
 const { t: $t } = useI18n()
@@ -206,6 +207,9 @@ const password = ref('')
 const loginError = ref('')
 const isLogging = ref(false)
 
+// 当前管理员角色
+const currentAdminRole = ref(null)
+
 // 定时器ID，用于定期检查token有效性
 let authCheckInterval = null
 
@@ -221,17 +225,29 @@ const components = {
   system: System
 }
 
-// 导航菜单配置
-const navigation = ref([
+// 所有可用的导航菜单配置
+const allNavigationItems = [
   { nameKey: 'nav.currentadmin', href: '#', icon: AcademicCapIcon, current: true, componentName: 'currentadmin'  },
   { nameKey: 'nav.classadmin', href: '#', icon: UsersIcon, current: false, componentName: 'classadmin'  },
   { nameKey: 'nav.studentadmin', href: '#', icon: UsersIcon, current: false, componentName: 'studentadmin'  },
   { nameKey: 'nav.homeworkadmin', href: '#', icon: BookOpenIcon, current: false, componentName: 'homeworkadmin'  },
   { nameKey: 'nav.countdownadmin', href: '#', icon: ClockIcon, current: false, componentName: 'countdownadmin'  },
   { nameKey: 'nav.settingadmin', href: '#', icon: AdjustmentsHorizontalIcon, current: false, componentName: 'settingadmin'  },
-  { nameKey: 'nav.adminmanagement', href: '#', icon: ShieldCheckIcon, current: false, componentName: 'adminmanagement'  },
+  { nameKey: 'nav.adminmanagement', href: '#', icon: ShieldCheckIcon, current: false, componentName: 'adminmanagement', requireSuperAdmin: true  },
   { nameKey: 'nav.system', href: '#', icon: Cog8ToothIcon, current: false, componentName: 'system'  }
-])
+]
+
+// 根据角色过滤导航菜单
+const navigation = computed(() => {
+  return allNavigationItems.filter(item => {
+    // 如果菜单项需要 superadmin 权限
+    if (item.requireSuperAdmin) {
+      return currentAdminRole.value === 'superadmin'
+    }
+    // 其他菜单项都显示
+    return true
+  })
+})
 
 // 当前选中的菜单项
 const currentComponent = ref(components[ navigation.value.find(item => item.current).componentName ])
@@ -241,6 +257,20 @@ const currentMenuName = computed(() => {
   const currentItem = navigation.value.find(item => item.current)
   return currentItem ? $t(currentItem.nameKey) : ''
 })
+
+// 获取当前管理员信息
+const fetchCurrentAdminInfo = async () => {
+  try {
+    const response = await AdminManagementService.getCurrentAdmin()
+    if (response.code === 0 && response.data) {
+      currentAdminRole.value = response.data.role
+    }
+  } catch (error) {
+    console.error('Failed to fetch current admin info:', error)
+    // 如果获取失败，默认为 admin 角色
+    currentAdminRole.value = 'admin'
+  }
+}
 
 // 检查登录状态
 const checkAuthStatus = () => {
@@ -252,6 +282,7 @@ const checkAuthStatus = () => {
     if (!authStatus) {
       password.value = ''
       loginError.value = ''
+      currentAdminRole.value = null
     }
   }
   return authStatus
@@ -295,6 +326,8 @@ const handleLogin = async () => {
     if (response.code === 0) {
       isAuthenticated.value = true
       password.value = ''
+      // 获取当前管理员信息和角色
+      await fetchCurrentAdminInfo()
       // 登录成功后启动定期检查
       startAuthCheck()
     } else {
@@ -329,8 +362,13 @@ const changeComponent = (item) => {
 }
 
 // 组件挂载时检查登录状态
-onMounted(() => {
+onMounted(async () => {
   startAuthCheck()
+
+  // 如果已经登录，获取管理员信息
+  if (isAuthenticated.value) {
+    await fetchCurrentAdminInfo()
+  }
 
   // 检测微信浏览器并显示提示
   if (checkWechatBrowser() && !hasShownWechatTip()) {

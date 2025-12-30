@@ -692,9 +692,10 @@ watch(currentPage, (newPage) => {
   jumpToPage.value = newPage
 })
 
-// 监听班级选择变化
+// 监听班级选择变化，自动刷新学生列表
 watch(selectedClassIds, () => {
   currentPage.value = 1
+  fetchStudents()
 }, { deep: true })
 
 // 点击外部关闭下拉框
