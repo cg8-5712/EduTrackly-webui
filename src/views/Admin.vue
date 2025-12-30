@@ -263,14 +263,18 @@ const currentMenuName = computed(() => {
 // 获取当前管理员信息
 const fetchCurrentAdminInfo = async () => {
   try {
+    console.log('[Admin.vue] Fetching current admin info...')
     const response = await AdminManagementService.getCurrentAdmin()
+    console.log('[Admin.vue] /admin/me response:', response)
+
     if (response.code === 0 && response.data) {
       currentAdminRole.value = response.data.role
       // 设置权限管理中的管理员信息和可管理班级
+      console.log('[Admin.vue] Setting admin info - role:', response.data.role, 'classes:', response.data.classes)
       setAdminInfo(response.data.role, response.data.classes)
     }
   } catch (error) {
-    console.error('Failed to fetch current admin info:', error)
+    console.error('[Admin.vue] Failed to fetch current admin info:', error)
     // 如果获取失败，默认为 admin 角色且无可管理班级
     currentAdminRole.value = 'admin'
     setAdminInfo('admin', [])

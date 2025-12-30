@@ -217,7 +217,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import { useAdminPermission } from '@/composables/useAdminPermission'
 
-const { filterManagedClasses } = useAdminPermission()
+const { filterManagedClasses, canManageClass } = useAdminPermission()
 
 const { t: $t } = useI18n()
 
@@ -282,8 +282,23 @@ const loadCountdowns = async () => {
       size: pagination.value.size
     })
     if (response.code === 0) {
-      countdownList.value = response.data
-      pagination.value = response.pagination
+      // 过滤倒计时列表：只显示属于可管理班级的倒计时
+      const allCountdowns = response.data || []
+      const filteredCountdowns = allCountdowns.filter(countdown => {
+        // 如果倒计时有 cid 字段，检查是否可以管理该班级
+        if (countdown.cid) {
+          return canManageClass(countdown.cid)
+        }
+        // 如果没有 cid 字段，保留（为了兼容性）
+        return true
+      })
+
+      countdownList.value = filteredCountdowns
+
+      // 更新分页信息（根据过滤后的结果调整）
+      const adjustedPagination = { ...response.pagination }
+      adjustedPagination.total = filteredCountdowns.length
+      pagination.value = adjustedPagination
     }
   } catch (err) {
     error.value = err.message || $t('ui.loadFailed')
@@ -371,6 +386,12 @@ const getDaysRemainingClass = (deadline) => {
 
 // 打开编辑对话框
 const openEditDialog = (countdown) => {
+  // 检查权限：只能编辑可管理班级的倒计时
+  if (countdown.cid && !canManageClass(countdown.cid)) {
+    alert($t('ui.noPermission') || '您没有权限编辑此班级的倒计时')
+    return
+  }
+
   formData.value = {
     cdid: countdown.cdid,
     cid: countdown.cid,
@@ -399,6 +420,12 @@ const handleCreate = async () => {
     return
   }
 
+  // 检查权限：只能为可管理的班级创建倒计时
+  if (!canManageClass(formData.value.cid)) {
+    alert($t('ui.noPermission') || '您没有权限为此班级创建倒计时')
+    return
+  }
+
   try {
     const deadline = formData.value.deadline.replace(/-/g, '')
     const response = await countdownService.createCountdown({
@@ -422,6 +449,12 @@ const handleUpdate = async () => {
     return
   }
 
+  // 检查权限：只能更新可管理班级的倒计时
+  if (formData.value.cid && !canManageClass(formData.value.cid)) {
+    alert($t('ui.noPermission') || '您没有权限更新此班级的倒计时')
+    return
+  }
+
   try {
     const response = await countdownService.updateCountdown(formData.value.cdid, {
       content: formData.value.content,
@@ -438,6 +471,15 @@ const handleUpdate = async () => {
 
 // 删除倒计时
 const handleDelete = async (cdid) => {
+  // 查找要删除的倒计时
+  const countdown = countdownList.value.find(c => c.cdid === cdid)
+
+  // 检查权限：只能删除可管理班级的倒计时
+  if (countdown && countdown.cid && !canManageClass(countdown.cid)) {
+    alert($t('ui.noPermission') || '您没有权限删除此班级的倒计时')
+    return
+  }
+
   if (!confirm($t('ui.confirmDelete'))) return
 
   try {

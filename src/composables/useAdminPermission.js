@@ -21,8 +21,10 @@ export function useAdminPermission() {
     // 普通 admin 只能管理分配的班级
     if (role === 'superadmin' || !classes) {
       managedClassIds.value = [] // 空数组表示可以管理所有班级
+      console.log('[AdminPermission] SuperAdmin detected - can manage all classes')
     } else {
       managedClassIds.value = classes.map(c => c.cid)
+      console.log('[AdminPermission] Admin role - managed class IDs:', managedClassIds.value)
     }
   }
 
@@ -42,11 +44,14 @@ export function useAdminPermission() {
   const canManageClass = (cid) => {
     // superadmin 可以管理所有班级
     if (isSuperAdmin.value) {
+      console.log(`[AdminPermission] SuperAdmin can manage class ${cid}`)
       return true
     }
 
     // 普通 admin 检查班级是否在可管理列表中
-    return managedClassIds.value.includes(cid)
+    const canManage = managedClassIds.value.includes(cid)
+    console.log(`[AdminPermission] Check class ${cid}: ${canManage}, managed IDs:`, managedClassIds.value)
+    return canManage
   }
 
   /**

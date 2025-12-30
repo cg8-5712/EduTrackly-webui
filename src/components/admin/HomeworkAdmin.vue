@@ -373,7 +373,7 @@ import notificationService from '@/services/common/notification'
 import Calendar from '@/components/common/calendar.vue'
 import { useAdminPermission } from '@/composables/useAdminPermission'
 
-const { filterManagedClasses } = useAdminPermission()
+const { filterManagedClasses, managedClassIds, canManageClass } = useAdminPermission()
 
 // 响应式数据
 const loading = ref(false)
@@ -553,8 +553,23 @@ const fetchHomeworkList = async () => {
 
     const response = await AdminHomeworkService.getHomeworkList(params)
 
-    homeworkList.value = response.data || []
-    Object.assign(pagination, response.pagination)
+    // 过滤作业列表：只显示属于可管理班级的作业
+    const allHomework = response.data || []
+    const filteredHomework = allHomework.filter(homework => {
+      // 如果作业有 cid 字段，检查是否可以管理该班级
+      if (homework.cid) {
+        return canManageClass(homework.cid)
+      }
+      // 如果没有 cid 字段，保留（为了兼容性）
+      return true
+    })
+
+    homeworkList.value = filteredHomework
+
+    // 更新分页信息（根据过滤后的结果调整）
+    const adjustedPagination = { ...response.pagination }
+    adjustedPagination.total = filteredHomework.length
+    Object.assign(pagination, adjustedPagination)
 
   } catch (err) {
     error.value = err.message || '获取作业列表失败'
@@ -844,6 +859,12 @@ const createHomework = async () => {
 }
 
 const viewHomeworkDetail = (homework) => {
+  // 检查权限：只能查看可管理班级的作业
+  if (!canManageClass(homework.cid)) {
+    notificationService.error('您没有权限查看此班级的作业')
+    return
+  }
+
   selectedHomework.value = homework
   showDetailDialog.value = true
   isEditing.value = false
@@ -866,11 +887,23 @@ const viewHomeworkDetail = (homework) => {
 }
 
 const confirmDelete = (homework) => {
+  // 检查权限：只能删除可管理班级的作业
+  if (!canManageClass(homework.cid)) {
+    notificationService.error('您没有权限删除此班级的作业')
+    return
+  }
+
   selectedHomework.value = homework
   showDeleteDialog.value = true
 }
 
 const startEdit = () => {
+  // 检查权限：只能编辑可管理班级的作业
+  if (selectedHomework.value && !canManageClass(selectedHomework.value.cid)) {
+    notificationService.error('您没有权限编辑此班级的作业')
+    return
+  }
+
   isEditing.value = true
 }
 
