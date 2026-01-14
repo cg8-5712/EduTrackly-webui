@@ -602,6 +602,7 @@ export default {
     dateAsc: '日期升序',
     foundCountdownsInfo: '共找到 {total} 个倒计时',
     countdownContent: '倒计时内容',
+    sloganContent: '班级标语',
     deadline: '截止日期',
     daysRemaining: '剩余天数',
     edit: '编辑',

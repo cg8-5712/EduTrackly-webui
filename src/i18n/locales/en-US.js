@@ -602,6 +602,7 @@ export default {
     dateAsc: 'Date Ascending',
     foundCountdownsInfo: 'Found {total} countdowns',
     countdownContent: 'Countdown Content',
+    sloganContent: 'Class Slogan',
     deadline: 'Deadline',
     daysRemaining: 'Days Remaining',
     edit: 'Edit',

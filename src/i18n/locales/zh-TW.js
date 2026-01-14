@@ -599,6 +599,7 @@ export default {
     dateAsc: '日期升序',
     foundCountdownsInfo: '共找到 {total} 個倒數計時',
     countdownContent: '倒數計時內容',
+    sloganContent: '班級標語',
     deadline: '截止日期',
     daysRemaining: '剩餘天數',
     edit: '編輯',

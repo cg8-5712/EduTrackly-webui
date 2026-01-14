@@ -599,6 +599,7 @@ export default {
     dateAsc: '日付昇順',
     foundCountdownsInfo: '{total}個のカウントダウンが見つかりました',
     countdownContent: 'カウントダウン内容',
+    sloganContent: 'クラススローガン',
     deadline: '期限',
     daysRemaining: '残り日数',
     edit: '編集',
