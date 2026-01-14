@@ -37,6 +37,7 @@
 
 <script>
 import ClassService from "@/services/basic/class";
+import AuthService from "@/services/common/auth";
 import notificationService from '@/services/common/notification';
 import { useI18n } from 'vue-i18n'
 
@@ -111,7 +112,17 @@ export default {
     async fetchClasses() {
       try {
         this.loading = true;
-        this.classes = await ClassService.getAllClasses();
+        let allClasses = await ClassService.getAllClasses();
+
+        // 根据管理员权限过滤班级
+        const allowedClasses = AuthService.getAdminClasses();
+        if (allowedClasses !== null) {
+          // 非超级管理员，过滤班级
+          allClasses = allClasses.filter(cls => allowedClasses.includes(cls.cid));
+          console.log(`[ClassSwitch] Filtered classes by permission:`, allowedClasses);
+        }
+
+        this.classes = allClasses;
 
         if (this.classes.length > 0) {
           // 获取上次记忆的班级ID

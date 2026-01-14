@@ -42,7 +42,7 @@ class AuthService {
             .post(`${this.apiUrl}/auth`, {
                 password
             })
-            .then(response => {
+            .then(async response => {
                 if (response.data.data && response.data.data.access_token) {
                     const { access_token, aid, expires_in, last_login_time, last_login_ip, role } = response.data.data;
 
@@ -60,6 +60,9 @@ class AuthService {
                     const currentTime = Math.floor(Date.now() / 1000);
                     const expiresAtTimestamp = currentTime + expires_in;
                     localStorage.setItem(`${this.STORAGE_PREFIX}admin_expires_in`, expiresAtTimestamp);
+
+                    // 获取管理员详细信息（包含班级权限）
+                    await this.fetchAndStoreAdminClasses(access_token);
                 }
                 return response.data;
             })
@@ -69,6 +72,52 @@ class AuthService {
             });
     }
 
+    /**
+     * 获取并存储管理员的班级权限
+     * @param {string} token - 访问令牌
+     */
+    async fetchAndStoreAdminClasses(token) {
+        try {
+            const response = await axios.get(`${this.apiUrl}/admin/me`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (response.data.code === 0 && response.data.data) {
+                const adminData = response.data.data;
+                // 存储班级权限列表
+                if (adminData.classes && Array.isArray(adminData.classes)) {
+                    const classIds = adminData.classes.map(c => c.cid);
+                    localStorage.setItem(`${this.STORAGE_PREFIX}admin_classes`, JSON.stringify(classIds));
+                    console.log('[AuthService] Admin classes stored:', classIds);
+                }
+            }
+        } catch (error) {
+            console.error('[AuthService] Failed to fetch admin classes:', error);
+        }
+    }
+
+    /**
+     * 获取管理员的班级权限列表
+     * @returns {number[]|null} 班级ID数组，超级管理员返回null表示无限制
+     */
+    getAdminClasses() {
+        const role = localStorage.getItem(`${this.STORAGE_PREFIX}admin_role`);
+        // 超级管理员无限制
+        if (role === 'superadmin') {
+            return null;
+        }
+
+        const classesStr = localStorage.getItem(`${this.STORAGE_PREFIX}admin_classes`);
+        if (classesStr) {
+            try {
+                return JSON.parse(classesStr);
+            } catch (e) {
+                console.error('[AuthService] Failed to parse admin classes:', e);
+            }
+        }
+        return [];
+    }
+
     logout() {
         localStorage.removeItem(`${this.STORAGE_PREFIX}access_token`);
         localStorage.removeItem(`${this.STORAGE_PREFIX}admin_aid`);
@@ -76,6 +125,7 @@ class AuthService {
         localStorage.removeItem(`${this.STORAGE_PREFIX}admin_last_login_time`);
         localStorage.removeItem(`${this.STORAGE_PREFIX}admin_last_login_ip`);
         localStorage.removeItem(`${this.STORAGE_PREFIX}admin_role`);
+        localStorage.removeItem(`${this.STORAGE_PREFIX}admin_classes`);
     }
 
     getToken() {
