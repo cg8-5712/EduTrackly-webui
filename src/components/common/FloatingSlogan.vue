@@ -9,20 +9,8 @@
     :title="$t('ui.sloganContent') + ' (' + $t('common.close') + ')'"
   >
     <div class="slogan-content">
-      <!-- 加载中状态 -->
-      <div v-if="loading" class="slogan-loading">
-        <div class="loading-spinner"></div>
-        <span>{{ $t('common.loading') }}</span>
-      </div>
-
-      <!-- 无数据提示 -->
-      <div v-else-if="slogans.length === 0" class="slogan-empty">
-        <span>{{ $t('ui.noSlogans') }}</span>
-      </div>
-
       <!-- 标语列表 -->
       <div
-        v-else
         v-for="slogan in displaySlogans"
         :key="slogan.slid"
         class="slogan-item"
@@ -68,6 +56,8 @@ const displaySlogans = computed(() => {
 const shouldShow = computed(() => {
   if (!isVisible.value) return false
   if (!props.selectedCid) return false
+  if (loading.value) return false
+  if (slogans.value.length === 0) return false
   return true
 })
 
@@ -323,41 +313,5 @@ onUnmounted(() => {
   .slogan-text {
     font-size: 14px;
   }
-}
-
-.slogan-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  gap: 12px;
-  color: var(--color-text-secondary);
-  font-size: 14px;
-}
-
-.loading-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-secondary);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.slogan-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  color: var(--color-text-secondary);
-  font-size: 14px;
-  text-align: center;
 }
 </style>
