@@ -1,33 +1,60 @@
-import axios from 'axios'
-import { getApiUrl } from '@/config/apiConfig'
+import ApiPrefix from '@/utils/ApiPrefix';
 
-const API_BASE_URL = getApiUrl()
+class SettingService extends ApiPrefix {
+  constructor() {
+    super();
+  }
 
-const settingService = {
-  // 获取设置
+  /**
+   * 获取设置
+   * @param {number} cid - 班级ID
+   */
   async getSetting(cid) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/setting/get`, {
-        params: { cid }
-      })
-      return response.data
-    } catch (error) {
-      throw error.response?.data || error
-    }
-  },
+      if (!cid) {
+        throw new Error('Class ID is required');
+      }
 
-  // 更新设置
+      const response = await this.get(`/setting/get?cid=${cid}`);
+      console.log('Get setting success:', response.message);
+
+      if (response.code !== 0) {
+        throw new Error(response.message);
+      }
+
+      return response;
+    } catch (error) {
+      console.error('Get setting failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 更新设置
+   * @param {number} cid - 班级ID
+   * @param {Object} data - 设置数据
+   * @param {boolean} data.is_countdown_display - 是否显示倒计时
+   * @param {boolean} data.is_slogan_display - 是否显示标语
+   */
   async updateSetting(cid, data) {
     try {
-      const response = await axios.put(`${API_BASE_URL}/setting/update`, data, {
-        params: { cid }
-      })
-      return response.data
+      if (!cid) {
+        throw new Error('Class ID is required');
+      }
+
+      const response = await this.adminPut(`/setting/update?cid=${cid}`, data);
+      console.log('Update setting success:', response.message);
+
+      if (response.code !== 0) {
+        throw new Error(response.message);
+      }
+
+      return response;
     } catch (error) {
-      throw error.response?.data || error
+      console.error('Update setting failed:', error);
+      throw error;
     }
   }
 }
 
-export default settingService
-
+export default new SettingService();
