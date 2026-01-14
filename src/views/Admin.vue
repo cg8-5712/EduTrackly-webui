@@ -141,14 +141,17 @@ import ClassAdmin from '@/components/admin/ClassAdmin.vue'
 import StudentAdmin from '@/components/admin/StudentAdmin.vue'
 import HomeworkAdmin from '@/components/admin/HomeworkAdmin.vue'
 import CountdownAdmin from '@/components/admin/CountdownAdmin.vue'
+import SloganAdmin from '@/components/admin/SloganAdmin.vue'
 import SettingAdmin from '@/components/admin/SettingAdmin.vue'
+import AdminManagement from '@/components/admin/AdminManagement.vue'
+import RateLimitAdmin from '@/components/admin/RateLimitAdmin.vue'
 import System from '@/components/admin/System.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import LanguageToggle from '@/components/common/LanguageToggle.vue'
 
 // 引入图标组件（你需要根据实际使用的图标库调整）
-import { AcademicCapIcon, BookOpenIcon, UsersIcon, Cog8ToothIcon, ClockIcon, AdjustmentsHorizontalIcon } from '@heroicons/vue/24/outline'
+import { AcademicCapIcon, BookOpenIcon, UsersIcon, Cog8ToothIcon, ClockIcon, AdjustmentsHorizontalIcon, ChatBubbleBottomCenterTextIcon, ShieldCheckIcon, BoltIcon } from '@heroicons/vue/24/outline'
 
 // 检测微信浏览器
 const checkWechatBrowser = () => {
@@ -177,7 +180,10 @@ const components = {
   studentadmin: StudentAdmin,
   homeworkadmin: HomeworkAdmin,
   countdownadmin: CountdownAdmin,
+  sloganadmin: SloganAdmin,
   settingadmin: SettingAdmin,
+  adminmanagement: AdminManagement,
+  ratelimitadmin: RateLimitAdmin,
   system: System
 }
 
@@ -188,7 +194,10 @@ const navigation = ref([
   { nameKey: 'nav.studentadmin', href: '#', icon: UsersIcon, current: false, componentName: 'studentadmin'  },
   { nameKey: 'nav.homeworkadmin', href: '#', icon: BookOpenIcon, current: false, componentName: 'homeworkadmin'  },
   { nameKey: 'nav.countdownadmin', href: '#', icon: ClockIcon, current: false, componentName: 'countdownadmin'  },
+  { nameKey: 'nav.sloganadmin', href: '#', icon: ChatBubbleBottomCenterTextIcon, current: false, componentName: 'sloganadmin'  },
   { nameKey: 'nav.settingadmin', href: '#', icon: AdjustmentsHorizontalIcon, current: false, componentName: 'settingadmin'  },
+  { nameKey: 'nav.adminmanagement', href: '#', icon: ShieldCheckIcon, current: false, componentName: 'adminmanagement'  },
+  { nameKey: 'nav.ratelimitadmin', href: '#', icon: BoltIcon, current: false, componentName: 'ratelimitadmin'  },
   { nameKey: 'nav.system', href: '#', icon: Cog8ToothIcon, current: false, componentName: 'system'  }
 ])
 

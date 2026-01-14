@@ -59,7 +59,10 @@ export default {
     studentadmin: '学生管理',
     homeworkadmin: '作业管理',
     countdownadmin: '倒计时管理',
-    settingadmin: '显示设置'
+    sloganadmin: '标语管理',
+    settingadmin: '显示设置',
+    adminmanagement: '管理员管理',
+    ratelimitadmin: '速率限制'
   },
 
   // 主题
@@ -629,7 +632,65 @@ export default {
     countdownDisplayDesc: '是否在首页显示倒计时',
     sloganDisplayDesc: '是否在首页显示标语',
     cancel: '取消',
-    save: '保存'
+    save: '保存',
+    all: '全部',
+
+    // SloganAdmin
+    sloganManagement: '标语管理',
+    manageSloganInfo: '管理所有班级的标语内容',
+    createSlogan: '创建标语',
+    foundSlogansInfo: '共找到 {total} 个标语',
+    sloganContent: '标语内容',
+    createdAt: '创建时间',
+    noSlogans: '暂无标语',
+    editSlogan: '编辑标语',
+    enterSloganContent: '请输入标语内容',
+
+    // AdminManagement
+    adminManagement: '管理员管理',
+    manageAdminInfo: '管理管理员账号、角色和班级分配',
+    createAdmin: '创建管理员',
+    roleFilter: '角色筛选',
+    allRoles: '全部角色',
+    superadmin: '超级管理员',
+    admin: '管理员',
+    foundAdminsInfo: '共找到 {total} 个管理员',
+    username: '用户名',
+    role: '角色',
+    assignedClasses: '分配的班级',
+    noClassAssigned: '未分配班级',
+    noAdmins: '暂无管理员',
+    editAdmin: '编辑管理员',
+    enterUsername: '请输入用户名',
+    enterPassword: '请输入密码',
+    newPassword: '新密码',
+    optional: '可选',
+    leaveEmptyToKeep: '留空保持原密码',
+    classes: '班级',
+    manageClassAssignment: '管理班级分配',
+    cannotDeleteSelf: '不能删除当前登录的管理员账号',
+
+    // RateLimitAdmin
+    rateLimitManagement: '速率限制管理',
+    manageRateLimitInfo: '管理API速率限制配置',
+    createRateLimit: '创建配置',
+    foundRateLimitsInfo: '共找到 {total} 个配置',
+    configKey: '配置Key',
+    maxRequests: '最大请求数',
+    windowMs: '时间窗口(ms)',
+    windowDisplay: '时间窗口',
+    noRateLimits: '暂无速率限制配置',
+    editRateLimit: '编辑速率限制',
+    enterConfigKey: '请输入配置Key',
+    configKeyHint: '例如: read, write, auth 等',
+    enterMaxRequests: '请输入最大请求数',
+    seconds: '秒',
+    minutes: '分钟',
+    hours: '小时',
+    secondsUnit: '秒',
+    minutesUnit: '分钟',
+    hoursUnit: '小时',
+    currentValue: '当前值'
   },
 
   // 页脚
