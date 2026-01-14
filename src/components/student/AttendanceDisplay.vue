@@ -149,10 +149,10 @@ const fetchAttendance = async () => {
         ? await AttendanceService.getAnalysisByDate(Number(props.selectedCid), props.selectedDate)
         : await AttendanceService.getTodayAnalysis(Number(props.selectedCid))
 
-    if (res.data?.code === 0 && res.data?.data) {
-      attendance.value = res.data.data
+    if (res.code === 0 && res.data) {
+      attendance.value = res.data
     } else {
-      throw new Error(res.data?.message || t('extraUI.fetchDataFailed'))
+      throw new Error(res.message || t('extraUI.fetchDataFailed'))
     }
   } catch (err) {
     console.error(t('extraUI.fetchAttendanceInfoFailed'), err)
