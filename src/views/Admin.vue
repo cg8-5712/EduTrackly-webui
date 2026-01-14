@@ -169,6 +169,7 @@ const isAuthenticated = ref(false)
 const password = ref('')
 const loginError = ref('')
 const isLogging = ref(false)
+const adminRole = ref('')  // 管理员角色
 
 // 定时器ID，用于定期检查token有效性
 let authCheckInterval = null
@@ -188,7 +189,7 @@ const components = {
 }
 
 // 导航菜单配置
-const navigation = ref([
+const allNavigation = [
   { nameKey: 'nav.currentadmin', href: '#', icon: AcademicCapIcon, current: true, componentName: 'currentadmin'  },
   { nameKey: 'nav.classadmin', href: '#', icon: UsersIcon, current: false, componentName: 'classadmin'  },
   { nameKey: 'nav.studentadmin', href: '#', icon: UsersIcon, current: false, componentName: 'studentadmin'  },
@@ -196,13 +197,21 @@ const navigation = ref([
   { nameKey: 'nav.countdownadmin', href: '#', icon: ClockIcon, current: false, componentName: 'countdownadmin'  },
   { nameKey: 'nav.sloganadmin', href: '#', icon: ChatBubbleBottomCenterTextIcon, current: false, componentName: 'sloganadmin'  },
   { nameKey: 'nav.settingadmin', href: '#', icon: AdjustmentsHorizontalIcon, current: false, componentName: 'settingadmin'  },
-  { nameKey: 'nav.adminmanagement', href: '#', icon: ShieldCheckIcon, current: false, componentName: 'adminmanagement'  },
-  { nameKey: 'nav.ratelimitadmin', href: '#', icon: BoltIcon, current: false, componentName: 'ratelimitadmin'  },
+  { nameKey: 'nav.adminmanagement', href: '#', icon: ShieldCheckIcon, current: false, componentName: 'adminmanagement', superadminOnly: true  },
+  { nameKey: 'nav.ratelimitadmin', href: '#', icon: BoltIcon, current: false, componentName: 'ratelimitadmin', superadminOnly: true  },
   { nameKey: 'nav.system', href: '#', icon: Cog8ToothIcon, current: false, componentName: 'system'  }
-])
+]
+
+// 根据角色过滤导航菜单
+const navigation = computed(() => {
+  if (adminRole.value === 'superadmin') {
+    return allNavigation
+  }
+  return allNavigation.filter(item => !item.superadminOnly)
+})
 
 // 当前选中的菜单项
-const currentComponent = ref(components[ navigation.value.find(item => item.current).componentName ])
+const currentComponent = ref(components.currentadmin)
 
 // 当前菜单名称（用于显示页面标题）
 const currentMenuName = computed(() => {
@@ -220,6 +229,11 @@ const checkAuthStatus = () => {
     if (!authStatus) {
       password.value = ''
       loginError.value = ''
+      adminRole.value = ''
+    } else {
+      // 获取角色信息
+      const adminInfo = AuthService.getAdminInfo()
+      adminRole.value = adminInfo.role || ''
     }
   }
   return authStatus
@@ -263,6 +277,9 @@ const handleLogin = async () => {
     if (response.code === 0) {
       isAuthenticated.value = true
       password.value = ''
+      // 获取角色信息
+      const adminInfo = AuthService.getAdminInfo()
+      adminRole.value = adminInfo.role || ''
       // 登录成功后启动定期检查
       startAuthCheck()
     } else {
@@ -282,6 +299,10 @@ const handleLogout = () => {
   isAuthenticated.value = false
   password.value = ''
   loginError.value = ''
+  adminRole.value = ''
+  // 重置导航状态
+  allNavigation.forEach(item => item.current = item.componentName === 'currentadmin')
+  currentComponent.value = components.currentadmin
   // 停止定期检查
   stopAuthCheck()
 }
@@ -289,7 +310,7 @@ const handleLogout = () => {
 // 处理菜单项选择
 const changeComponent = (item) => {
   // 设置当前选中项
-  navigation.value.forEach(navItem => navItem.current = false)
+  allNavigation.forEach(navItem => navItem.current = false)
   item.current = true
 
   // 切换显示的组件

@@ -44,13 +44,17 @@ class AuthService {
             })
             .then(response => {
                 if (response.data.data && response.data.data.access_token) {
-                    const { access_token, aid, expires_in, last_login_time, last_login_ip } = response.data.data;
+                    const { access_token, aid, expires_in, last_login_time, last_login_ip, role } = response.data.data;
 
                     // 统一使用 access_token
                     localStorage.setItem(`${this.STORAGE_PREFIX}access_token`, access_token);
                     localStorage.setItem(`${this.STORAGE_PREFIX}admin_aid`, aid);
                     localStorage.setItem(`${this.STORAGE_PREFIX}admin_last_login_time`, last_login_time);
                     localStorage.setItem(`${this.STORAGE_PREFIX}admin_last_login_ip`, last_login_ip);
+                    // 存储角色信息
+                    if (role) {
+                        localStorage.setItem(`${this.STORAGE_PREFIX}admin_role`, role);
+                    }
 
                     // 计算过期时间戳并存储
                     const currentTime = Math.floor(Date.now() / 1000);
@@ -71,6 +75,7 @@ class AuthService {
         localStorage.removeItem(`${this.STORAGE_PREFIX}admin_expires_in`);
         localStorage.removeItem(`${this.STORAGE_PREFIX}admin_last_login_time`);
         localStorage.removeItem(`${this.STORAGE_PREFIX}admin_last_login_ip`);
+        localStorage.removeItem(`${this.STORAGE_PREFIX}admin_role`);
     }
 
     getToken() {
@@ -83,7 +88,8 @@ class AuthService {
             token: localStorage.getItem(`${this.STORAGE_PREFIX}access_token`),
             expiresIn: localStorage.getItem(`${this.STORAGE_PREFIX}admin_expires_in`),
             lastLoginTime: localStorage.getItem(`${this.STORAGE_PREFIX}admin_last_login_time`),
-            lastLoginIp: localStorage.getItem(`${this.STORAGE_PREFIX}admin_last_login_ip`)
+            lastLoginIp: localStorage.getItem(`${this.STORAGE_PREFIX}admin_last_login_ip`),
+            role: localStorage.getItem(`${this.STORAGE_PREFIX}admin_role`)
         };
     }
 
