@@ -30,19 +30,19 @@
               </div>
               <div class="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-50 max-h-60 overflow-y-auto animate-in slide-in-from-top-2 duration-200" v-show="showClassDropdown">
                 <div
-                  class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
-                  :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': !filters.cid }"
-                  @click="selectClass(null, '全部班级')"
+                    class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                    :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': !filters.cid }"
+                    @click="selectClass(null, '全部班级')"
                 >
                   全部班级
                   <span v-if="!filters.cid" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
                 </div>
                 <div
-                  v-for="classItem in classList"
-                  :key="classItem.cid"
-                  class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
-                  :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': filters.cid === classItem.cid }"
-                  @click="selectClass(classItem.cid, classItem.class_name)"
+                    v-for="classItem in classList"
+                    :key="classItem.cid"
+                    class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                    :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': filters.cid === classItem.cid }"
+                    @click="selectClass(classItem.cid, classItem.class_name)"
                 >
                   {{ classItem.class_name }}
                   <span v-if="filters.cid === classItem.cid" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
@@ -56,12 +56,12 @@
             <label class="block mb-2 font-semibold text-gray-700">开始日期</label>
             <div class="relative" ref="startDateCalendarRef">
               <input
-                :value="filters.startDate"
-                type="text"
-                readonly
-                placeholder="选择开始日期"
-                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-xl text-sm transition-colors cursor-pointer focus:outline-none focus:border-blue-600"
-                @click="showStartDateCalendar = !showStartDateCalendar"
+                  :value="filters.startDate"
+                  type="text"
+                  readonly
+                  placeholder="选择开始日期"
+                  class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-xl text-sm transition-colors cursor-pointer focus:outline-none focus:border-blue-600"
+                  @click="showStartDateCalendar = !showStartDateCalendar"
               >
               <div v-if="showStartDateCalendar" class="fixed mt-1 z-[60]" :style="startDateCalendarStyle">
                 <Calendar mode="single" @select-date="handleStartDateSelect" />
@@ -74,12 +74,12 @@
             <label class="block mb-2 font-semibold text-gray-700">结束日期</label>
             <div class="relative" ref="endDateCalendarRef">
               <input
-                :value="filters.endDate"
-                type="text"
-                readonly
-                placeholder="选择结束日期"
-                class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-xl text-sm transition-colors cursor-pointer focus:outline-none focus:border-blue-600"
-                @click="showEndDateCalendar = !showEndDateCalendar"
+                  :value="filters.endDate"
+                  type="text"
+                  readonly
+                  placeholder="选择结束日期"
+                  class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-xl text-sm transition-colors cursor-pointer focus:outline-none focus:border-blue-600"
+                  @click="showEndDateCalendar = !showEndDateCalendar"
               >
               <div v-if="showEndDateCalendar" class="fixed mt-1 z-[60]" :style="endDateCalendarStyle">
                 <Calendar mode="single" @select-date="handleEndDateSelect" />
@@ -97,17 +97,17 @@
               </div>
               <div class="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200" v-show="showSortDropdown">
                 <div
-                  class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
-                  :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': sortOrder === 'desc' }"
-                  @click="selectSortOrder('desc')"
+                    class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                    :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': sortOrder === 'desc' }"
+                    @click="selectSortOrder('desc')"
                 >
                   日期降序
                   <span v-if="sortOrder === 'desc'" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
                 </div>
                 <div
-                  class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
-                  :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': sortOrder === 'incs' }"
-                  @click="selectSortOrder('incs')"
+                    class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                    :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': sortOrder === 'incs' }"
+                    @click="selectSortOrder('incs')"
                 >
                   日期升序
                   <span v-if="sortOrder === 'incs'" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
@@ -126,11 +126,11 @@
               </div>
               <div class="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200" v-show="showPageSizeDropdown">
                 <div
-                  v-for="size in [5, 20, 50, 100]"
-                  :key="size"
-                  class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
-                  :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': pagination.size === size }"
-                  @click="selectPageSizeOption(size)"
+                    v-for="size in [5, 20, 50, 100]"
+                    :key="size"
+                    class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                    :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': pagination.size === size }"
+                    @click="selectPageSizeOption(size)"
                 >
                   {{ size }}条
                   <span v-if="pagination.size === size" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
@@ -170,9 +170,9 @@
 
         <div class="flex flex-col">
           <div
-            v-for="homework in homeworkList"
-            :key="`${homework.cid}-${homework.due_date}`"
-            class="flex items-center py-4 px-6 border-b border-gray-100 transition-all duration-200 last:border-b-0 hover:bg-gray-50"
+              v-for="homework in homeworkList"
+              :key="`${homework.cid}-${homework.due_date}`"
+              class="flex items-center py-4 px-6 border-b border-gray-100 transition-all duration-200 last:border-b-0 hover:bg-gray-50"
           >
             <div class="flex items-center px-2 min-w-0 flex-[1.5]">
               <h3 class="text-base font-semibold text-gray-800 m-0 truncate">{{ homework.class_name }}</h3>
@@ -186,16 +186,16 @@
             <div class="flex items-center px-2 min-w-0 flex-1">
               <div class="flex gap-2">
                 <button
-                  @click="viewHomeworkDetail(homework)"
-                  class="flex items-center justify-center w-9 h-9 border-none rounded-lg text-sm cursor-pointer transition-all duration-200 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:scale-105"
-                  title="查看详情"
+                    @click="viewHomeworkDetail(homework)"
+                    class="flex items-center justify-center w-9 h-9 border-none rounded-lg text-sm cursor-pointer transition-all duration-200 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:scale-105"
+                    title="查看详情"
                 >
                   <span class="text-base">👁️</span>
                 </button>
                 <button
-                  @click="confirmDelete(homework)"
-                  class="flex items-center justify-center w-9 h-9 border-none rounded-lg text-sm cursor-pointer transition-all duration-200 bg-red-50 text-red-600 hover:bg-red-100 hover:scale-105"
-                  title="删除作业"
+                    @click="confirmDelete(homework)"
+                    class="flex items-center justify-center w-9 h-9 border-none rounded-lg text-sm cursor-pointer transition-all duration-200 bg-red-50 text-red-600 hover:bg-red-100 hover:scale-105"
+                    title="删除作业"
                 >
                   <span class="text-base">🗑️</span>
                 </button>
@@ -207,11 +207,11 @@
         <!-- 分页组件 -->
         <div class="flex justify-center gap-2 py-6 border-t border-gray-200" v-if="pagination.pages > 1">
           <button
-            @click="changePage(page)"
-            v-for="page in paginationPages"
-            :key="page"
-            :class="['py-2 px-4 border-2 border-gray-200 bg-white text-gray-500 rounded-lg cursor-pointer text-sm font-medium transition-all duration-200 hover:border-blue-600 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50', { 'bg-blue-600 border-blue-600 text-white': page === pagination.page }]"
-            :disabled="page === '...'"
+              @click="changePage(page)"
+              v-for="page in paginationPages"
+              :key="page"
+              :class="['py-2 px-4 border-2 border-gray-200 bg-white text-gray-500 rounded-lg cursor-pointer text-sm font-medium transition-all duration-200 hover:border-blue-600 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50', { 'bg-blue-600 border-blue-600 text-white': page === pagination.page }]"
+              :disabled="page === '...'"
           >
             {{ page }}
           </button>
@@ -238,11 +238,11 @@
               </div>
               <div class="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-50 max-h-60 overflow-y-auto" v-show="showCreateClassDropdown">
                 <div
-                  v-for="classItem in classList"
-                  :key="classItem.cid"
-                  class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
-                  :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold': newHomework.cid === classItem.cid }"
-                  @click="selectCreateClass(classItem.cid)"
+                    v-for="classItem in classList"
+                    :key="classItem.cid"
+                    class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                    :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold': newHomework.cid === classItem.cid }"
+                    @click="selectCreateClass(classItem.cid)"
                 >
                   {{ classItem.class_name }}
                 </div>
@@ -255,10 +255,10 @@
               <div v-for="(label, key) in subjectNames" :key="key" class="flex items-center gap-3">
                 <label class="min-w-16 text-sm text-gray-600">{{ label }}：</label>
                 <input
-                  v-model="newHomework.subjects[key]"
-                  type="text"
-                  :placeholder="`输入${label}作业`"
-                  class="flex-1 py-2 px-3 border-2 border-gray-200 rounded-lg text-sm transition-colors focus:outline-none focus:border-blue-600"
+                    v-model="newHomework.subjects[key]"
+                    type="text"
+                    :placeholder="`输入${label}作业`"
+                    class="flex-1 py-2 px-3 border-2 border-gray-200 rounded-lg text-sm transition-colors focus:outline-none focus:border-blue-600"
                 >
               </div>
             </div>
@@ -267,12 +267,12 @@
             <label class="block mb-2 font-semibold text-gray-700">截止日期</label>
             <div class="relative" ref="createDateCalendarRef">
               <input
-                :value="formatDate(newHomework.due_date)"
-                type="text"
-                readonly
-                placeholder="选择截止日期"
-                class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-base transition-colors cursor-pointer focus:outline-none focus:border-blue-600"
-                @click="showCreateDateCalendar = !showCreateDateCalendar"
+                  :value="formatDate(newHomework.due_date)"
+                  type="text"
+                  readonly
+                  placeholder="选择截止日期"
+                  class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-base transition-colors cursor-pointer focus:outline-none focus:border-blue-600"
+                  @click="showCreateDateCalendar = !showCreateDateCalendar"
               >
               <div v-if="showCreateDateCalendar" class="fixed mt-1 z-[100]" :style="calendarStyle">
                 <Calendar mode="single" :allow-future="true" @select-date="handleCreateDateSelect" />
@@ -320,10 +320,10 @@
                 <div v-for="(label, key) in subjectNames" :key="key" class="flex items-center gap-3">
                   <label class="min-w-16 text-sm text-gray-600 font-medium">{{ label }}：</label>
                   <input
-                    v-model="editHomework.subjects[key]"
-                    type="text"
-                    :placeholder="`输入${label}作业`"
-                    class="flex-1 py-2 px-3 border-2 border-gray-200 rounded-lg text-sm transition-colors focus:outline-none focus:border-blue-600"
+                      v-model="editHomework.subjects[key]"
+                      type="text"
+                      :placeholder="`输入${label}作业`"
+                      class="flex-1 py-2 px-3 border-2 border-gray-200 rounded-lg text-sm transition-colors focus:outline-none focus:border-blue-600"
                   >
                 </div>
               </div>
@@ -628,11 +628,11 @@ const formatHomeworkContent = (content) => {
 
     // 筛选出有内容的科目
     const subjects = Object.entries(homework)
-      .filter(([key, value]) => value && value.trim())
-      .map(([key, value]) => {
-        const subjectName = subjectNames[key] || key
-        return `${subjectName}: ${value}`
-      })
+        .filter(([key, value]) => value && value.trim())
+        .map(([key, value]) => {
+          const subjectName = subjectNames[key] || key
+          return `${subjectName}: ${value}`
+        })
 
     return subjects.length > 0 ? subjects.join('\n') : '暂无作业'
   } catch (e) {
@@ -650,8 +650,8 @@ const getHomeworkSummary = (content) => {
 
     // 获取有内容的科目数量
     const subjects = Object.entries(homework)
-      .filter(([key, value]) => value && value.trim())
-      .map(([key]) => subjectNames[key] || key)
+        .filter(([key, value]) => value && value.trim())
+        .map(([key]) => subjectNames[key] || key)
 
     if (subjects.length === 0) return '暂无作业'
 
@@ -863,8 +863,8 @@ const viewHomeworkDetail = (homework) => {
 
   try {
     const content = typeof homework.homework_content === 'string'
-      ? JSON.parse(homework.homework_content)
-      : homework.homework_content
+        ? JSON.parse(homework.homework_content)
+        : homework.homework_content
 
     Object.keys(editHomework.subjects).forEach(key => {
       editHomework.subjects[key] = content[key] || ''
@@ -931,8 +931,8 @@ const deleteHomework = async () => {
   try {
     deleting.value = true
     await AdminHomeworkService.deleteHomework(
-      selectedHomework.value.cid,
-      selectedHomework.value.due_date
+        selectedHomework.value.cid,
+        selectedHomework.value.due_date
     )
 
     showDeleteDialog.value = false
