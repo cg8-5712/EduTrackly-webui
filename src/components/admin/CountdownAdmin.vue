@@ -284,8 +284,15 @@ const loadCountdowns = async () => {
       size: pagination.value.size
     })
     if (response.code === 0) {
-      countdownList.value = response.data
-      pagination.value = response.pagination
+      // 根据管理员权限过滤数据
+      const allowedClasses = AuthService.getAdminClasses()
+      if (allowedClasses !== null && Array.isArray(response.data)) {
+        countdownList.value = response.data.filter(item => allowedClasses.includes(item.cid))
+        pagination.value = { ...response.pagination, total: countdownList.value.length }
+      } else {
+        countdownList.value = response.data
+        pagination.value = response.pagination
+      }
     }
   } catch (err) {
     error.value = err.message || $t('ui.loadFailed')

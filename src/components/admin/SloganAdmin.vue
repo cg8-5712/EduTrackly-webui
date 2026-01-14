@@ -274,8 +274,15 @@ const loadSlogans = async () => {
       size: pagination.value.size
     })
     if (response.code === 0) {
-      sloganList.value = response.data
-      pagination.value = response.pagination
+      // 根据管理员权限过滤数据
+      const allowedClasses = AuthService.getAdminClasses()
+      if (allowedClasses !== null && Array.isArray(response.data)) {
+        sloganList.value = response.data.filter(item => allowedClasses.includes(item.cid))
+        pagination.value = { ...response.pagination, total: sloganList.value.length }
+      } else {
+        sloganList.value = response.data
+        pagination.value = response.pagination
+      }
     }
   } catch (err) {
     error.value = err.message || $t('ui.loadFailed')

@@ -551,8 +551,15 @@ const fetchHomeworkList = async () => {
 
     const response = await AdminHomeworkService.getHomeworkList(params)
 
-    homeworkList.value = response.data || []
-    Object.assign(pagination, response.pagination)
+    // 根据管理员权限过滤数据
+    const allowedClasses = AuthService.getAdminClasses()
+    if (allowedClasses !== null && Array.isArray(response.data)) {
+      homeworkList.value = response.data.filter(item => allowedClasses.includes(item.cid))
+      Object.assign(pagination, { ...response.pagination, total: homeworkList.value.length })
+    } else {
+      homeworkList.value = response.data || []
+      Object.assign(pagination, response.pagination)
+    }
 
   } catch (err) {
     error.value = err.message || '获取作业列表失败'
