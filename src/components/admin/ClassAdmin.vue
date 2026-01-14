@@ -318,6 +318,7 @@
 import { ref, reactive, onMounted, computed, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AdminClassService from '@/services/admin/class'
+import AuthService from '@/services/common/auth'
 import AttendanceChart from './AttendanceChart.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import notificationService from '@/services/common/notification'
@@ -459,8 +460,15 @@ const fetchClasses = async () => {
 
     const response = await AdminClassService.getClassList(params)
 
-    classList.value = response.data || []
-    Object.assign(pagination, response.pagination)
+    // 根据管理员权限过滤班级
+    const allowedClasses = AuthService.getAdminClasses()
+    if (allowedClasses !== null && Array.isArray(response.data)) {
+      classList.value = response.data.filter(cls => allowedClasses.includes(cls.cid))
+      pagination.total = classList.value.length
+    } else {
+      classList.value = response.data || []
+      Object.assign(pagination, response.pagination)
+    }
 
     // 获取每个班级的学生人数
     await fetchStudentCounts()

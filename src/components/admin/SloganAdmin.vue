@@ -204,6 +204,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import sloganService from '@/services/admin/slogan'
 import classService from '@/services/admin/class'
+import AuthService from '@/services/common/auth'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import Pagination from '@/components/common/Pagination.vue'
 
@@ -248,7 +249,13 @@ const loadClassList = async () => {
   try {
     const response = await classService.getClassList({ page: 1, size: 1000 })
     if (response.code === 0) {
-      classList.value = response.data
+      // 根据管理员权限过滤班级
+      const allowedClasses = AuthService.getAdminClasses()
+      if (allowedClasses !== null && Array.isArray(response.data)) {
+        classList.value = response.data.filter(cls => allowedClasses.includes(cls.cid))
+      } else {
+        classList.value = response.data
+      }
     }
   } catch (err) {
     console.error('Failed to load class list:', err)

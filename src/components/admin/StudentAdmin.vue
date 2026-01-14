@@ -409,6 +409,7 @@ import StudentDetailModal from '@/components/student/StudentDetailModal.vue'
 import StudentService from '@/services/basic/student.js'
 import StudentAdminService from '@/services/admin/student.js'
 import ClassService from '@/services/basic/class.js'
+import AuthService from '@/services/common/auth.js'
 import notificationService from '@/services/common/notification.js'
 
 const { t: $t } = useI18n()
@@ -542,7 +543,14 @@ const getAvatarColor = (name) => {
 const fetchClassList = async () => {
   try {
     classLoading.value = true
-    const response = await ClassService.getAllClasses()
+    let response = await ClassService.getAllClasses()
+
+    // 根据管理员权限过滤班级
+    const allowedClasses = AuthService.getAdminClasses()
+    if (allowedClasses !== null && Array.isArray(response)) {
+      response = response.filter(cls => allowedClasses.includes(cls.cid))
+    }
+
     classList.value = response || []
   } catch (error) {
     console.error($t('component.getClassListFailed') + ':', error)

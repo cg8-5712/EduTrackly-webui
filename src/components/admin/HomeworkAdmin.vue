@@ -369,6 +369,7 @@
 import { ref, reactive, onMounted, computed, onUnmounted } from 'vue'
 import AdminHomeworkService from '@/services/admin/homework'
 import AdminClassService from '@/services/admin/class'
+import AuthService from '@/services/common/auth'
 import notificationService from '@/services/common/notification'
 import Calendar from '@/components/common/calendar.vue'
 
@@ -564,7 +565,13 @@ const fetchHomeworkList = async () => {
 const fetchClassList = async () => {
   try {
     const response = await AdminClassService.getClassList({ page: 1, size: 1000 })
-    classList.value = response.data || []
+    // 根据管理员权限过滤班级
+    const allowedClasses = AuthService.getAdminClasses()
+    if (allowedClasses !== null && Array.isArray(response.data)) {
+      classList.value = response.data.filter(cls => allowedClasses.includes(cls.cid))
+    } else {
+      classList.value = response.data || []
+    }
   } catch (err) {
     console.error('获取班级列表失败:', err)
   }
