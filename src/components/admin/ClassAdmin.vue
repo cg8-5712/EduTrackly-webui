@@ -186,13 +186,13 @@
         </div>
         <div class="p-6">
           <div class="mb-5">
-            <label for="className" class="block mb-2 font-semibold text-gray-800">{{ $t('ui.className') }}</label>
+            <label for="className" class="block mb-2 font-semibold text-gray-700">{{ $t('ui.className') }}</label>
             <input
               id="className"
               v-model="newClassName"
               type="text"
               :placeholder="$t('ui.enterClassName')"
-              class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-base text-gray-900 placeholder:text-gray-400 bg-white transition-colors focus:outline-none focus:border-blue-600"
+              class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-blue-600"
               @keyup.enter="createClass"
             >
           </div>
@@ -392,10 +392,8 @@ import AnalysisService from '@/services/basic/analysis'
 import AttendanceChart from './AttendanceChart.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import notificationService from '@/services/common/notification'
-import { useAdminPermission } from '@/composables/useAdminPermission'
 
 const { t } = useI18n()
-const { filterManagedClasses, canManageClass, isSuperAdmin } = useAdminPermission()
 
 // 响应式数据
 const loading = ref(false)

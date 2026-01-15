@@ -510,10 +510,8 @@ import ClassService from '@/services/basic/class.js'
 import AuthService from '@/services/common/auth.js'
 import AnalysisService from '@/services/basic/analysis.js'
 import notificationService from '@/services/common/notification.js'
-import { useAdminPermission } from '@/composables/useAdminPermission'
 
 const { t: $t } = useI18n()
-const { filterManagedClasses } = useAdminPermission()
 
 // 数据状态
 const students = ref([])
@@ -894,10 +892,9 @@ watch(currentPage, (newPage) => {
   jumpToPage.value = newPage
 })
 
-// 监听班级选择变化，自动刷新学生列表
+// 监听班级选择变化
 watch(selectedClassIds, () => {
   currentPage.value = 1
-  fetchStudents()
 }, { deep: true })
 
 // 点击外部关闭下拉框

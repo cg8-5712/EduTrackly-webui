@@ -455,9 +455,6 @@ import AuthService from '@/services/common/auth'
 import AnalysisService from '@/services/basic/analysis'
 import notificationService from '@/services/common/notification'
 import Calendar from '@/components/common/calendar.vue'
-import { useAdminPermission } from '@/composables/useAdminPermission'
-
-const { filterManagedClasses, managedClassIds, canManageClass } = useAdminPermission()
 
 // 响应式数据
 const loading = ref(false)
@@ -961,12 +958,6 @@ const createHomework = async () => {
 }
 
 const viewHomeworkDetail = (homework) => {
-  // 检查权限：只能查看可管理班级的作业
-  if (!canManageClass(homework.cid)) {
-    notificationService.error('您没有权限查看此班级的作业')
-    return
-  }
-
   selectedHomework.value = homework
   showDetailDialog.value = true
   isEditing.value = false
@@ -989,23 +980,11 @@ const viewHomeworkDetail = (homework) => {
 }
 
 const confirmDelete = (homework) => {
-  // 检查权限：只能删除可管理班级的作业
-  if (!canManageClass(homework.cid)) {
-    notificationService.error('您没有权限删除此班级的作业')
-    return
-  }
-
   selectedHomework.value = homework
   showDeleteDialog.value = true
 }
 
 const startEdit = () => {
-  // 检查权限：只能编辑可管理班级的作业
-  if (selectedHomework.value && !canManageClass(selectedHomework.value.cid)) {
-    notificationService.error('您没有权限编辑此班级的作业')
-    return
-  }
-
   isEditing.value = true
 }
 
