@@ -10,13 +10,15 @@
   >
     <div class="slogan-content">
       <!-- 标语列表 -->
-      <div
-        v-for="slogan in displaySlogans"
-        :key="slogan.slid"
-        class="slogan-item"
-      >
-        <div class="slogan-text">{{ slogan.content }}</div>
-      </div>
+      <TransitionGroup name="slogan-fade" tag="div">
+        <div
+          v-for="slogan in displaySlogans"
+          :key="slogan.slid"
+          class="slogan-item"
+        >
+          <div class="slogan-text">{{ slogan.content }}</div>
+        </div>
+      </TransitionGroup>
     </div>
   </div>
 </template>
@@ -38,6 +40,7 @@ const props = defineProps({
 
 // 状态
 const slogans = ref([])
+const randomSlogans = ref([])
 const isVisible = ref(true)
 const loading = ref(false)
 const position = ref({ x: 20, y: 300 })
@@ -47,10 +50,22 @@ const displaySettings = ref(null)
 const dragStartPos = ref({ x: 0, y: 0 })
 const hasMoved = ref(false)
 const animationFrameId = ref(null)
+const refreshTimerId = ref(null)
+
+// 随机选择3个标语
+const selectRandomSlogans = () => {
+  if (slogans.value.length <= 3) {
+    randomSlogans.value = [...slogans.value]
+    return
+  }
+
+  const shuffled = [...slogans.value].sort(() => Math.random() - 0.5)
+  randomSlogans.value = shuffled.slice(0, 3)
+}
 
 // 计算属性
 const displaySlogans = computed(() => {
-  return slogans.value.slice(0, 5)
+  return randomSlogans.value
 })
 
 const shouldShow = computed(() => {
@@ -96,6 +111,8 @@ const fetchSlogans = async () => {
 
     if (response.code === 0 && response.data && Array.isArray(response.data)) {
       slogans.value = response.data
+      selectRandomSlogans()
+      startRefreshTimer()
     } else {
       slogans.value = []
     }
@@ -106,6 +123,19 @@ const fetchSlogans = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 启动15分钟定时刷新
+const startRefreshTimer = () => {
+  // 清除已有的定时器
+  if (refreshTimerId.value) {
+    clearInterval(refreshTimerId.value)
+  }
+
+  // 每15分钟刷新一次 (15 * 60 * 1000 = 900000ms)
+  refreshTimerId.value = setInterval(() => {
+    selectRandomSlogans()
+  }, 15 * 60 * 1000)
 }
 
 // 拖动相关
@@ -221,6 +251,11 @@ onUnmounted(() => {
   document.removeEventListener('touchmove', onDrag)
   document.removeEventListener('mouseup', stopDrag)
   document.removeEventListener('touchend', stopDrag)
+
+  // 清除定时刷新器
+  if (refreshTimerId.value) {
+    clearInterval(refreshTimerId.value)
+  }
 })
 </script>
 
@@ -313,5 +348,25 @@ onUnmounted(() => {
   .slogan-text {
     font-size: 14px;
   }
+}
+
+/* 标语切换动画 */
+.slogan-fade-enter-active,
+.slogan-fade-leave-active {
+  transition: all 0.5s ease;
+}
+
+.slogan-fade-enter-from {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.slogan-fade-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.slogan-fade-move {
+  transition: transform 0.5s ease;
 }
 </style>
