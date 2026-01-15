@@ -439,6 +439,10 @@ export default {
     confirmDeleteStudent: '生徒 {studentName} を削除してもよろしいですか？この操作は元に戻せません。',
     statusChangedTo: 'ステータスが次に変更されました',
 
+    // Export
+    exportSuccess: 'エクスポートに成功しました',
+    exportFailed: 'エクスポートに失敗しました',
+
     // HomeworkAdmin
     homeworkCreatedSuccess: '宿題の作成に成功しました',
     createHomeworkFailed: '宿題の作成に失敗しました',
@@ -588,6 +592,19 @@ export default {
     confirm: '確認',
     unknownClass: '不明なクラス({cid})',
     allClasses: 'すべてのクラス ({count}個)',
+
+    // Export
+    classData: 'クラスデータ',
+    studentData: '生徒データ',
+    selectStudents: '生徒を選択',
+    selectedCount: '{count}人選択中',
+    startDate: '開始日',
+    endDate: '終了日',
+    quickSelect: 'クイック選択',
+    lastWeek: '過去1週間',
+    lastMonth: '過去1ヶ月',
+    lastQuarter: '過去3ヶ月',
+    exporting: 'エクスポート中...',
 
     // CountdownAdmin
     countdownManagement: 'カウントダウン管理',
