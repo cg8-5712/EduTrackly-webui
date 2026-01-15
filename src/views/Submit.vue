@@ -43,13 +43,10 @@ const handleClassChange = (newCid) => {
 // watch selectedCid，班级变化时刷新学生列表
 watch(
     selectedCid,
-    async (newVal) => {
+    (newVal) => {
       console.log('Selected CID changed:', newVal)
-      if (studentListComponent.value) {
-        await studentListComponent.value.fetchStudents()
-      }
-    },
-    { immediate: true }
+      // StudentEventSelector 组件内部已有 watch 监听 cid 变化，无需重复调用
+    }
 )
 
 // 页面加载时检测微信浏览器
