@@ -5,13 +5,13 @@
       <div class="mb-8">
         <div class="flex justify-between items-start flex-wrap gap-6">
           <div class="flex-1 min-w-[300px]">
-            <h1 class="text-4xl font-bold bg-gradient-to-br from-blue-600 to-purple-600 bg-clip-text text-transparent m-0 mb-2">{{ $t('ui.countdownManagement') }}</h1>
-            <p class="text-gray-500 text-lg m-0 font-normal">{{ $t('ui.manageCountdownInfo') }}</p>
+            <h1 class="text-4xl font-bold bg-gradient-to-br from-blue-600 to-purple-600 bg-clip-text text-transparent m-0 mb-2">{{ $t('ui.sloganManagement') }}</h1>
+            <p class="text-gray-500 text-lg m-0 font-normal">{{ $t('ui.manageSloganInfo') }}</p>
           </div>
           <div class="flex gap-4">
             <button @click="showCreateDialog = true" class="flex items-center gap-2 py-3 px-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white border-none rounded-xl text-base font-semibold cursor-pointer transition-all duration-300 shadow-lg shadow-blue-600/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-600/40">
               <span class="text-base">➕</span>
-              {{ $t('ui.createCountdown') }}
+              {{ $t('ui.createSlogan') }}
             </button>
           </div>
         </div>
@@ -116,44 +116,40 @@
         {{ error }}
       </div>
 
-      <!-- 倒计时列表 -->
+      <!-- 标语列表 -->
       <div v-if="!loading && !error" class="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div class="py-5 px-6 border-b border-gray-200 bg-gray-50">
           <div class="text-gray-500 text-sm font-medium">
-            <span>{{ $t('ui.foundCountdownsInfo', { total: pagination.total }) }}</span>
+            <span>{{ $t('ui.foundSlogansInfo', { total: pagination.total }) }}</span>
           </div>
         </div>
 
         <!-- 表头 -->
         <div class="flex bg-gray-50 border-b-2 border-gray-200 py-4 px-6 font-semibold text-gray-700 text-sm">
-          <div class="flex items-center px-2 min-w-0 flex-[2]">{{ $t('ui.countdownContent') }}</div>
+          <div class="flex items-center px-2 min-w-0 flex-[2]">{{ $t('ui.sloganContent') }}</div>
           <div class="flex items-center px-2 min-w-0 flex-1">{{ $t('ui.className') }}</div>
-          <div class="flex items-center px-2 min-w-0 flex-1">{{ $t('ui.deadline') }}</div>
-          <div class="flex items-center px-2 min-w-0 flex-1">{{ $t('ui.daysRemaining') }}</div>
+          <div class="flex items-center px-2 min-w-0 flex-1">{{ $t('ui.createdAt') }}</div>
           <div class="flex items-center justify-center px-2 min-w-0 w-32">{{ $t('ui.actions') }}</div>
         </div>
 
         <!-- 数据行 -->
-        <div v-for="(countdown, index) in countdownList" :key="countdown.cdid" class="flex items-center py-5 px-6 border-b border-gray-100 transition-colors hover:bg-blue-50" :class="{ 'bg-gray-50': index % 2 === 1 }">
-          <div class="px-2 min-w-0 flex-[2] text-gray-800 font-medium truncate">{{ countdown.content }}</div>
-          <div class="px-2 min-w-0 flex-1 text-gray-600 truncate">{{ countdown.class_name }}</div>
-          <div class="px-2 min-w-0 flex-1 text-gray-600">{{ formatDate(countdown.deadline) }}</div>
-          <div class="px-2 min-w-0 flex-1 text-gray-600">
-            <span :class="getDaysRemainingClass(countdown.deadline)">{{ calculateDaysRemaining(countdown.deadline) }}</span>
-          </div>
+        <div v-for="(slogan, index) in sloganList" :key="slogan.slid" class="flex items-center py-5 px-6 border-b border-gray-100 transition-colors hover:bg-blue-50" :class="{ 'bg-gray-50': index % 2 === 1 }">
+          <div class="px-2 min-w-0 flex-[2] text-gray-800 font-medium truncate">{{ slogan.content }}</div>
+          <div class="px-2 min-w-0 flex-1 text-gray-600 truncate">{{ slogan.class_name }}</div>
+          <div class="px-2 min-w-0 flex-1 text-gray-600">{{ formatDate(slogan.created_at) }}</div>
           <div class="flex items-center justify-center gap-2 px-2 min-w-0 w-32">
-            <button @click="openEditDialog(countdown)" class="py-2 px-4 bg-blue-600 text-white text-xs font-medium rounded-lg transition-all hover:bg-blue-700 hover:shadow-md">
+            <button @click="openEditDialog(slogan)" class="py-2 px-4 bg-blue-600 text-white text-xs font-medium rounded-lg transition-all hover:bg-blue-700 hover:shadow-md">
               {{ $t('ui.edit') }}
             </button>
-            <button @click="handleDelete(countdown.cdid)" class="py-2 px-4 bg-red-600 text-white text-xs font-medium rounded-lg transition-all hover:bg-red-700 hover:shadow-md">
+            <button @click="handleDelete(slogan.slid)" class="py-2 px-4 bg-red-600 text-white text-xs font-medium rounded-lg transition-all hover:bg-red-700 hover:shadow-md">
               {{ $t('ui.delete') }}
             </button>
           </div>
         </div>
 
         <!-- 空状态 -->
-        <div v-if="countdownList.length === 0" class="text-center py-12 text-gray-500">
-          {{ $t('ui.noCountdowns') }}
+        <div v-if="sloganList.length === 0" class="text-center py-12 text-gray-500">
+          {{ $t('ui.noSlogans') }}
         </div>
       </div>
 
@@ -173,7 +169,7 @@
     <div v-if="showCreateDialog || showEditDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" @click.self="closeDialogs">
       <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
         <div class="p-6 border-b border-gray-200">
-          <h3 class="text-xl font-bold text-gray-900 m-0">{{ showCreateDialog ? $t('ui.createCountdown') : $t('ui.editCountdown') }}</h3>
+          <h3 class="text-xl font-bold text-gray-900 m-0">{{ showCreateDialog ? $t('ui.createSlogan') : $t('ui.editSlogan') }}</h3>
         </div>
         <div class="p-6 space-y-4">
           <!-- 班级选择 -->
@@ -184,15 +180,10 @@
               <option v-for="classItem in classList" :key="classItem.cid" :value="classItem.cid">{{ classItem.class_name }}</option>
             </select>
           </div>
-          <!-- 倒计时内容 -->
+          <!-- 标语内容 -->
           <div>
-            <label class="block mb-2 font-semibold text-gray-700">{{ $t('ui.countdownContent') }}</label>
-            <input v-model="formData.content" type="text" class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-600" :placeholder="$t('ui.enterCountdownContent')" />
-          </div>
-          <!-- 截止日期 -->
-          <div>
-            <label class="block mb-2 font-semibold text-gray-700">{{ $t('ui.deadline') }}</label>
-            <input v-model="formData.deadline" type="date" class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-600" />
+            <label class="block mb-2 font-semibold text-gray-700">{{ $t('ui.sloganContent') }}</label>
+            <textarea v-model="formData.content" rows="3" class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 resize-none" :placeholder="$t('ui.enterSloganContent')"></textarea>
           </div>
         </div>
         <div class="p-6 border-t border-gray-200 flex gap-3 justify-end">
@@ -211,20 +202,17 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
-import countdownService from '@/services/admin/countdown'
+import sloganService from '@/services/admin/slogan'
 import classService from '@/services/admin/class'
 import AuthService from '@/services/common/auth'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import Pagination from '@/components/common/Pagination.vue'
-import { useAdminPermission } from '@/composables/useAdminPermission'
-
-const { filterManagedClasses, canManageClass } = useAdminPermission()
 
 const { t: $t } = useI18n()
 
 const loading = ref(false)
 const error = ref(null)
-const countdownList = ref([])
+const sloganList = ref([])
 const classList = ref([])
 const pagination = ref({
   page: 1,
@@ -237,7 +225,7 @@ const filters = ref({
   cid: null
 })
 
-const sortOrder = ref('asc')
+const sortOrder = ref('desc')
 const selectedClassName = ref('')
 
 const showClassDropdown = ref(false)
@@ -247,10 +235,9 @@ const showCreateDialog = ref(false)
 const showEditDialog = ref(false)
 
 const formData = ref({
-  cdid: null,
+  slid: null,
   cid: null,
-  content: '',
-  deadline: ''
+  content: ''
 })
 
 const classSelectRef = ref(null)
@@ -275,12 +262,12 @@ const loadClassList = async () => {
   }
 }
 
-// 加载倒计时列表
-const loadCountdowns = async () => {
+// 加载标语列表
+const loadSlogans = async () => {
   loading.value = true
   error.value = null
   try {
-    const response = await countdownService.getCountdownList({
+    const response = await sloganService.getSloganList({
       cid: filters.value.cid,
       order: sortOrder.value,
       page: pagination.value.page,
@@ -290,10 +277,10 @@ const loadCountdowns = async () => {
       // 根据管理员权限过滤数据
       const allowedClasses = AuthService.getAdminClasses()
       if (allowedClasses !== null && Array.isArray(response.data)) {
-        countdownList.value = response.data.filter(item => allowedClasses.includes(item.cid))
-        pagination.value = { ...response.pagination, total: countdownList.value.length }
+        sloganList.value = response.data.filter(item => allowedClasses.includes(item.cid))
+        pagination.value = { ...response.pagination, total: sloganList.value.length }
       } else {
-        countdownList.value = response.data
+        sloganList.value = response.data
         pagination.value = response.pagination
       }
     }
@@ -329,7 +316,7 @@ const selectClass = (cid, className) => {
   selectedClassName.value = cid ? className : ''
   showClassDropdown.value = false
   pagination.value.page = 1
-  loadCountdowns()
+  loadSlogans()
 }
 
 // 选择排序
@@ -337,7 +324,7 @@ const selectSortOrder = (order) => {
   sortOrder.value = order
   showSortDropdown.value = false
   pagination.value.page = 1
-  loadCountdowns()
+  loadSlogans()
 }
 
 // 选择每页条数
@@ -345,13 +332,13 @@ const selectPageSizeOption = (size) => {
   pagination.value.size = size
   pagination.value.page = 1
   showPageSizeDropdown.value = false
-  loadCountdowns()
+  loadSlogans()
 }
 
 // 页码变化
 const handlePageChange = (page) => {
   pagination.value.page = page
-  loadCountdowns()
+  loadSlogans()
 }
 
 // 格式化日期
@@ -360,40 +347,12 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString()
 }
 
-// 计算剩余天数
-const calculateDaysRemaining = (deadline) => {
-  const now = new Date()
-  const end = new Date(deadline)
-  const diff = Math.ceil((end - now) / (1000 * 60 * 60 * 24))
-  if (diff < 0) return $t('ui.expired')
-  if (diff === 0) return $t('ui.today')
-  return $t('ui.daysCount', { count: diff })
-}
-
-// 获取剩余天数样式
-const getDaysRemainingClass = (deadline) => {
-  const now = new Date()
-  const end = new Date(deadline)
-  const diff = Math.ceil((end - now) / (1000 * 60 * 60 * 24))
-  if (diff < 0) return 'text-gray-400'
-  if (diff <= 3) return 'text-red-600 font-bold'
-  if (diff <= 7) return 'text-orange-600 font-semibold'
-  return 'text-green-600'
-}
-
 // 打开编辑对话框
-const openEditDialog = (countdown) => {
-  // 检查权限：只能编辑可管理班级的倒计时
-  if (countdown.cid && !canManageClass(countdown.cid)) {
-    alert($t('ui.noPermission') || '您没有权限编辑此班级的倒计时')
-    return
-  }
-
+const openEditDialog = (slogan) => {
   formData.value = {
-    cdid: countdown.cdid,
-    cid: countdown.cid,
-    content: countdown.content,
-    deadline: new Date(countdown.deadline).toISOString().split('T')[0]
+    slid: slogan.slid,
+    cid: slogan.cid,
+    content: slogan.content
   }
   showEditDialog.value = true
 }
@@ -403,86 +362,61 @@ const closeDialogs = () => {
   showCreateDialog.value = false
   showEditDialog.value = false
   formData.value = {
-    cdid: null,
+    slid: null,
     cid: null,
-    content: '',
-    deadline: ''
+    content: ''
   }
 }
 
-// 创建倒计时
+// 创建标语
 const handleCreate = async () => {
-  if (!formData.value.cid || !formData.value.content || !formData.value.deadline) {
+  if (!formData.value.cid || !formData.value.content) {
     alert($t('ui.pleaseFillAllFields'))
     return
   }
 
-  // 检查权限：只能为可管理的班级创建倒计时
-  if (!canManageClass(formData.value.cid)) {
-    alert($t('ui.noPermission') || '您没有权限为此班级创建倒计时')
-    return
-  }
-
   try {
-    const deadline = formData.value.deadline.replace(/-/g, '')
-    const response = await countdownService.createCountdown({
+    const response = await sloganService.createSlogan({
       cid: formData.value.cid,
-      content: formData.value.content,
-      deadline: parseInt(deadline)
+      content: formData.value.content
     })
     if (response.code === 0) {
       closeDialogs()
-      loadCountdowns()
+      loadSlogans()
     }
   } catch (err) {
     alert(err.message || $t('ui.createFailed'))
   }
 }
 
-// 更新倒计时
+// 更新标语
 const handleUpdate = async () => {
-  if (!formData.value.content || !formData.value.deadline) {
+  if (!formData.value.content) {
     alert($t('ui.pleaseFillAllFields'))
     return
   }
 
-  // 检查权限：只能更新可管理班级的倒计时
-  if (formData.value.cid && !canManageClass(formData.value.cid)) {
-    alert($t('ui.noPermission') || '您没有权限更新此班级的倒计时')
-    return
-  }
-
   try {
-    const response = await countdownService.updateCountdown(formData.value.cdid, {
-      content: formData.value.content,
-      deadline: formData.value.deadline.replace(/-/g, '')
+    const response = await sloganService.updateSlogan(formData.value.slid, {
+      content: formData.value.content
     })
     if (response.code === 0) {
       closeDialogs()
-      loadCountdowns()
+      loadSlogans()
     }
   } catch (err) {
     alert(err.message || $t('ui.updateFailed'))
   }
 }
 
-// 删除倒计时
-const handleDelete = async (cdid) => {
-  // 查找要删除的倒计时
-  const countdown = countdownList.value.find(c => c.cdid === cdid)
-
-  // 检查权限：只能删除可管理班级的倒计时
-  if (countdown && countdown.cid && !canManageClass(countdown.cid)) {
-    alert($t('ui.noPermission') || '您没有权限删除此班级的倒计时')
-    return
-  }
-
+// 删除标语
+const handleDelete = async (slid) => {
   if (!confirm($t('ui.confirmDelete'))) return
 
   try {
-    const response = await countdownService.deleteCountdown(cdid)
+    const response = await sloganService.deleteSlogan(slid)
     if (response.code === 0) {
-      loadCountdowns()
+      loadSlogans()
     }
   } catch (err) {
     alert(err.message || $t('ui.deleteFailed'))
@@ -504,7 +438,7 @@ const handleClickOutside = (event) => {
 
 onMounted(() => {
   loadClassList()
-  loadCountdowns()
+  loadSlogans()
   document.addEventListener('click', handleClickOutside)
 })
 

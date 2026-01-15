@@ -9,6 +9,10 @@
             <p class="text-gray-500 text-lg m-0 font-normal">{{ $t('ui.manageClassInfo') }}</p>
           </div>
           <div class="flex gap-4">
+            <button @click="openExportDialog" class="flex items-center gap-2 py-3 px-6 bg-gradient-to-br from-green-600 to-teal-600 text-white border-none rounded-xl text-base font-semibold cursor-pointer transition-all duration-300 shadow-lg shadow-green-600/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-green-600/40">
+              <span class="text-base">📊</span>
+              {{ $t('analysis.export') }}
+            </button>
             <button @click="showCreateDialog = true" class="flex items-center gap-2 py-3 px-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white border-none rounded-xl text-base font-semibold cursor-pointer transition-all duration-300 shadow-lg shadow-blue-600/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-600/40">
               <span class="text-base">➕</span>
               {{ $t('ui.createClass') }}
@@ -311,6 +315,71 @@
         </div>
       </div>
     </div>
+
+    <!-- 导出对话框 -->
+    <div v-if="showExportDialog" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showExportDialog = false">
+      <div class="bg-white rounded-2xl w-[90%] max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200">
+          <h3 class="m-0 text-xl font-bold text-gray-800">{{ $t('analysis.export') }} - {{ $t('ui.classData') }}</h3>
+          <button @click="showExportDialog = false" class="bg-none border-none text-lg cursor-pointer p-1 rounded transition-colors hover:bg-gray-100">✖️</button>
+        </div>
+        <div class="p-6">
+          <!-- 班级选择 -->
+          <div class="mb-5">
+            <label class="block mb-2 font-semibold text-gray-700">{{ $t('ui.selectClass') }}</label>
+            <select v-model="exportClassId" class="w-full py-3 px-4 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-blue-600">
+              <option value="">{{ $t('ui.pleaseSelectClass') }}</option>
+              <option v-for="classItem in classList" :key="classItem.cid" :value="classItem.cid">
+                {{ classItem.class_name }} (ID: {{ classItem.cid }})
+              </option>
+            </select>
+          </div>
+
+          <!-- 日期范围选择 -->
+          <div class="mb-5">
+            <label class="block mb-2 font-semibold text-gray-700">{{ $t('analysis.dateRange') }}</label>
+            <div class="flex gap-4 items-center">
+              <div class="flex-1">
+                <label class="block mb-1 text-sm text-gray-500">{{ $t('ui.startDate') }}</label>
+                <input
+                  type="date"
+                  v-model="exportStartDate"
+                  :max="exportEndDate || todayDate"
+                  class="w-full py-2 px-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-blue-600"
+                />
+              </div>
+              <span class="text-gray-400 mt-6">~</span>
+              <div class="flex-1">
+                <label class="block mb-1 text-sm text-gray-500">{{ $t('ui.endDate') }}</label>
+                <input
+                  type="date"
+                  v-model="exportEndDate"
+                  :min="exportStartDate"
+                  :max="todayDate"
+                  class="w-full py-2 px-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-blue-600"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- 快捷选择 -->
+          <div class="mb-5">
+            <label class="block mb-2 text-sm text-gray-500">{{ $t('ui.quickSelect') }}</label>
+            <div class="flex gap-2 flex-wrap">
+              <button @click="setDateRange('week')" class="py-1.5 px-3 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">{{ $t('ui.lastWeek') }}</button>
+              <button @click="setDateRange('month')" class="py-1.5 px-3 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">{{ $t('ui.lastMonth') }}</button>
+              <button @click="setDateRange('quarter')" class="py-1.5 px-3 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">{{ $t('ui.lastQuarter') }}</button>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-3 justify-end p-6 border-t border-gray-200">
+          <button @click="showExportDialog = false" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-gray-100 text-gray-700 border-none hover:bg-gray-200">{{ $t('common.cancel') }}</button>
+          <button @click="exportClassData" :disabled="exporting || !canExport" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-green-600 text-white border-none hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed">
+            {{ exporting ? $t('ui.exporting') : $t('analysis.export') }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -318,6 +387,8 @@
 import { ref, reactive, onMounted, computed, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AdminClassService from '@/services/admin/class'
+import AuthService from '@/services/common/auth'
+import AnalysisService from '@/services/basic/analysis'
 import AttendanceChart from './AttendanceChart.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import notificationService from '@/services/common/notification'
@@ -353,6 +424,13 @@ const pagination = reactive({
 const showCreateDialog = ref(false)
 const showDetailDialog = ref(false)
 const showDeleteDialog = ref(false)
+const showExportDialog = ref(false)
+
+// 导出相关状态
+const exportClassId = ref('')
+const exportStartDate = ref('')
+const exportEndDate = ref('')
+const exporting = ref(false)
 
 // 表单数据
 const newClassName = ref('')
@@ -447,6 +525,16 @@ const sortedClassList = computed(() => {
   return sorted
 })
 
+// 导出相关计算属性
+const todayDate = computed(() => {
+  const today = new Date()
+  return today.toISOString().split('T')[0]
+})
+
+const canExport = computed(() => {
+  return exportClassId.value && exportStartDate.value && exportEndDate.value
+})
+
 // 方法
 const fetchClasses = async () => {
   try {
@@ -461,16 +549,13 @@ const fetchClasses = async () => {
 
     const response = await AdminClassService.getClassList(params)
 
-    // 使用权限管理过滤班级列表，只显示该管理员可以管理的班级
-    const allClasses = response.data || []
-    classList.value = filterManagedClasses(allClasses)
-
-    // 更新分页信息（根据过滤后的结果）
-    if (!isSuperAdmin.value) {
-      // 普通管理员需要调整 total，因为过滤掉了一些班级
+    // 根据管理员权限过滤班级
+    const allowedClasses = AuthService.getAdminClasses()
+    if (allowedClasses !== null && Array.isArray(response.data)) {
+      classList.value = response.data.filter(cls => allowedClasses.includes(cls.cid))
       pagination.total = classList.value.length
-      pagination.pages = Math.ceil(classList.value.length / pagination.size)
     } else {
+      classList.value = response.data || []
       Object.assign(pagination, response.pagination)
     }
 
@@ -640,6 +725,70 @@ const deleteClass = async () => {
     console.error(t('component.deleteClassFailed') + ':', err)
   } finally {
     deleting.value = false
+  }
+}
+
+// 导出相关方法
+const openExportDialog = () => {
+  exportClassId.value = ''
+  exportStartDate.value = ''
+  exportEndDate.value = ''
+  showExportDialog.value = true
+}
+
+const setDateRange = (range) => {
+  const today = new Date()
+  const end = new Date(today)
+  let start = new Date(today)
+
+  switch (range) {
+    case 'week':
+      start.setDate(start.getDate() - 7)
+      break
+    case 'month':
+      start.setMonth(start.getMonth() - 1)
+      break
+    case 'quarter':
+      start.setMonth(start.getMonth() - 3)
+      break
+  }
+
+  exportStartDate.value = start.toISOString().split('T')[0]
+  exportEndDate.value = end.toISOString().split('T')[0]
+}
+
+const formatDateToYYYYMMDD = (dateStr) => {
+  return dateStr.replace(/-/g, '')
+}
+
+const exportClassData = async () => {
+  if (!canExport.value) return
+
+  try {
+    exporting.value = true
+    const startDate = formatDateToYYYYMMDD(exportStartDate.value)
+    const endDate = formatDateToYYYYMMDD(exportEndDate.value)
+
+    const blob = await AnalysisService.exportClassAttendance(
+      exportClassId.value,
+      startDate,
+      endDate
+    )
+
+    // 获取班级名称用于文件名
+    const classItem = classList.value.find(c => c.cid === exportClassId.value)
+    const className = classItem ? classItem.class_name : `class_${exportClassId.value}`
+    const filename = `${className}_attendance_${startDate}_${endDate}.xlsx`
+
+    AnalysisService.downloadExcel(blob, filename)
+
+    notificationService.success(t('component.exportSuccess'))
+    showExportDialog.value = false
+  } catch (err) {
+    console.error('Export failed:', err)
+    notificationService.error(err.message || t('component.exportFailed'))
+  } finally {
+    exporting.value = false
   }
 }
 

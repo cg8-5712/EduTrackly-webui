@@ -3,25 +3,25 @@
     <!-- 班级选择器 -->
     <div class="class-switch-container">
       <input
-        v-if="isSearching"
-        v-model="searchQuery"
-        type="text"
-        :placeholder="$t('class.searchPlaceholder')"
-        class="search-input"
-        @blur="handleBlur"
+          v-if="isSearching"
+          v-model="searchQuery"
+          type="text"
+          :placeholder="$t('class.searchPlaceholder')"
+          class="search-input"
+          @blur="handleBlur"
       />
       <select
-        v-else
-        v-model="selectedCid"
-        @change="onClassChange"
-        class="class-select"
+          v-else
+          v-model="selectedCid"
+          @change="onClassChange"
+          class="class-select"
       >
         <option value="" disabled>{{ loading ? $t('common.loading') : $t('class.selectClass') }}</option>
         <option
-          v-for="cls in filteredClasses"
-          :key="cls.cid"
-          :value="cls.cid"
-          class="class-option"
+            v-for="cls in filteredClasses"
+            :key="cls.cid"
+            :value="cls.cid"
+            class="class-option"
         >
           {{ cls.class_name }}
         </option>
@@ -66,7 +66,7 @@ export default {
       if (!this.searchQuery) return this.classes;
       const query = this.searchQuery.toLowerCase();
       return this.classes.filter(cls =>
-        cls.class_name.toLowerCase().includes(query)
+          cls.class_name.toLowerCase().includes(query)
       );
     },
   },

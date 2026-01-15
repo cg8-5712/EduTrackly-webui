@@ -59,8 +59,10 @@ export default {
     studentadmin: 'Student Management',
     homeworkadmin: 'Homework Management',
     countdownadmin: 'Countdown Management',
+    sloganadmin: 'Slogan Management',
     settingadmin: 'Display Settings',
-    adminmanagement: 'Admin Management'
+    adminmanagement: 'Admin Management',
+    ratelimitadmin: 'Rate Limits'
   },
 
   // Theme
@@ -499,6 +501,10 @@ export default {
     confirmDeleteStudent: 'Are you sure you want to delete student {studentName}? This action cannot be undone.',
     statusChangedTo: 'Status changed to',
 
+    // Export
+    exportSuccess: 'Export successful',
+    exportFailed: 'Export failed',
+
     // HomeworkAdmin
     homeworkCreatedSuccess: 'Homework created successfully',
     createHomeworkFailed: 'Failed to create homework',
@@ -649,6 +655,19 @@ export default {
     unknownClass: 'Unknown Class({cid})',
     allClasses: 'All Classes ({count})',
 
+    // Export
+    classData: 'Class Data',
+    studentData: 'Student Data',
+    selectStudents: 'Select Students',
+    selectedCount: '{count} selected',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    quickSelect: 'Quick Select',
+    lastWeek: 'Last Week',
+    lastMonth: 'Last Month',
+    lastQuarter: 'Last Quarter',
+    exporting: 'Exporting...',
+
     // CountdownAdmin
     countdownManagement: 'Countdown Management',
     manageCountdownInfo: 'Manage all class countdown events, view deadlines and days remaining',
@@ -659,6 +678,7 @@ export default {
     dateAsc: 'Date Ascending',
     foundCountdownsInfo: 'Found {total} countdowns',
     countdownContent: 'Countdown Content',
+    sloganContent: 'Class Slogan',
     deadline: 'Deadline',
     daysRemaining: 'Days Remaining',
     edit: 'Edit',
@@ -689,7 +709,65 @@ export default {
     countdownDisplayDesc: 'Whether to display countdown on homepage',
     sloganDisplayDesc: 'Whether to display slogan on homepage',
     cancel: 'Cancel',
-    save: 'Save'
+    save: 'Save',
+    all: 'All',
+
+    // SloganAdmin
+    sloganManagement: 'Slogan Management',
+    manageSloganInfo: 'Manage slogans for all classes',
+    createSlogan: 'Create Slogan',
+    foundSlogansInfo: 'Found {total} slogans',
+    sloganContent: 'Slogan Content',
+    createdAt: 'Created At',
+    noSlogans: 'No slogans',
+    editSlogan: 'Edit Slogan',
+    enterSloganContent: 'Enter slogan content',
+
+    // AdminManagement
+    adminManagement: 'Admin Management',
+    manageAdminInfo: 'Manage admin accounts, roles, and class assignments',
+    createAdmin: 'Create Admin',
+    roleFilter: 'Role Filter',
+    allRoles: 'All Roles',
+    superadmin: 'Super Admin',
+    admin: 'Admin',
+    foundAdminsInfo: 'Found {total} admins',
+    username: 'Username',
+    role: 'Role',
+    assignedClasses: 'Assigned Classes',
+    noClassAssigned: 'No class assigned',
+    noAdmins: 'No admins',
+    editAdmin: 'Edit Admin',
+    enterUsername: 'Enter username',
+    enterPassword: 'Enter password',
+    newPassword: 'New Password',
+    optional: 'optional',
+    leaveEmptyToKeep: 'Leave empty to keep current password',
+    classes: 'Classes',
+    manageClassAssignment: 'Manage Class Assignment',
+    cannotDeleteSelf: 'Cannot delete current logged-in admin account',
+
+    // RateLimitAdmin
+    rateLimitManagement: 'Rate Limit Management',
+    manageRateLimitInfo: 'Manage API rate limit configurations',
+    createRateLimit: 'Create Config',
+    foundRateLimitsInfo: 'Found {total} configurations',
+    configKey: 'Config Key',
+    maxRequests: 'Max Requests',
+    windowMs: 'Window (ms)',
+    windowDisplay: 'Time Window',
+    noRateLimits: 'No rate limit configurations',
+    editRateLimit: 'Edit Rate Limit',
+    enterConfigKey: 'Enter config key',
+    configKeyHint: 'e.g.: read, write, auth, etc.',
+    enterMaxRequests: 'Enter max requests',
+    seconds: 'Seconds',
+    minutes: 'Minutes',
+    hours: 'Hours',
+    secondsUnit: 's',
+    minutesUnit: 'min',
+    hoursUnit: 'h',
+    currentValue: 'Current value'
   },
 
   // Footer

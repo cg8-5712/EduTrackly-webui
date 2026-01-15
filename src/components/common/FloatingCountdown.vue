@@ -9,20 +9,8 @@
     :title="$t('ui.countdownContent') + ' (' + $t('common.close') + ')'"
   >
     <div class="countdown-content">
-      <!-- 加载中状态 -->
-      <div v-if="loading" class="countdown-loading">
-        <div class="loading-spinner"></div>
-        <span>{{ $t('common.loading') }}</span>
-      </div>
-
-      <!-- 无数据提示 -->
-      <div v-else-if="countdowns.length === 0" class="countdown-empty">
-        <span>{{ $t('ui.noCountdowns') }}</span>
-      </div>
-
       <!-- 倒计时列表 -->
       <div
-        v-else
         v-for="countdown in displayCountdowns"
         :key="countdown.cdid"
         class="countdown-item"
@@ -80,7 +68,12 @@ const shouldShow = computed(() => {
   // 如果没有选择班级，不显示
   if (!props.selectedCid) return false
 
-  // 显示组件（即使没有数据也显示，让用户知道倒计时功能存在）
+  // 如果正在加载，不显示
+  if (loading.value) return false
+
+  // 如果没有有效的倒计时数据，不显示
+  if (displayCountdowns.value.length === 0) return false
+
   return true
 })
 
@@ -505,43 +498,5 @@ onUnmounted(() => {
   .countdown-text {
     font-size: 13px;
   }
-}
-
-/* 加载中状态 - 使用主题色 */
-.countdown-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  gap: 12px;
-  color: var(--color-text-secondary);
-  font-size: 14px;
-}
-
-.loading-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-primary);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* 空状态 - 使用主题色 */
-.countdown-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  color: var(--color-text-secondary);
-  font-size: 14px;
-  text-align: center;
 }
 </style>

@@ -182,15 +182,17 @@ import ClassAdmin from '@/components/admin/ClassAdmin.vue'
 import StudentAdmin from '@/components/admin/StudentAdmin.vue'
 import HomeworkAdmin from '@/components/admin/HomeworkAdmin.vue'
 import CountdownAdmin from '@/components/admin/CountdownAdmin.vue'
+import SloganAdmin from '@/components/admin/SloganAdmin.vue'
 import SettingAdmin from '@/components/admin/SettingAdmin.vue'
 import AdminManagement from '@/components/admin/AdminManagement.vue'
+import RateLimitAdmin from '@/components/admin/RateLimitAdmin.vue'
 import System from '@/components/admin/System.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import LanguageToggle from '@/components/common/LanguageToggle.vue'
 
 // 引入图标组件（你需要根据实际使用的图标库调整）
-import { AcademicCapIcon, BookOpenIcon, UsersIcon, Cog8ToothIcon, ClockIcon, AdjustmentsHorizontalIcon, ShieldCheckIcon } from '@heroicons/vue/24/outline'
+import { AcademicCapIcon, BookOpenIcon, UsersIcon, Cog8ToothIcon, ClockIcon, AdjustmentsHorizontalIcon, ChatBubbleBottomCenterTextIcon, ShieldCheckIcon, BoltIcon } from '@heroicons/vue/24/outline'
 
 // 检测微信浏览器
 const checkWechatBrowser = () => {
@@ -208,6 +210,7 @@ const isAuthenticated = ref(false)
 const password = ref('')
 const loginError = ref('')
 const isLogging = ref(false)
+const adminRole = ref('')  // 管理员角色
 
 // 当前管理员角色
 const currentAdminRole = ref(null)
@@ -222,37 +225,37 @@ const components = {
   studentadmin: StudentAdmin,
   homeworkadmin: HomeworkAdmin,
   countdownadmin: CountdownAdmin,
+  sloganadmin: SloganAdmin,
   settingadmin: SettingAdmin,
   adminmanagement: AdminManagement,
+  ratelimitadmin: RateLimitAdmin,
   system: System
 }
 
-// 所有可用的导航菜单配置
-const allNavigationItems = [
+// 导航菜单配置
+const allNavigation = [
   { nameKey: 'nav.currentadmin', href: '#', icon: AcademicCapIcon, current: true, componentName: 'currentadmin'  },
   { nameKey: 'nav.classadmin', href: '#', icon: UsersIcon, current: false, componentName: 'classadmin'  },
   { nameKey: 'nav.studentadmin', href: '#', icon: UsersIcon, current: false, componentName: 'studentadmin'  },
   { nameKey: 'nav.homeworkadmin', href: '#', icon: BookOpenIcon, current: false, componentName: 'homeworkadmin'  },
   { nameKey: 'nav.countdownadmin', href: '#', icon: ClockIcon, current: false, componentName: 'countdownadmin'  },
+  { nameKey: 'nav.sloganadmin', href: '#', icon: ChatBubbleBottomCenterTextIcon, current: false, componentName: 'sloganadmin'  },
   { nameKey: 'nav.settingadmin', href: '#', icon: AdjustmentsHorizontalIcon, current: false, componentName: 'settingadmin'  },
-  { nameKey: 'nav.adminmanagement', href: '#', icon: ShieldCheckIcon, current: false, componentName: 'adminmanagement', requireSuperAdmin: true  },
+  { nameKey: 'nav.adminmanagement', href: '#', icon: ShieldCheckIcon, current: false, componentName: 'adminmanagement', superadminOnly: true  },
+  { nameKey: 'nav.ratelimitadmin', href: '#', icon: BoltIcon, current: false, componentName: 'ratelimitadmin', superadminOnly: true  },
   { nameKey: 'nav.system', href: '#', icon: Cog8ToothIcon, current: false, componentName: 'system'  }
 ]
 
 // 根据角色过滤导航菜单
 const navigation = computed(() => {
-  return allNavigationItems.filter(item => {
-    // 如果菜单项需要 superadmin 权限
-    if (item.requireSuperAdmin) {
-      return currentAdminRole.value === 'superadmin'
-    }
-    // 其他菜单项都显示
-    return true
-  })
+  if (adminRole.value === 'superadmin') {
+    return allNavigation
+  }
+  return allNavigation.filter(item => !item.superadminOnly)
 })
 
 // 当前选中的菜单项
-const currentComponent = ref(components[ navigation.value.find(item => item.current).componentName ])
+const currentComponent = ref(components.currentadmin)
 
 // 当前菜单名称（用于显示页面标题）
 const currentMenuName = computed(() => {
@@ -291,7 +294,11 @@ const checkAuthStatus = () => {
     if (!authStatus) {
       password.value = ''
       loginError.value = ''
-      currentAdminRole.value = null
+      adminRole.value = ''
+    } else {
+      // 获取角色信息
+      const adminInfo = AuthService.getAdminInfo()
+      adminRole.value = adminInfo.role || ''
     }
   }
   return authStatus
@@ -335,8 +342,9 @@ const handleLogin = async () => {
     if (response.code === 0) {
       isAuthenticated.value = true
       password.value = ''
-      // 获取当前管理员信息和角色
-      await fetchCurrentAdminInfo()
+      // 获取角色信息
+      const adminInfo = AuthService.getAdminInfo()
+      adminRole.value = adminInfo.role || ''
       // 登录成功后启动定期检查
       startAuthCheck()
     } else {
@@ -356,9 +364,10 @@ const handleLogout = () => {
   isAuthenticated.value = false
   password.value = ''
   loginError.value = ''
-  currentAdminRole.value = null
-  // 清空权限信息
-  clearAdminInfo()
+  adminRole.value = ''
+  // 重置导航状态
+  allNavigation.forEach(item => item.current = item.componentName === 'currentadmin')
+  currentComponent.value = components.currentadmin
   // 停止定期检查
   stopAuthCheck()
 }
@@ -366,7 +375,7 @@ const handleLogout = () => {
 // 处理菜单项选择
 const changeComponent = (item) => {
   // 设置当前选中项
-  navigation.value.forEach(navItem => navItem.current = false)
+  allNavigation.forEach(navItem => navItem.current = false)
   item.current = true
 
   // 切换显示的组件

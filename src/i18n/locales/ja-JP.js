@@ -499,6 +499,10 @@ export default {
     confirmDeleteStudent: '生徒 {studentName} を削除してもよろしいですか？この操作は元に戻せません。',
     statusChangedTo: 'ステータスが次に変更されました',
 
+    // Export
+    exportSuccess: 'エクスポートに成功しました',
+    exportFailed: 'エクスポートに失敗しました',
+
     // HomeworkAdmin
     homeworkCreatedSuccess: '宿題の作成に成功しました',
     createHomeworkFailed: '宿題の作成に失敗しました',
@@ -649,6 +653,19 @@ export default {
     unknownClass: '不明なクラス({cid})',
     allClasses: 'すべてのクラス ({count}個)',
 
+    // Export
+    classData: 'クラスデータ',
+    studentData: '生徒データ',
+    selectStudents: '生徒を選択',
+    selectedCount: '{count}人選択中',
+    startDate: '開始日',
+    endDate: '終了日',
+    quickSelect: 'クイック選択',
+    lastWeek: '過去1週間',
+    lastMonth: '過去1ヶ月',
+    lastQuarter: '過去3ヶ月',
+    exporting: 'エクスポート中...',
+
     // CountdownAdmin
     countdownManagement: 'カウントダウン管理',
     manageCountdownInfo: 'すべてのクラスのカウントダウンイベントを管理し、期限と残り日数を確認します',
@@ -659,6 +676,7 @@ export default {
     dateAsc: '日付昇順',
     foundCountdownsInfo: '{total}個のカウントダウンが見つかりました',
     countdownContent: 'カウントダウン内容',
+    sloganContent: 'クラススローガン',
     deadline: '期限',
     daysRemaining: '残り日数',
     edit: '編集',

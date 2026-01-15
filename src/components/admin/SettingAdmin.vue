@@ -211,6 +211,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import settingService from '@/services/admin/setting'
 import classService from '@/services/admin/class'
+import AuthService from '@/services/common/auth'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { useAdminPermission } from '@/composables/useAdminPermission'
 
@@ -267,9 +268,13 @@ const loadClassList = async () => {
   try {
     const response = await classService.getClassList({ page: 1, size: 1000 })
     if (response.code === 0) {
-      // 使用权限管理过滤班级列表，只显示该管理员可以管理的班级
-      const allClasses = response.data || []
-      classList.value = filterManagedClasses(allClasses)
+      // 根据管理员权限过滤班级
+      const allowedClasses = AuthService.getAdminClasses()
+      if (allowedClasses !== null && Array.isArray(response.data)) {
+        classList.value = response.data.filter(cls => allowedClasses.includes(cls.cid))
+      } else {
+        classList.value = response.data
+      }
     }
   } catch (err) {
     console.error('Failed to load class list:', err)
