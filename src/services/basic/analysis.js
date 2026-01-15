@@ -180,6 +180,46 @@ class AnalysisService extends ApiPrefix {
     }
 
     /**
+     * 导出作业数据Excel
+     * @param {number} cid - 班级ID
+     * @param {number} startDate - 起始日期 (8位 YYYYMMDD)
+     * @param {number} endDate - 结束日期 (8位 YYYYMMDD)
+     * @returns {Promise<Blob>} Excel文件Blob
+     */
+    async exportHomeworkData(cid, startDate, endDate) {
+        try {
+            if (!cid || !startDate || !endDate) {
+                throw new Error('Class ID, start date, and end date are required');
+            }
+
+            const token = AuthService.getToken();
+            if (!token) throw new Error('未登录或登录已过期');
+
+            const baseURL = getApiUrl();
+            const url = `${baseURL}/analysis/export/homework?cid=${cid}&startDate=${startDate}&endDate=${endDate}`;
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Export failed');
+            }
+
+            const blob = await response.blob();
+            console.log('Export homework data success');
+            return blob;
+        } catch (error) {
+            console.error('Export homework data failed:', error);
+            throw error;
+        }
+    }
+
+    /**
      * 下载Excel文件的辅助方法
      * @param {Blob} blob - Excel文件Blob
      * @param {string} filename - 文件名

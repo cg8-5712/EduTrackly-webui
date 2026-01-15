@@ -9,6 +9,10 @@
             <p class="text-gray-500 text-lg m-0 font-normal">管理所有班级作业，查看作业内容和截止日期</p>
           </div>
           <div class="flex gap-4">
+            <button @click="openExportDialog" :disabled="classList.length === 0" class="flex items-center gap-2 py-3 px-6 bg-gradient-to-br from-teal-600 to-teal-700 text-white border-none rounded-xl text-base font-semibold cursor-pointer transition-all duration-300 shadow-lg shadow-teal-600/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-teal-600/40 disabled:opacity-60 disabled:cursor-not-allowed">
+              <span class="text-base">📊</span>
+              导出数据
+            </button>
             <button @click="showCreateDialog = true" class="flex items-center gap-2 py-3 px-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white border-none rounded-xl text-base font-semibold cursor-pointer transition-all duration-300 shadow-lg shadow-blue-600/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-600/40">
               <span class="text-base">➕</span>
               创建作业
@@ -362,6 +366,84 @@
         </div>
       </div>
     </div>
+
+    <!-- 导出对话框 -->
+    <div v-if="showExportDialog" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showExportDialog = false">
+      <div class="bg-white rounded-2xl w-[90%] max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200">
+          <h3 class="m-0 text-xl font-bold text-gray-800">导出作业数据</h3>
+          <button @click="showExportDialog = false" class="bg-none border-none text-lg cursor-pointer p-1 rounded transition-colors hover:bg-gray-100">✖️</button>
+        </div>
+        <div class="p-6">
+          <!-- 班级选择 -->
+          <div class="mb-5">
+            <label class="block mb-2 font-semibold text-gray-700">选择班级</label>
+            <div class="relative" ref="exportClassSelectRef">
+              <div class="flex items-center justify-between py-3 px-4 border-2 border-gray-200 rounded-lg cursor-pointer transition-colors text-base hover:border-blue-600" @click="toggleExportClassDropdown">
+                <span class="flex-1 text-left" :class="{ 'text-gray-400': !exportCid }">
+                  {{ getClassNameById(exportCid) || '请选择班级' }}
+                </span>
+                <span class="ml-3 text-xs text-gray-500 transition-transform duration-300" :class="{ 'rotate-180': showExportClassDropdown }">▼</span>
+              </div>
+              <div class="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-50 max-h-60 overflow-y-auto" v-show="showExportClassDropdown">
+                <div
+                    v-for="classItem in classList"
+                    :key="classItem.cid"
+                    class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                    :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold': exportCid === classItem.cid }"
+                    @click="selectExportClass(classItem.cid)"
+                >
+                  {{ classItem.class_name }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 日期范围选择 -->
+          <div class="mb-5">
+            <label class="block mb-2 font-semibold text-gray-700">日期范围</label>
+            <div class="flex gap-4 items-center">
+              <div class="flex-1">
+                <label class="block mb-1 text-sm text-gray-500">开始日期</label>
+                <input
+                    type="date"
+                    v-model="exportStartDate"
+                    :max="exportEndDate || todayDate"
+                    class="w-full py-2 px-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-blue-600"
+                />
+              </div>
+              <span class="text-gray-400 mt-6">~</span>
+              <div class="flex-1">
+                <label class="block mb-1 text-sm text-gray-500">结束日期</label>
+                <input
+                    type="date"
+                    v-model="exportEndDate"
+                    :min="exportStartDate"
+                    :max="todayDate"
+                    class="w-full py-2 px-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-blue-600"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- 快捷选择 -->
+          <div class="mb-5">
+            <label class="block mb-2 text-sm text-gray-500">快捷选择</label>
+            <div class="flex gap-2 flex-wrap">
+              <button @click="setExportDateRange('week')" class="py-1.5 px-3 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">最近一周</button>
+              <button @click="setExportDateRange('month')" class="py-1.5 px-3 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">最近一月</button>
+              <button @click="setExportDateRange('quarter')" class="py-1.5 px-3 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">最近三月</button>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-3 justify-end p-6 border-t border-gray-200">
+          <button @click="showExportDialog = false" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-gray-100 text-gray-700 border-none hover:bg-gray-200">取消</button>
+          <button @click="exportHomeworkData" :disabled="exporting || !canExport" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-teal-600 text-white border-none hover:bg-teal-700 disabled:opacity-60 disabled:cursor-not-allowed">
+            {{ exporting ? '导出中...' : '导出' }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -370,6 +452,7 @@ import { ref, reactive, onMounted, computed, onUnmounted } from 'vue'
 import AdminHomeworkService from '@/services/admin/homework'
 import AdminClassService from '@/services/admin/class'
 import AuthService from '@/services/common/auth'
+import AnalysisService from '@/services/basic/analysis'
 import notificationService from '@/services/common/notification'
 import Calendar from '@/components/common/calendar.vue'
 
@@ -402,6 +485,14 @@ const createClassSelectRef = ref(null)
 const startDateCalendarRef = ref(null)
 const endDateCalendarRef = ref(null)
 const createDateCalendarRef = ref(null)
+const exportClassSelectRef = ref(null)
+
+// 导出相关状态
+const showExportClassDropdown = ref(false)
+const exportCid = ref(null)
+const exportStartDate = ref('')
+const exportEndDate = ref('')
+const exporting = ref(false)
 
 // 分页数据
 const pagination = reactive({
@@ -415,6 +506,7 @@ const pagination = reactive({
 const showCreateDialog = ref(false)
 const showDetailDialog = ref(false)
 const showDeleteDialog = ref(false)
+const showExportDialog = ref(false)
 const showStartDateCalendar = ref(false)
 const showEndDateCalendar = ref(false)
 const showCreateDateCalendar = ref(false)
@@ -523,6 +615,16 @@ const isFormValid = computed(() => {
   // 至少有一个科目有内容
   const hasContent = Object.values(newHomework.subjects).some(v => v && v.trim())
   return newHomework.cid && hasContent && newHomework.due_date
+})
+
+// 计算属性：今天日期（用于日期选择器限制）
+const todayDate = computed(() => {
+  return getTodayDate()
+})
+
+// 计算属性：导出表单验证
+const canExport = computed(() => {
+  return exportCid.value && exportStartDate.value && exportEndDate.value
 })
 
 // 方法
@@ -741,6 +843,9 @@ const handleClickOutside = (event) => {
   if (createDateCalendarRef.value && !createDateCalendarRef.value.contains(event.target)) {
     showCreateDateCalendar.value = false
   }
+  if (exportClassSelectRef.value && !exportClassSelectRef.value.contains(event.target)) {
+    showExportClassDropdown.value = false
+  }
 }
 
 // 日期选择处理
@@ -950,6 +1055,76 @@ const deleteHomework = async () => {
     console.error('删除作业失败:', err)
   } finally {
     deleting.value = false
+  }
+}
+
+// 导出相关方法
+const openExportDialog = () => {
+  exportCid.value = null
+  exportStartDate.value = ''
+  exportEndDate.value = ''
+  showExportDialog.value = true
+}
+
+const toggleExportClassDropdown = () => {
+  showExportClassDropdown.value = !showExportClassDropdown.value
+}
+
+const selectExportClass = (cid) => {
+  exportCid.value = cid
+  showExportClassDropdown.value = false
+}
+
+const setExportDateRange = (range) => {
+  const today = new Date()
+  const end = new Date(today)
+  let start = new Date(today)
+
+  switch (range) {
+    case 'week':
+      start.setDate(start.getDate() - 7)
+      break
+    case 'month':
+      start.setMonth(start.getMonth() - 1)
+      break
+    case 'quarter':
+      start.setMonth(start.getMonth() - 3)
+      break
+  }
+
+  exportStartDate.value = start.toISOString().split('T')[0]
+  exportEndDate.value = end.toISOString().split('T')[0]
+}
+
+const formatDateToYYYYMMDD = (dateStr) => {
+  return dateStr.replace(/-/g, '')
+}
+
+const exportHomeworkData = async () => {
+  if (!canExport.value) return
+
+  try {
+    exporting.value = true
+    const startDate = formatDateToYYYYMMDD(exportStartDate.value)
+    const endDate = formatDateToYYYYMMDD(exportEndDate.value)
+
+    const blob = await AnalysisService.exportHomeworkData(
+      exportCid.value,
+      startDate,
+      endDate
+    )
+
+    const className = getClassNameById(exportCid.value) || 'homework'
+    const filename = `${className}_homework_${startDate}_${endDate}.xlsx`
+    AnalysisService.downloadExcel(blob, filename)
+
+    notificationService.success('导出成功')
+    showExportDialog.value = false
+  } catch (err) {
+    console.error('Export failed:', err)
+    notificationService.error(err.message || '导出失败')
+  } finally {
+    exporting.value = false
   }
 }
 
