@@ -94,24 +94,51 @@ const fetchStudents = async () => {
   if (!props.cid) return
   try {
     loading.value = true
+    console.log(`[StudentEventSelector] 开始加载班级 ${props.cid} 的学生列表和今日事件`)
+
     // 并行请求学生列表和今日分析数据
     const [res, analysis] = await Promise.all([
       StudentService.getStudentListAll(props.cid),
       AnalysisService.getTodayAnalysis(props.cid)
     ])
+
+    console.log(`[StudentEventSelector] 获取到 ${res.data?.length || 0} 个学生`)
+    console.log(`[StudentEventSelector] 今日分析数据:`, analysis.data)
+    console.log(`[StudentEventSelector] 今日事件列表:`, analysis.data?.event_list)
+
     const existingEvents = {}
 
-    if (analysis.data?.data?.event_list) {
-      analysis.data.data.event_list.forEach(e => {
+    // 处理今日已有的事件记录
+    if (analysis.data?.event_list && Array.isArray(analysis.data.event_list)) {
+      analysis.data.event_list.forEach(e => {
         const student = res.data?.find(s => s.student_name === e.student_name)
-        if (student) existingEvents[student.sid] = e.event_type
+        if (student) {
+          existingEvents[student.sid] = e.event_type
+          console.log(`[StudentEventSelector] 学生 ${student.student_name}(sid:${student.sid}) 今日事件: ${e.event_type}`)
+        } else {
+          console.warn(`[StudentEventSelector] 今日事件中的学生 ${e.student_name} 未在学生列表中找到`)
+        }
       })
     }
 
-    students.value = (res.data || []).map(s => ({ ...s }))
+    // 为每个学生设置attendance字段（如果后端未返回）
+    // attendance为true表示学生应该在校（正常在校学生，可以设置请假事件）
+    // attendance为false表示学生不应在校（临时参加的学生，不能请假）
+    students.value = (res.data || []).map(s => ({
+      ...s,
+      // 如果后端返回了attendance字段则使用，否则默认为true
+      attendance: s.attendance !== undefined ? s.attendance : true
+    }))
+
+    // 设置已有的事件状态
     selectedEvents.value = { ...existingEvents }
+
+    console.log(`[StudentEventSelector] 加载完成: ${students.value.length} 个学生`)
+    console.log(`[StudentEventSelector] 其中有状态的学生数: ${students.value.filter(s => s.attendance).length}`)
+    console.log(`[StudentEventSelector] 已设置事件的学生数: ${Object.keys(existingEvents).length}`)
+    console.log(`[StudentEventSelector] 当前选中的事件:`, selectedEvents.value)
   } catch (err) {
-    console.error(err)
+    console.error('[StudentEventSelector] 获取学生列表失败:', err)
     notificationService.error('获取学生列表失败')
   } finally {
     loading.value = false
@@ -119,18 +146,30 @@ const fetchStudents = async () => {
 }
 
 const submitEvents = async () => {
+  // 构建所有学生的事件数组，包括没有事件的学生（event_type为空字符串）
   const eventsArray = students.value.map(s => ({
     sid: s.sid,
     event_type: selectedEvents.value[s.sid] || ''
   }))
+
+  console.log('[StudentEventSelector] 准备提交事件')
+  console.log(`[StudentEventSelector] 总学生数: ${students.value.length}`)
+  console.log(`[StudentEventSelector] 有事件的学生数: ${eventsArray.filter(e => e.event_type).length}`)
+  console.log('[StudentEventSelector] 提交数据:', eventsArray)
+
   try {
     loading.value = true
     const today = formatDateToYYYYMMDD(new Date())
+    console.log(`[StudentEventSelector] 提交日期: ${today}`)
+
     await StudentService.submitStudentEvents(eventsArray, today)
     notificationService.success('提交成功')
+
+    // 提交成功后重新加载学生列表，确保显示最新状态
+    console.log('[StudentEventSelector] 提交成功，重新加载学生列表')
     await fetchStudents()
   } catch (error) {
-    console.error('提交学生事件失败:', error)
+    console.error('[StudentEventSelector] 提交学生事件失败:', error)
     notificationService.error('提交失败')
   } finally {
     loading.value = false
