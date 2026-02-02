@@ -111,6 +111,29 @@ class ApiPrefix {
         const response = await this.api.delete(url, { params });
         return response.data;
     }
+
+    /**
+     * 可选认证的 POST 请求
+     * 如果有 token 就带上，没有就不带
+     * 后端会根据业务逻辑决定是否需要认证
+     * @param {string} url - 请求 URL
+     * @param {Object} data - 请求数据
+     * @returns {Promise<any>} 响应数据
+     */
+    async optionalAuthPost(url, data = {}) {
+        const token = AuthService.getToken();
+
+        if (token) {
+            // 有 token 就带上
+            const response = await this.api.post(url, data, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            return response.data;
+        } else {
+            // 没有 token 就不带
+            return await this.post(url, data);
+        }
+    }
 }
 
 export default ApiPrefix;
