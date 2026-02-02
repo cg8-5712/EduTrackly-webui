@@ -101,7 +101,7 @@ class StudentService extends ApiPrefix {
         throw new Error(t('error.eventDataEmpty'));
       }
 
-      const url = `/student/event?date=${date}`;
+      const url = `/student/event`;
       const data = await this.put(url, events);
       console.log(t('service.submittingStudentEvents') + ':', data.message);
 
