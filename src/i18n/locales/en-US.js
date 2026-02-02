@@ -59,8 +59,10 @@ export default {
     studentadmin: 'Student Management',
     homeworkadmin: 'Homework Management',
     countdownadmin: 'Countdown Management',
+    sloganadmin: 'Slogan Management',
     settingadmin: 'Display Settings',
-    adminmanagement: 'Admin Management'
+    adminmanagement: 'Admin Management',
+    ratelimitadmin: 'Rate Limits'
   },
 
   // Theme
@@ -236,37 +238,7 @@ export default {
     pleaseEnterPassword: 'Please enter password',
     loginSuccess: 'Login successfully',
     loginFailed: 'Login failed',
-    sessionExpired: 'Session expired, please login again',
-    // Admin Management
-    management: 'Admin Management',
-    managementDesc: 'Manage system administrator accounts and permissions',
-    role: 'Role',
-    superadmin: 'Super Admin',
-    admin: 'Admin',
-    createAdmin: 'Create Admin',
-    editAdmin: 'Edit Admin',
-    deleteAdmin: 'Delete Admin',
-    viewDetails: 'View Details',
-    manageClasses: 'Manage Classes',
-    adminId: 'Admin ID',
-    password: 'Password',
-    passwordPlaceholder: 'At least 8 characters',
-    createTime: 'Create Time',
-    lastLogin: 'Last Login',
-    lastLoginIp2: 'Last Login IP',
-    deleteConfirm: 'Are you sure you want to delete admin {aid}? This action cannot be undone.',
-    cannotDeleteSelf: 'Cannot delete your own account',
-    cannotDemoteSelf: 'Cannot demote your own role',
-    assignedClasses: 'Assigned Classes',
-    noClassAssigned: 'No class assigned',
-    assignClass: 'Assign Class',
-    removeClass: 'Remove Class',
-    noAdmins: 'No admins found',
-    createFirst: 'Create your first admin',
-    noPassword: 'Leave empty to keep current password',
-    filterByRole: 'Filter by role',
-    allRoles: 'All roles',
-    searchPlaceholder: 'Search by admin ID...'
+    sessionExpired: 'Session expired, please login again'
   },
 
   // System Settings
@@ -394,13 +366,7 @@ export default {
     excelParseFailed: 'Failed to parse Excel file, please check the file format',
     excelReadFailed: 'Failed to read Excel file',
     fileLoadSuccess: 'Successfully loaded file: {filename}',
-    fileReadFailed: 'Failed to read file',
-
-    // Admin management errors
-    adminIdRequired: 'Admin ID is required',
-    passwordTooShort: 'Password must be at least 8 characters',
-    adminIdAndClassIdRequired: 'Admin ID and class ID are both required',
-    classIdsArrayRequired: 'Class IDs must be an array'
+    fileReadFailed: 'Failed to read file'
   },
 
   // Service messages (console logs and operations)
@@ -444,29 +410,6 @@ export default {
     getClassAnalysisFailed: 'Failed to get class analysis data',
     getClassesFailed: 'Failed to get classes',
 
-    // Admin management service
-    getCurrentAdminSuccess: 'Get current admin info successfully',
-    getCurrentAdminFailed: 'Failed to get current admin info',
-    createAdminSuccess: 'Create admin successfully',
-    createAdminFailed: 'Failed to create admin',
-    getAdminSuccess: 'Get admin successfully',
-    getAdminFailed: 'Failed to get admin',
-    getAdminListSuccess: 'Get admin list successfully',
-    getAdminListFailed: 'Failed to get admin list',
-    updateAdminSuccess: 'Update admin successfully',
-    updateAdminFailed: 'Failed to update admin',
-    deleteAdminSuccess: 'Delete admin successfully',
-    deleteAdminFailed: 'Failed to delete admin',
-    assignClassSuccess: 'Assign class successfully',
-    assignClassFailed: 'Failed to assign class',
-    removeClassSuccess: 'Remove class successfully',
-    removeClassFailed: 'Failed to remove class',
-    getAdminClassesSuccess: 'Get admin classes successfully',
-    getAdminClassesFailed: 'Failed to get admin classes',
-    replaceClassesSuccess: 'Replace classes successfully',
-    replaceClassesFailed: 'Failed to replace classes',
-    batchAssignFailed: 'Batch assign classes failed',
-
     // Theme service
     themeSaved: 'Theme saved',
     saveThemeFailed: 'Failed to save theme',
@@ -498,6 +441,10 @@ export default {
     deleteStudentFailed: 'Failed to delete student',
     confirmDeleteStudent: 'Are you sure you want to delete student {studentName}? This action cannot be undone.',
     statusChangedTo: 'Status changed to',
+
+    // Export
+    exportSuccess: 'Export successful',
+    exportFailed: 'Export failed',
 
     // HomeworkAdmin
     homeworkCreatedSuccess: 'Homework created successfully',
@@ -649,6 +596,19 @@ export default {
     unknownClass: 'Unknown Class({cid})',
     allClasses: 'All Classes ({count})',
 
+    // Export
+    classData: 'Class Data',
+    studentData: 'Student Data',
+    selectStudents: 'Select Students',
+    selectedCount: '{count} selected',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    quickSelect: 'Quick Select',
+    lastWeek: 'Last Week',
+    lastMonth: 'Last Month',
+    lastQuarter: 'Last Quarter',
+    exporting: 'Exporting...',
+
     // CountdownAdmin
     countdownManagement: 'Countdown Management',
     manageCountdownInfo: 'Manage all class countdown events, view deadlines and days remaining',
@@ -659,6 +619,7 @@ export default {
     dateAsc: 'Date Ascending',
     foundCountdownsInfo: 'Found {total} countdowns',
     countdownContent: 'Countdown Content',
+    sloganContent: 'Class Slogan',
     deadline: 'Deadline',
     daysRemaining: 'Days Remaining',
     edit: 'Edit',
@@ -689,7 +650,65 @@ export default {
     countdownDisplayDesc: 'Whether to display countdown on homepage',
     sloganDisplayDesc: 'Whether to display slogan on homepage',
     cancel: 'Cancel',
-    save: 'Save'
+    save: 'Save',
+    all: 'All',
+
+    // SloganAdmin
+    sloganManagement: 'Slogan Management',
+    manageSloganInfo: 'Manage slogans for all classes',
+    createSlogan: 'Create Slogan',
+    foundSlogansInfo: 'Found {total} slogans',
+    sloganContent: 'Slogan Content',
+    createdAt: 'Created At',
+    noSlogans: 'No slogans',
+    editSlogan: 'Edit Slogan',
+    enterSloganContent: 'Enter slogan content',
+
+    // AdminManagement
+    adminManagement: 'Admin Management',
+    manageAdminInfo: 'Manage admin accounts, roles, and class assignments',
+    createAdmin: 'Create Admin',
+    roleFilter: 'Role Filter',
+    allRoles: 'All Roles',
+    superadmin: 'Super Admin',
+    admin: 'Admin',
+    foundAdminsInfo: 'Found {total} admins',
+    username: 'Username',
+    role: 'Role',
+    assignedClasses: 'Assigned Classes',
+    noClassAssigned: 'No class assigned',
+    noAdmins: 'No admins',
+    editAdmin: 'Edit Admin',
+    enterUsername: 'Enter username',
+    enterPassword: 'Enter password',
+    newPassword: 'New Password',
+    optional: 'optional',
+    leaveEmptyToKeep: 'Leave empty to keep current password',
+    classes: 'Classes',
+    manageClassAssignment: 'Manage Class Assignment',
+    cannotDeleteSelf: 'Cannot delete current logged-in admin account',
+
+    // RateLimitAdmin
+    rateLimitManagement: 'Rate Limit Management',
+    manageRateLimitInfo: 'Manage API rate limit configurations',
+    createRateLimit: 'Create Config',
+    foundRateLimitsInfo: 'Found {total} configurations',
+    configKey: 'Config Key',
+    maxRequests: 'Max Requests',
+    windowMs: 'Window (ms)',
+    windowDisplay: 'Time Window',
+    noRateLimits: 'No rate limit configurations',
+    editRateLimit: 'Edit Rate Limit',
+    enterConfigKey: 'Enter config key',
+    configKeyHint: 'e.g.: read, write, auth, etc.',
+    enterMaxRequests: 'Enter max requests',
+    seconds: 'Seconds',
+    minutes: 'Minutes',
+    hours: 'Hours',
+    secondsUnit: 's',
+    minutesUnit: 'min',
+    hoursUnit: 'h',
+    currentValue: 'Current value'
   },
 
   // Footer

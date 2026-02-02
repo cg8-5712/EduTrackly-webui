@@ -211,11 +211,10 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import settingService from '@/services/admin/setting'
 import classService from '@/services/admin/class'
+import AuthService from '@/services/common/auth'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import { useAdminPermission } from '@/composables/useAdminPermission'
 
 const { t: $t } = useI18n()
-const { filterManagedClasses, canManageClass } = useAdminPermission()
 
 const loading = ref(false)
 const error = ref(null)
@@ -267,9 +266,13 @@ const loadClassList = async () => {
   try {
     const response = await classService.getClassList({ page: 1, size: 1000 })
     if (response.code === 0) {
-      // 使用权限管理过滤班级列表，只显示该管理员可以管理的班级
-      const allClasses = response.data || []
-      classList.value = filterManagedClasses(allClasses)
+      // 根据管理员权限过滤班级
+      const allowedClasses = AuthService.getAdminClasses()
+      if (allowedClasses !== null && Array.isArray(response.data)) {
+        classList.value = response.data.filter(cls => allowedClasses.includes(cls.cid))
+      } else {
+        classList.value = response.data
+      }
     }
   } catch (err) {
     console.error('Failed to load class list:', err)
@@ -343,12 +346,6 @@ const getDisplayStatusText = () => {
 
 // 快速切换倒计时显示
 const toggleCountdownDisplay = async (setting) => {
-  // 检查权限：只能切换可管理班级的设置
-  if (!canManageClass(setting.cid)) {
-    alert($t('ui.noPermission') || '您没有权限修改此班级的设置')
-    return
-  }
-
   try {
     const newValue = !setting.is_countdown_display
     const response = await settingService.updateSetting(setting.cid, {
@@ -365,12 +362,6 @@ const toggleCountdownDisplay = async (setting) => {
 
 // 快速切换标语显示
 const toggleSloganDisplay = async (setting) => {
-  // 检查权限：只能切换可管理班级的设置
-  if (!canManageClass(setting.cid)) {
-    alert($t('ui.noPermission') || '您没有权限修改此班级的设置')
-    return
-  }
-
   try {
     const newValue = !setting.is_slogan_display
     const response = await settingService.updateSetting(setting.cid, {
@@ -387,12 +378,6 @@ const toggleSloganDisplay = async (setting) => {
 
 // 打开编辑对话框
 const openEditDialog = (setting) => {
-  // 检查权限：只能编辑可管理班级的设置
-  if (!canManageClass(setting.cid)) {
-    alert($t('ui.noPermission') || '您没有权限编辑此班级的设置')
-    return
-  }
-
   editingSettings.value = {
     cid: setting.cid,
     class_name: setting.class_name,
@@ -415,12 +400,6 @@ const closeDialog = () => {
 
 // 更新设置
 const handleUpdate = async () => {
-  // 检查权限：只能更新可管理班级的设置
-  if (!canManageClass(editingSettings.value.cid)) {
-    alert($t('ui.noPermission') || '您没有权限修改此班级的设置')
-    return
-  }
-
   try {
     const response = await settingService.updateSetting(editingSettings.value.cid, {
       is_countdown_display: editingSettings.value.is_countdown_display,

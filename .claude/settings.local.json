@@ -9,7 +9,9 @@
       "Bash(npm run dev)",
       "Bash(for:*)",
       "Bash(done)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(dir:*)",
+      "Bash(Get-ChildItem:*)"
     ],
     "deny": [],
     "ask": []

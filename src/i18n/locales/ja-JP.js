@@ -59,8 +59,7 @@ export default {
     studentadmin: '生徒管理',
     homeworkadmin: '宿題管理',
     countdownadmin: 'カウントダウン管理',
-    settingadmin: '表示設定',
-    adminmanagement: '管理者管理'
+    settingadmin: '表示設定'
   },
 
   // テーマ
@@ -236,37 +235,7 @@ export default {
     pleaseEnterPassword: 'パスワードを入力してください',
     loginSuccess: 'ログイン成功',
     loginFailed: 'ログイン失敗',
-    sessionExpired: 'セッションが期限切れです。再度ログインしてください',
-    // 管理者管理
-    management: '管理者管理',
-    managementDesc: 'システム管理者アカウントと権限を管理',
-    role: 'ロール',
-    superadmin: 'スーパー管理者',
-    admin: '管理者',
-    createAdmin: '管理者を作成',
-    editAdmin: '管理者を編集',
-    deleteAdmin: '管理者を削除',
-    viewDetails: '詳細を表示',
-    manageClasses: 'クラスを管理',
-    adminId: '管理者 ID',
-    password: 'パスワード',
-    passwordPlaceholder: '最低8文字',
-    createTime: '作成時刻',
-    lastLogin: '最終ログイン',
-    lastLoginIp2: '最終ログインIP',
-    deleteConfirm: '管理者 {aid} を削除してもよろしいですか？この操作は元に戻せません。',
-    cannotDeleteSelf: '自分のアカウントは削除できません',
-    cannotDemoteSelf: '自分のロールを降格できません',
-    assignedClasses: '割り当てられたクラス',
-    noClassAssigned: 'クラスが割り当てられていません',
-    assignClass: 'クラスを割り当て',
-    removeClass: 'クラスを削除',
-    noAdmins: '管理者が見つかりません',
-    createFirst: '最初の管理者を作成',
-    noPassword: '空欄のまま現在のパスワードを保持',
-    filterByRole: 'ロールでフィルタ',
-    allRoles: 'すべてのロール',
-    searchPlaceholder: '管理者IDで検索...'
+    sessionExpired: 'セッションが期限切れです。再度ログインしてください'
   },
 
   // システム設定
@@ -394,13 +363,7 @@ export default {
     excelParseFailed: 'Excelファイルの解析に失敗しました。ファイル形式を確認してください',
     excelReadFailed: 'Excelファイルの読み取りに失敗しました',
     fileLoadSuccess: 'ファイルの読み込みに成功しました: {filename}',
-    fileReadFailed: 'ファイルの読み取りに失敗しました',
-
-    // 管理者管理エラー
-    adminIdRequired: '管理者IDは必須です',
-    passwordTooShort: 'パスワードは最低8文字必要です',
-    adminIdAndClassIdRequired: '管理者IDとクラスIDの両方が必須です',
-    classIdsArrayRequired: 'クラスIDは配列である必要があります'
+    fileReadFailed: 'ファイルの読み取りに失敗しました'
   },
 
   // Service messages (console logs and operations)
@@ -444,29 +407,6 @@ export default {
     getClassAnalysisFailed: 'クラス分析データの取得に失敗しました',
     getClassesFailed: 'クラスの取得に失敗しました',
 
-    // 管理者管理サービス
-    getCurrentAdminSuccess: '現在の管理者情報の取得に成功しました',
-    getCurrentAdminFailed: '現在の管理者情報の取得に失敗しました',
-    createAdminSuccess: '管理者の作成に成功しました',
-    createAdminFailed: '管理者の作成に失敗しました',
-    getAdminSuccess: '管理者の取得に成功しました',
-    getAdminFailed: '管理者の取得に失敗しました',
-    getAdminListSuccess: '管理者リストの取得に成功しました',
-    getAdminListFailed: '管理者リストの取得に失敗しました',
-    updateAdminSuccess: '管理者の更新に成功しました',
-    updateAdminFailed: '管理者の更新に失敗しました',
-    deleteAdminSuccess: '管理者の削除に成功しました',
-    deleteAdminFailed: '管理者の削除に失敗しました',
-    assignClassSuccess: 'クラスの割り当てに成功しました',
-    assignClassFailed: 'クラスの割り当てに失敗しました',
-    removeClassSuccess: 'クラスの削除に成功しました',
-    removeClassFailed: 'クラスの削除に失敗しました',
-    getAdminClassesSuccess: '管理者クラスの取得に成功しました',
-    getAdminClassesFailed: '管理者クラスの取得に失敗しました',
-    replaceClassesSuccess: 'クラスの置換に成功しました',
-    replaceClassesFailed: 'クラスの置換に失敗しました',
-    batchAssignFailed: 'クラスの一括割り当てに失敗しました',
-
     // Theme service
     themeSaved: 'テーマが保存されました',
     saveThemeFailed: 'テーマの保存に失敗しました',
@@ -498,6 +438,10 @@ export default {
     deleteStudentFailed: '生徒の削除に失敗しました',
     confirmDeleteStudent: '生徒 {studentName} を削除してもよろしいですか？この操作は元に戻せません。',
     statusChangedTo: 'ステータスが次に変更されました',
+
+    // Export
+    exportSuccess: 'エクスポートに成功しました',
+    exportFailed: 'エクスポートに失敗しました',
 
     // HomeworkAdmin
     homeworkCreatedSuccess: '宿題の作成に成功しました',
@@ -649,6 +593,19 @@ export default {
     unknownClass: '不明なクラス({cid})',
     allClasses: 'すべてのクラス ({count}個)',
 
+    // Export
+    classData: 'クラスデータ',
+    studentData: '生徒データ',
+    selectStudents: '生徒を選択',
+    selectedCount: '{count}人選択中',
+    startDate: '開始日',
+    endDate: '終了日',
+    quickSelect: 'クイック選択',
+    lastWeek: '過去1週間',
+    lastMonth: '過去1ヶ月',
+    lastQuarter: '過去3ヶ月',
+    exporting: 'エクスポート中...',
+
     // CountdownAdmin
     countdownManagement: 'カウントダウン管理',
     manageCountdownInfo: 'すべてのクラスのカウントダウンイベントを管理し、期限と残り日数を確認します',
@@ -659,6 +616,7 @@ export default {
     dateAsc: '日付昇順',
     foundCountdownsInfo: '{total}個のカウントダウンが見つかりました',
     countdownContent: 'カウントダウン内容',
+    sloganContent: 'クラススローガン',
     deadline: '期限',
     daysRemaining: '残り日数',
     edit: '編集',

@@ -1,327 +1,262 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex justify-between items-center">
-      <div>
-        <h1 class="text-4xl font-bold text-gray-900">{{ $t('admin.management') }}</h1>
-        <p class="text-gray-600 mt-2">{{ $t('admin.managementDesc') }}</p>
+  <div class="bg-gradient-to-br from-gray-50 to-slate-200 min-h-screen p-6 font-sans">
+    <div class="max-w-6xl mx-auto">
+      <!-- 头部区域 -->
+      <div class="mb-8">
+        <div class="flex justify-between items-start flex-wrap gap-6">
+          <div class="flex-1 min-w-[300px]">
+            <h1 class="text-4xl font-bold bg-gradient-to-br from-blue-600 to-purple-600 bg-clip-text text-transparent m-0 mb-2">{{ $t('ui.adminManagement') }}</h1>
+            <p class="text-gray-500 text-lg m-0 font-normal">{{ $t('ui.manageAdminInfo') }}</p>
+          </div>
+          <div class="flex gap-4">
+            <button @click="showCreateDialog = true" class="flex items-center gap-2 py-3 px-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white border-none rounded-xl text-base font-semibold cursor-pointer transition-all duration-300 shadow-lg shadow-blue-600/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-600/40">
+              <span class="text-base">➕</span>
+              {{ $t('ui.createAdmin') }}
+            </button>
+          </div>
+        </div>
       </div>
-      <button
-        @click="showCreateDialog = true"
-        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        {{ $t('admin.createAdmin') }}
-      </button>
-    </div>
 
-    <!-- Filters -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <div class="flex gap-4 items-center flex-wrap">
-        <input
-          v-model="searchQuery"
-          type="text"
-          :placeholder="$t('admin.adminId') + '...'"
-          class="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-        />
-        <select
-          v-model="roleFilter"
-          class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-        >
-          <option value="all">{{ $t('admin.roleAll') }}</option>
-          <option value="superadmin">{{ $t('admin.superadmin') }}</option>
-          <option value="admin">{{ $t('admin.admin') }}</option>
-        </select>
-        <button
-          @click="fetchAdmins"
-          class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 flex items-center gap-2"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          {{ $t('common.search') }}
-        </button>
-      </div>
-    </div>
-
-    <!-- Loading -->
-    <div v-if="loading" class="text-center py-12">
-      <LoadingSpinner :size="60" :message="$t('admin.loading')" />
-    </div>
-
-    <!-- Error -->
-    <div v-else-if="error" class="bg-red-50 border border-red-300 text-red-700 p-4 rounded-xl">
-      {{ error }}
-    </div>
-
-    <!-- Table -->
-    <div v-else class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {{ $t('admin.adminId') }}
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {{ $t('admin.role') }}
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {{ $t('admin.createTime') }}
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {{ $t('admin.lastLogin') }}
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {{ $t('admin.lastLoginIp') }}
-              </th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {{ $t('common.actions') }}
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="admin in paginatedAdmins" :key="admin.aid" class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {{ admin.aid }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  :class="admin.role === 'superadmin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'"
-                  class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+      <!-- 筛选区域 -->
+      <div class="bg-white rounded-2xl p-6 mb-6 shadow-lg">
+        <div class="flex gap-6 items-end flex-wrap">
+          <!-- 角色筛选 -->
+          <div class="min-w-[200px]">
+            <label class="block mb-2 font-semibold text-gray-700">{{ $t('ui.roleFilter') }}</label>
+            <div class="relative" ref="roleSelectRef">
+              <div class="flex items-center justify-between py-2.5 px-4 bg-white border-2 border-gray-200 rounded-xl cursor-pointer transition-all duration-300 text-sm font-medium text-gray-700 shadow-sm hover:border-blue-600 hover:shadow-blue-100 hover:shadow-lg" @click="toggleRoleDropdown">
+                <span class="flex-1 text-left">{{ getRoleText(filters.role) }}</span>
+                <span class="ml-3 text-xs text-gray-500 transition-transform duration-300" :class="{ 'rotate-180': showRoleDropdown }">▼</span>
+              </div>
+              <div class="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200" v-show="showRoleDropdown">
+                <div
+                  class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                  :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': !filters.role }"
+                  @click="selectRole(null)"
                 >
-                  {{ $t(`admin.${admin.role}`) }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(admin.time) }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(admin.time) }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ admin.ip }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex justify-end gap-2">
-                  <button
-                    @click="viewAdmin(admin)"
-                    class="text-blue-600 hover:text-blue-900"
-                  >
-                    {{ $t('admin.viewDetails') }}
-                  </button>
-                  <button
-                    @click="editAdmin(admin)"
-                    class="text-green-600 hover:text-green-900"
-                  >
-                    {{ $t('common.edit') }}
-                  </button>
-                  <button
-                    v-if="admin.role === 'admin'"
-                    @click="manageClasses(admin)"
-                    class="text-purple-600 hover:text-purple-900"
-                  >
-                    {{ $t('admin.manageClasses') }}
-                  </button>
-                  <button
-                    @click="confirmDelete(admin)"
-                    :disabled="admin.aid === currentAdminId"
-                    class="text-red-600 hover:text-red-900 disabled:text-gray-400 disabled:cursor-not-allowed"
-                  >
-                    {{ $t('common.delete') }}
-                  </button>
+                  {{ $t('ui.allRoles') }}
+                  <span v-if="!filters.role" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                <div
+                  class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                  :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': filters.role === 'superadmin' }"
+                  @click="selectRole('superadmin')"
+                >
+                  {{ $t('ui.superadmin') }}
+                  <span v-if="filters.role === 'superadmin'" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
+                </div>
+                <div
+                  class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                  :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': filters.role === 'admin' }"
+                  @click="selectRole('admin')"
+                >
+                  {{ $t('ui.admin') }}
+                  <span v-if="filters.role === 'admin'" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 每页条数 -->
+          <div class="min-w-[140px]">
+            <label class="block mb-2 font-semibold text-gray-700">{{ $t('ui.itemsPerPage') }}</label>
+            <div class="relative" ref="pageSizeSelectRef">
+              <div class="flex items-center justify-between py-2.5 px-4 bg-white border-2 border-gray-200 rounded-xl cursor-pointer transition-all duration-300 text-sm font-medium text-gray-700 shadow-sm hover:border-blue-600 hover:shadow-blue-100 hover:shadow-lg" @click="togglePageSizeDropdown">
+                <span class="flex-1 text-left">{{ pagination.size }}{{ $t('pagination.itemsUnit') }}</span>
+                <span class="ml-3 text-xs text-gray-500 transition-transform duration-300" :class="{ 'rotate-180': showPageSizeDropdown }">▼</span>
+              </div>
+              <div class="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200" v-show="showPageSizeDropdown">
+                <div
+                  v-for="size in [5, 20, 50, 100]"
+                  :key="size"
+                  class="py-3 px-4 cursor-pointer transition-all duration-200 text-sm text-gray-700 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 hover:text-blue-600"
+                  :class="{ 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold relative': pagination.size === size }"
+                  @click="selectPageSizeOption(size)"
+                >
+                  {{ size }}{{ $t('pagination.itemsUnit') }}
+                  <span v-if="pagination.size === size" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-bold">✓</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Pagination -->
-      <div class="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
-        <div class="text-sm text-gray-700">
-          {{ $t('ui.showingRecords', { start: (pagination.page - 1) * pagination.size + 1, end: Math.min(pagination.page * pagination.size, pagination.total), total: pagination.total }) }}
+      <!-- 加载状态 -->
+      <div v-if="loading" class="text-center py-12">
+        <LoadingSpinner />
+        <p class="text-gray-500 text-base m-0 mt-4">{{ $t('common.loading') }}</p>
+      </div>
+
+      <!-- 错误提示 -->
+      <div v-if="error" class="bg-red-50 border border-red-300 text-red-700 p-4 rounded-xl mb-6 text-center">
+        {{ error }}
+      </div>
+
+      <!-- 管理员列表 -->
+      <div v-if="!loading && !error" class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="py-5 px-6 border-b border-gray-200 bg-gray-50">
+          <div class="text-gray-500 text-sm font-medium">
+            <span>{{ $t('ui.foundAdminsInfo', { total: pagination.total }) }}</span>
+          </div>
         </div>
-        <div class="flex items-center gap-2">
-          <button
-            @click="changePage(1)"
-            :disabled="pagination.page === 1"
-            class="px-3 py-1 rounded bg-white border border-gray-300 text-sm disabled:opacity-50"
-          >
-            {{ $t('ui.firstPage') }}
-          </button>
-          <button
-            @click="changePage(pagination.page - 1)"
-            :disabled="pagination.page === 1"
-            class="px-3 py-1 rounded bg-white border border-gray-300 text-sm disabled:opacity-50"
-          >
-            {{ $t('ui.previousPage') }}
-          </button>
-          <span class="text-sm text-gray-700">
-            {{ pagination.page }} / {{ pagination.pages }}
-          </span>
-          <button
-            @click="changePage(pagination.page + 1)"
-            :disabled="pagination.page === pagination.pages"
-            class="px-3 py-1 rounded bg-white border border-gray-300 text-sm disabled:opacity-50"
-          >
-            {{ $t('ui.nextPage') }}
-          </button>
-          <button
-            @click="changePage(pagination.pages)"
-            :disabled="pagination.page === pagination.pages"
-            class="px-3 py-1 rounded bg-white border border-gray-300 text-sm disabled:opacity-50"
-          >
-            {{ $t('ui.lastPage') }}
-          </button>
+
+        <!-- 表头 -->
+        <div class="flex bg-gray-50 border-b-2 border-gray-200 py-4 px-6 font-semibold text-gray-700 text-sm">
+          <div class="flex items-center px-2 min-w-0 w-20">ID</div>
+          <div class="flex items-center px-2 min-w-0 flex-1">{{ $t('ui.username') }}</div>
+          <div class="flex items-center px-2 min-w-0 w-32">{{ $t('ui.role') }}</div>
+          <div class="flex items-center px-2 min-w-0 flex-1">{{ $t('ui.assignedClasses') }}</div>
+          <div class="flex items-center px-2 min-w-0 w-40">{{ $t('ui.createdAt') }}</div>
+          <div class="flex items-center justify-center px-2 min-w-0 w-40">{{ $t('ui.actions') }}</div>
         </div>
+
+        <!-- 数据行 -->
+        <div v-for="(admin, index) in adminList" :key="admin.aid" class="flex items-center py-5 px-6 border-b border-gray-100 transition-colors hover:bg-blue-50" :class="{ 'bg-gray-50': index % 2 === 1 }">
+          <div class="px-2 min-w-0 w-20 text-gray-600">{{ admin.aid }}</div>
+          <div class="px-2 min-w-0 flex-1 text-gray-800 font-medium truncate">{{ admin.username }}</div>
+          <div class="px-2 min-w-0 w-32">
+            <span :class="admin.role === 'superadmin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'" class="px-3 py-1 rounded-full text-xs font-semibold">
+              {{ admin.role === 'superadmin' ? $t('ui.superadmin') : $t('ui.admin') }}
+            </span>
+          </div>
+          <div class="px-2 min-w-0 flex-1 text-gray-600 truncate">
+            <span v-if="admin.classes && admin.classes.length > 0">
+              {{ admin.classes.map(c => c.class_name).join(', ') }}
+            </span>
+            <span v-else class="text-gray-400">{{ $t('ui.noClassAssigned') }}</span>
+          </div>
+          <div class="px-2 min-w-0 w-40 text-gray-600">{{ formatDate(admin.created_at) }}</div>
+          <div class="flex items-center justify-center gap-2 px-2 min-w-0 w-40">
+            <button @click="openEditDialog(admin)" class="py-2 px-3 bg-blue-600 text-white text-xs font-medium rounded-lg transition-all hover:bg-blue-700 hover:shadow-md">
+              {{ $t('ui.edit') }}
+            </button>
+            <button @click="openClassDialog(admin)" class="py-2 px-3 bg-green-600 text-white text-xs font-medium rounded-lg transition-all hover:bg-green-700 hover:shadow-md">
+              {{ $t('ui.classes') }}
+            </button>
+            <button @click="handleDelete(admin.aid)" class="py-2 px-3 bg-red-600 text-white text-xs font-medium rounded-lg transition-all hover:bg-red-700 hover:shadow-md" :disabled="admin.aid === currentAdminId">
+              {{ $t('ui.delete') }}
+            </button>
+          </div>
+        </div>
+
+        <!-- 空状态 -->
+        <div v-if="adminList.length === 0" class="text-center py-12 text-gray-500">
+          {{ $t('ui.noAdmins') }}
+        </div>
+      </div>
+
+      <!-- 分页 -->
+      <div v-if="!loading && !error && pagination.total > 0" class="mt-6">
+        <Pagination
+          :current-page="pagination.page"
+          :total-pages="pagination.pages"
+          :total-items="pagination.total"
+          :page-size="pagination.size"
+          @page-change="handlePageChange"
+        />
       </div>
     </div>
 
-    <!-- Create Dialog -->
-    <div v-if="showCreateDialog" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showCreateDialog = false">
-      <div class="bg-white rounded-2xl w-[90%] max-w-md shadow-2xl">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200">
-          <h3 class="text-xl font-semibold">{{ $t('admin.createAdminTitle') }}</h3>
-          <button @click="showCreateDialog = false" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+    <!-- 创建管理员对话框 -->
+    <div v-if="showCreateDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" @click.self="closeDialogs">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
+        <div class="p-6 border-b border-gray-200">
+          <h3 class="text-xl font-bold text-gray-900 m-0">{{ $t('ui.createAdmin') }}</h3>
         </div>
-        <form @submit.prevent="createAdmin" class="p-6 space-y-4">
+        <div class="p-6 space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              {{ $t('admin.password') }}
-            </label>
-            <input
-              v-model="createForm.password"
-              type="password"
-              :placeholder="$t('admin.passwordPlaceholder')"
-              required
-              minlength="8"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-            />
+            <label class="block mb-2 font-semibold text-gray-700">{{ $t('ui.username') }}</label>
+            <input v-model="formData.username" type="text" class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-600" :placeholder="$t('ui.enterUsername')" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              {{ $t('admin.role') }}
-            </label>
-            <select
-              v-model="createForm.role"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-            >
-              <option value="admin">{{ $t('admin.admin') }}</option>
-              <option value="superadmin">{{ $t('admin.superadmin') }}</option>
+            <label class="block mb-2 font-semibold text-gray-700">{{ $t('common.password') }}</label>
+            <input v-model="formData.password" type="password" class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-600" :placeholder="$t('ui.enterPassword')" />
+          </div>
+          <div>
+            <label class="block mb-2 font-semibold text-gray-700">{{ $t('ui.role') }}</label>
+            <select v-model="formData.role" class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-600">
+              <option value="admin">{{ $t('ui.admin') }}</option>
+              <option value="superadmin">{{ $t('ui.superadmin') }}</option>
             </select>
           </div>
-          <div class="flex gap-3 justify-end pt-4">
-            <button
-              type="button"
-              @click="showCreateDialog = false"
-              class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-            >
-              {{ $t('common.cancel') }}
-            </button>
-            <button
-              type="submit"
-              :disabled="creating"
-              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
-            >
-              {{ creating ? $t('admin.creating') : $t('common.confirm') }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Edit Dialog -->
-    <div v-if="showEditDialog && selectedAdmin" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showEditDialog = false">
-      <div class="bg-white rounded-2xl w-[90%] max-w-md shadow-2xl">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200">
-          <h3 class="text-xl font-semibold">{{ $t('admin.editAdminTitle') }}</h3>
-          <button @click="showEditDialog = false" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+        </div>
+        <div class="p-6 border-t border-gray-200 flex gap-3 justify-end">
+          <button @click="closeDialogs" class="py-2.5 px-6 bg-gray-200 text-gray-700 rounded-xl font-semibold transition-all hover:bg-gray-300">
+            {{ $t('ui.cancel') }}
+          </button>
+          <button @click="handleCreate" class="py-2.5 px-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-xl font-semibold transition-all hover:shadow-lg">
+            {{ $t('ui.create') }}
           </button>
         </div>
-        <form @submit.prevent="updateAdmin" class="p-6 space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              {{ $t('admin.passwordOptional') }}
-            </label>
-            <input
-              v-model="editForm.password"
-              type="password"
-              :placeholder="$t('admin.passwordPlaceholder')"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              {{ $t('admin.role') }}
-            </label>
-            <select
-              v-model="editForm.role"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-            >
-              <option value="admin">{{ $t('admin.admin') }}</option>
-              <option value="superadmin">{{ $t('admin.superadmin') }}</option>
-            </select>
-          </div>
-          <div class="flex gap-3 justify-end pt-4">
-            <button
-              type="button"
-              @click="showEditDialog = false"
-              class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-            >
-              {{ $t('common.cancel') }}
-            </button>
-            <button
-              type="submit"
-              :disabled="updating"
-              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
-            >
-              {{ updating ? $t('admin.updating') : $t('common.save') }}
-            </button>
-          </div>
-        </form>
       </div>
     </div>
 
-    <!-- Delete Confirm Dialog -->
-    <div v-if="showDeleteDialog && selectedAdmin" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showDeleteDialog = false">
-      <div class="bg-white rounded-2xl w-[90%] max-w-md shadow-2xl">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200">
-          <h3 class="text-xl font-semibold">{{ $t('admin.deleteAdminTitle') }}</h3>
-          <button @click="showDeleteDialog = false" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+    <!-- 编辑管理员对话框 -->
+    <div v-if="showEditDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" @click.self="closeDialogs">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
+        <div class="p-6 border-b border-gray-200">
+          <h3 class="text-xl font-bold text-gray-900 m-0">{{ $t('ui.editAdmin') }}</h3>
+        </div>
+        <div class="p-6 space-y-4">
+          <div>
+            <label class="block mb-2 font-semibold text-gray-700">{{ $t('ui.username') }}</label>
+            <input :value="editingAdmin.username" type="text" class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-xl text-sm bg-gray-100" disabled />
+          </div>
+          <div>
+            <label class="block mb-2 font-semibold text-gray-700">{{ $t('ui.role') }}</label>
+            <select v-model="editingAdmin.role" class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-600" :disabled="editingAdmin.aid === currentAdminId">
+              <option value="admin">{{ $t('ui.admin') }}</option>
+              <option value="superadmin">{{ $t('ui.superadmin') }}</option>
+            </select>
+          </div>
+          <div>
+            <label class="block mb-2 font-semibold text-gray-700">{{ $t('ui.newPassword') }} ({{ $t('ui.optional') }})</label>
+            <input v-model="editingAdmin.newPassword" type="password" class="w-full py-2.5 px-4 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-600" :placeholder="$t('ui.leaveEmptyToKeep')" />
+          </div>
+        </div>
+        <div class="p-6 border-t border-gray-200 flex gap-3 justify-end">
+          <button @click="closeDialogs" class="py-2.5 px-6 bg-gray-200 text-gray-700 rounded-xl font-semibold transition-all hover:bg-gray-300">
+            {{ $t('ui.cancel') }}
           </button>
+          <button @click="handleUpdate" class="py-2.5 px-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-xl font-semibold transition-all hover:shadow-lg">
+            {{ $t('ui.save') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 班级分配对话框 -->
+    <div v-if="showClassDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" @click.self="closeDialogs">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg transform transition-all">
+        <div class="p-6 border-b border-gray-200">
+          <h3 class="text-xl font-bold text-gray-900 m-0">{{ $t('ui.manageClassAssignment') }}</h3>
+          <p class="text-gray-500 text-sm mt-1">{{ selectedAdmin?.username }}</p>
         </div>
         <div class="p-6">
-          <p class="text-gray-700 mb-4">
-            {{ $t('admin.deleteConfirm', { aid: selectedAdmin.aid }) }}
-          </p>
-          <p class="text-red-600 text-sm">{{ $t('ui.cannotUndo') }}</p>
+          <div class="max-h-80 overflow-y-auto space-y-2">
+            <label
+              v-for="classItem in classList"
+              :key="classItem.cid"
+              class="flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all"
+              :class="selectedClasses.includes(classItem.cid) ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'"
+            >
+              <input
+                type="checkbox"
+                :checked="selectedClasses.includes(classItem.cid)"
+                @change="toggleClassSelection(classItem.cid)"
+                class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <span class="text-gray-700 font-medium">{{ classItem.class_name }}</span>
+            </label>
+          </div>
         </div>
-        <div class="flex gap-3 justify-end p-6 border-t border-gray-200">
-          <button
-            @click="showDeleteDialog = false"
-            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-          >
-            {{ $t('common.cancel') }}
+        <div class="p-6 border-t border-gray-200 flex gap-3 justify-end">
+          <button @click="closeDialogs" class="py-2.5 px-6 bg-gray-200 text-gray-700 rounded-xl font-semibold transition-all hover:bg-gray-300">
+            {{ $t('ui.cancel') }}
           </button>
-          <button
-            @click="deleteAdmin"
-            :disabled="deleting"
-            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg disabled:opacity-50"
-          >
-            {{ deleting ? $t('admin.deleting') : $t('ui.confirmDeleteButton') }}
+          <button @click="handleSaveClasses" class="py-2.5 px-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-xl font-semibold transition-all hover:shadow-lg">
+            {{ $t('ui.save') }}
           </button>
         </div>
       </div>
@@ -330,227 +265,280 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
-import AdminManagementService from '@/services/admin/admin'
+import adminService from '@/services/admin/admin'
+import adminClassService from '@/services/admin/adminClass'
+import classService from '@/services/admin/class'
 import AuthService from '@/services/common/auth'
-import notificationService from '@/services/common/notification'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import Pagination from '@/components/common/Pagination.vue'
 
 const { t: $t } = useI18n()
 
-// 数据状态
-const admins = ref([])
 const loading = ref(false)
-const error = ref('')
+const error = ref(null)
+const adminList = ref([])
+const classList = ref([])
+const currentAdminId = ref(null)
 
-// 分页状态
-const pagination = reactive({
+const pagination = ref({
   page: 1,
   size: 20,
   total: 0,
   pages: 0
 })
 
-// 筛选状态
-const roleFilter = ref('all')
-const searchQuery = ref('')
+const filters = ref({
+  role: null
+})
 
-// 对话框状态
+const showRoleDropdown = ref(false)
+const showPageSizeDropdown = ref(false)
 const showCreateDialog = ref(false)
 const showEditDialog = ref(false)
-const showDeleteDialog = ref(false)
+const showClassDialog = ref(false)
 
-// 选中项
+const formData = ref({
+  username: '',
+  password: '',
+  role: 'admin'
+})
+
+const editingAdmin = ref({
+  aid: null,
+  username: '',
+  role: 'admin',
+  newPassword: ''
+})
+
 const selectedAdmin = ref(null)
+const selectedClasses = ref([])
 
-// 当前管理员 ID
-const currentAdminId = computed(() => {
+const roleSelectRef = ref(null)
+const pageSizeSelectRef = ref(null)
+
+// 获取当前管理员ID
+const getCurrentAdminId = () => {
   const adminInfo = AuthService.getAdminInfo()
-  return adminInfo.aid ? parseInt(adminInfo.aid) : null
-})
+  currentAdminId.value = adminInfo.aid ? parseInt(adminInfo.aid) : null
+}
 
-// 表单数据
-const createForm = reactive({
-  password: '',
-  role: 'admin'
-})
-
-const editForm = reactive({
-  password: '',
-  role: 'admin'
-})
-
-// 操作状态
-const creating = ref(false)
-const updating = ref(false)
-const deleting = ref(false)
-
-// 过滤后的管理员列表
-const filteredAdmins = computed(() => {
-  let filtered = admins.value
-
-  // 搜索过滤
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase().trim()
-    filtered = filtered.filter(admin =>
-      admin.aid.toString().includes(query)
-    )
-  }
-
-  return filtered
-})
-
-// 分页后的管理员列表
-const paginatedAdmins = computed(() => {
-  return filteredAdmins.value
-})
-
-// 获取管理员列表
-const fetchAdmins = async () => {
+// 加载班级列表
+const loadClassList = async () => {
   try {
-    loading.value = true
-    error.value = ''
-
-    const response = await AdminManagementService.getAdminList({
-      page: pagination.page,
-      size: pagination.size,
-      role: roleFilter.value
-    })
-
-    admins.value = response.data || []
-    if (response.pagination) {
-      Object.assign(pagination, response.pagination)
+    const response = await classService.getClassList({ page: 1, size: 1000 })
+    if (response.code === 0) {
+      classList.value = response.data
     }
   } catch (err) {
-    error.value = err.message || $t('service.getAdminListFailed')
-    console.error($t('service.getAdminListFailed'), err)
+    console.error('Failed to load class list:', err)
+  }
+}
+
+// 加载管理员列表
+const loadAdmins = async () => {
+  loading.value = true
+  error.value = null
+  try {
+    const response = await adminService.getAdminList({
+      page: pagination.value.page,
+      size: pagination.value.size,
+      role: filters.value.role
+    })
+    if (response.code === 0) {
+      adminList.value = response.data
+      pagination.value = response.pagination
+    }
+  } catch (err) {
+    error.value = err.message || $t('ui.loadFailed')
   } finally {
     loading.value = false
   }
 }
 
-// 创建管理员
-const createAdmin = async () => {
-  try {
-    creating.value = true
-
-    await AdminManagementService.createAdmin({
-      password: createForm.password,
-      role: createForm.role
-    })
-
-    notificationService.success($t('service.createAdminSuccess'))
-    showCreateDialog.value = false
-    createForm.password = ''
-    createForm.role = 'admin'
-
-    await fetchAdmins()
-  } catch (err) {
-    notificationService.error(err.message || $t('service.createAdminFailed'))
-  } finally {
-    creating.value = false
-  }
+// 切换下拉菜单
+const toggleRoleDropdown = () => {
+  showRoleDropdown.value = !showRoleDropdown.value
+  showPageSizeDropdown.value = false
 }
 
-// 查看管理员详情
-const viewAdmin = (admin) => {
-  selectedAdmin.value = admin
-  // 可以添加详情对话框
+const togglePageSizeDropdown = () => {
+  showPageSizeDropdown.value = !showPageSizeDropdown.value
+  showRoleDropdown.value = false
 }
 
-// 编辑管理员
-const editAdmin = (admin) => {
-  selectedAdmin.value = admin
-  editForm.role = admin.role
-  editForm.password = ''
-  showEditDialog.value = true
+// 选择角色
+const selectRole = (role) => {
+  filters.value.role = role
+  showRoleDropdown.value = false
+  pagination.value.page = 1
+  loadAdmins()
 }
 
-// 更新管理员
-const updateAdmin = async () => {
-  try {
-    updating.value = true
-
-    const data = { role: editForm.role }
-    if (editForm.password.trim()) {
-      data.password = editForm.password
-    }
-
-    await AdminManagementService.updateAdmin(selectedAdmin.value.aid, data)
-
-    notificationService.success($t('service.updateAdminSuccess'))
-    showEditDialog.value = false
-
-    await fetchAdmins()
-  } catch (err) {
-    notificationService.error(err.message || $t('service.updateAdminFailed'))
-  } finally {
-    updating.value = false
-  }
+// 获取角色文本
+const getRoleText = (role) => {
+  if (role === 'superadmin') return $t('ui.superadmin')
+  if (role === 'admin') return $t('ui.admin')
+  return $t('ui.allRoles')
 }
 
-// 确认删除
-const confirmDelete = (admin) => {
-  if (admin.aid === currentAdminId.value) {
-    notificationService.error($t('admin.cannotDeleteSelf'))
-    return
-  }
-  selectedAdmin.value = admin
-  showDeleteDialog.value = true
+// 选择每页条数
+const selectPageSizeOption = (size) => {
+  pagination.value.size = size
+  pagination.value.page = 1
+  showPageSizeDropdown.value = false
+  loadAdmins()
 }
 
-// 删除管理员
-const deleteAdmin = async () => {
-  try {
-    deleting.value = true
-
-    await AdminManagementService.deleteAdmin(selectedAdmin.value.aid)
-
-    notificationService.success($t('service.deleteAdminSuccess'))
-    showDeleteDialog.value = false
-
-    await fetchAdmins()
-  } catch (err) {
-    notificationService.error(err.message || $t('service.deleteAdminFailed'))
-  } finally {
-    deleting.value = false
-  }
-}
-
-// 管理班级
-const manageClasses = (admin) => {
-  // TODO: 实现班级管理功能
-  notificationService.info('班级管理功能开发中...')
-}
-
-// 切换页码
-const changePage = (page) => {
-  if (page !== pagination.page && page >= 1 && page <= pagination.pages) {
-    pagination.page = page
-    fetchAdmins()
-  }
+// 页码变化
+const handlePageChange = (page) => {
+  pagination.value.page = page
+  loadAdmins()
 }
 
 // 格式化日期
 const formatDate = (dateString) => {
   if (!dateString) return '-'
   const date = new Date(dateString)
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  return date.toLocaleDateString()
 }
 
-// 挂载时获取数据
+// 打开编辑对话框
+const openEditDialog = (admin) => {
+  editingAdmin.value = {
+    aid: admin.aid,
+    username: admin.username,
+    role: admin.role,
+    newPassword: ''
+  }
+  showEditDialog.value = true
+}
+
+// 打开班级分配对话框
+const openClassDialog = async (admin) => {
+  selectedAdmin.value = admin
+  try {
+    const response = await adminClassService.getAdminClasses(admin.aid)
+    if (response.code === 0) {
+      selectedClasses.value = response.data.map(c => c.cid)
+    }
+  } catch (err) {
+    selectedClasses.value = admin.classes ? admin.classes.map(c => c.cid) : []
+  }
+  showClassDialog.value = true
+}
+
+// 切换班级选择
+const toggleClassSelection = (cid) => {
+  const index = selectedClasses.value.indexOf(cid)
+  if (index === -1) {
+    selectedClasses.value.push(cid)
+  } else {
+    selectedClasses.value.splice(index, 1)
+  }
+}
+
+// 关闭对话框
+const closeDialogs = () => {
+  showCreateDialog.value = false
+  showEditDialog.value = false
+  showClassDialog.value = false
+  formData.value = { username: '', password: '', role: 'admin' }
+  editingAdmin.value = { aid: null, username: '', role: 'admin', newPassword: '' }
+  selectedAdmin.value = null
+  selectedClasses.value = []
+}
+
+// 创建管理员
+const handleCreate = async () => {
+  if (!formData.value.username || !formData.value.password) {
+    alert($t('ui.pleaseFillAllFields'))
+    return
+  }
+
+  try {
+    const response = await adminService.createAdmin({
+      username: formData.value.username,
+      password: formData.value.password,
+      role: formData.value.role
+    })
+    if (response.code === 0) {
+      closeDialogs()
+      loadAdmins()
+    }
+  } catch (err) {
+    alert(err.message || $t('ui.createFailed'))
+  }
+}
+
+// 更新管理员
+const handleUpdate = async () => {
+  try {
+    const updateData = { role: editingAdmin.value.role }
+    if (editingAdmin.value.newPassword) {
+      updateData.password = editingAdmin.value.newPassword
+    }
+
+    const response = await adminService.updateAdmin(editingAdmin.value.aid, updateData)
+    if (response.code === 0) {
+      closeDialogs()
+      loadAdmins()
+    }
+  } catch (err) {
+    alert(err.message || $t('ui.updateFailed'))
+  }
+}
+
+// 删除管理员
+const handleDelete = async (aid) => {
+  if (aid === currentAdminId.value) {
+    alert($t('ui.cannotDeleteSelf'))
+    return
+  }
+  if (!confirm($t('ui.confirmDelete'))) return
+
+  try {
+    const response = await adminService.deleteAdmin(aid)
+    if (response.code === 0) {
+      loadAdmins()
+    }
+  } catch (err) {
+    alert(err.message || $t('ui.deleteFailed'))
+  }
+}
+
+// 保存班级分配
+const handleSaveClasses = async () => {
+  try {
+    const response = await adminClassService.replaceClasses(selectedAdmin.value.aid, selectedClasses.value)
+    if (response.code === 0) {
+      closeDialogs()
+      loadAdmins()
+    }
+  } catch (err) {
+    alert(err.message || $t('ui.updateFailed'))
+  }
+}
+
+// 点击外部关闭下拉菜单
+const handleClickOutside = (event) => {
+  if (roleSelectRef.value && !roleSelectRef.value.contains(event.target)) {
+    showRoleDropdown.value = false
+  }
+  if (pageSizeSelectRef.value && !pageSizeSelectRef.value.contains(event.target)) {
+    showPageSizeDropdown.value = false
+  }
+}
+
 onMounted(() => {
-  fetchAdmins()
+  getCurrentAdminId()
+  loadClassList()
+  loadAdmins()
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
-
-<style scoped>
-/* 组件样式已由 Tailwind CSS 处理 */
-</style>

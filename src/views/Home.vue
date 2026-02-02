@@ -3,6 +3,9 @@
     <!-- 可拖动的倒计时组件 -->
     <FloatingCountdown :selected-cid="selectedCid" />
 
+    <!-- 可拖动的标语组件 -->
+    <FloatingSlogan :selected-cid="selectedCid" />
+
     <!-- 顶部栏 -->
     <div class="flex flex-wrap md:flex-nowrap justify-between items-center gap-3 md:gap-4 p-3 md:p-4 bg-[var(--color-header-footer)] rounded-xl shadow-lg transition-colors duration-200">
       <!-- 日期和日历 -->
@@ -97,6 +100,7 @@ import ClassSwitch from '@/components/common/ClassSwitch.vue'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import LanguageToggle from '@/components/common/LanguageToggle.vue'
 import FloatingCountdown from '@/components/common/FloatingCountdown.vue'
+import FloatingSlogan from '@/components/common/FloatingSlogan.vue'
 import { formatYYYYMMDDToDate } from '@/utils/formatDate'
 import notificationService from '@/services/common/notification'
 
@@ -191,6 +195,16 @@ const updateTime = () => {
   const hours = String(now.getHours()).padStart(2, '0')
   const minutes = String(now.getMinutes()).padStart(2, '0')
   currentTime.value = `${hours}:${minutes}`
+
+  // 检查日期是否变化（处理跨午夜情况）
+  const currentDateInt = String(
+    now.getFullYear() +
+    String(now.getMonth() + 1).padStart(2, '0') +
+    String(now.getDate()).padStart(2, '0')
+  )
+  if (currentDateInt !== todayDateInt.value) {
+    updateDate()
+  }
 }
 
 // 更新日期

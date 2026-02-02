@@ -59,8 +59,10 @@ export default {
     studentadmin: '学生管理',
     homeworkadmin: '作业管理',
     countdownadmin: '倒计时管理',
+    sloganadmin: '标语管理',
     settingadmin: '显示设置',
-    adminmanagement: '管理员管理'
+    adminmanagement: '管理员管理',
+    ratelimitadmin: '速率限制'
   },
 
   // 主题
@@ -236,47 +238,7 @@ export default {
     pleaseEnterPassword: '请输入密码',
     loginSuccess: '登录成功',
     loginFailed: '登录失败',
-    sessionExpired: '会话已过期，请重新登录',
-
-    // 管理员管理
-    management: '管理员管理',
-    managementDesc: '管理系统管理员账户和权限',
-    role: '角色',
-    superadmin: '超级管理员',
-    admin: '管理员',
-    roleAll: '全部角色',
-    createAdmin: '创建管理员',
-    editAdmin: '编辑管理员',
-    deleteAdmin: '删除管理员',
-    viewDetails: '查看详情',
-    manageClasses: '管理班级',
-    adminId: '管理员 ID',
-    password: '密码',
-    passwordPlaceholder: '至少 8 位字符',
-    passwordOptional: '密码（可选，留空不修改）',
-    createTime: '创建时间',
-    lastLogin: '最后登录',
-    lastLoginIp: '最后登录 IP',
-    createAdminTitle: '创建新管理员',
-    editAdminTitle: '编辑管理员',
-    deleteAdminTitle: '删除管理员',
-    deleteConfirm: '确定要删除管理员 {aid} 吗？此操作不可撤销。',
-    cannotDeleteSelf: '不能删除自己的账户',
-    cannotDemoteSelf: '不能降级自己的角色',
-    assignedClasses: '已分配班级',
-    availableClasses: '可分配班级',
-    noClassAssigned: '尚未分配班级',
-    assignClass: '分配班级',
-    removeClass: '移除班级',
-    replaceAllClasses: '替换全部班级',
-    selectClasses: '选择班级',
-    creating: '创建中...',
-    updating: '更新中...',
-    deleting: '删除中...',
-    loading: '加载中...',
-    totalAdmins: '总管理员数',
-    superadminCount: '超级管理员',
-    adminCount: '普通管理员'
+    sessionExpired: '会话已过期，请重新登录'
   },
 
   // 系统设置
@@ -396,12 +358,6 @@ export default {
     inSchoolCannotSelectTempLeave: '在校学生不能选择临时外出',
     atLeastOneSubjectRequired: '请至少填写一个科目的作业',
 
-    // Admin management errors
-    adminIdRequired: '管理员 ID 必填',
-    passwordTooShort: '密码至少需要 8 位字符',
-    adminIdAndClassIdRequired: '管理员 ID 和班级 ID 都必填',
-    classIdsArrayRequired: '班级 ID 必须是数组',
-
     // File upload errors
     fileTypesSupported: '仅支持上传 .txt、.csv、.xlsx 或 .xls 文件',
     fileSizeLimit: '文件大小不能超过 5MB',
@@ -463,30 +419,7 @@ export default {
     themeCacheCleared: '主题缓存已清除',
     clearThemeCacheFailed: '清除主题缓存失败',
     themeApplied: '主题已应用',
-    allThemeCacheCleared: '所有主题缓存已清除',
-
-    // Admin management service
-    getCurrentAdminSuccess: '获取当前管理员信息成功',
-    getCurrentAdminFailed: '获取当前管理员信息失败',
-    createAdminSuccess: '创建管理员成功',
-    createAdminFailed: '创建管理员失败',
-    getAdminSuccess: '获取管理员信息成功',
-    getAdminFailed: '获取管理员信息失败',
-    getAdminListSuccess: '获取管理员列表成功',
-    getAdminListFailed: '获取管理员列表失败',
-    updateAdminSuccess: '更新管理员成功',
-    updateAdminFailed: '更新管理员失败',
-    deleteAdminSuccess: '删除管理员成功',
-    deleteAdminFailed: '删除管理员失败',
-    assignClassSuccess: '分配班级成功',
-    assignClassFailed: '分配班级失败',
-    removeClassSuccess: '移除班级成功',
-    removeClassFailed: '移除班级失败',
-    getAdminClassesSuccess: '获取管理员班级列表成功',
-    getAdminClassesFailed: '获取管理员班级列表失败',
-    replaceClassesSuccess: '替换班级成功',
-    replaceClassesFailed: '替换班级失败',
-    batchAssignFailed: '批量分配班级失败'
+    allThemeCacheCleared: '所有主题缓存已清除'
   },
 
   // Component specific messages
@@ -508,6 +441,10 @@ export default {
     deleteStudentFailed: '删除学生失败',
     confirmDeleteStudent: '确定要删除学生 {studentName} 吗？此操作不可恢复。',
     statusChangedTo: '状态已更改为',
+
+    // Export
+    exportSuccess: '导出成功',
+    exportFailed: '导出失败',
 
     // HomeworkAdmin
     homeworkCreatedSuccess: '作业创建成功',
@@ -659,6 +596,19 @@ export default {
     unknownClass: '未知班级({cid})',
     allClasses: '全部班级 ({count}个)',
 
+    // Export
+    classData: '班级数据',
+    studentData: '学生数据',
+    selectStudents: '选择学生',
+    selectedCount: '已选择 {count} 人',
+    startDate: '开始日期',
+    endDate: '结束日期',
+    quickSelect: '快捷选择',
+    lastWeek: '最近一周',
+    lastMonth: '最近一月',
+    lastQuarter: '最近一季度',
+    exporting: '导出中...',
+
     // CountdownAdmin
     countdownManagement: '倒计时管理',
     manageCountdownInfo: '管理所有班级倒计时事件，查看截止日期和剩余天数',
@@ -669,6 +619,7 @@ export default {
     dateAsc: '日期升序',
     foundCountdownsInfo: '共找到 {total} 个倒计时',
     countdownContent: '倒计时内容',
+    sloganContent: '班级标语',
     deadline: '截止日期',
     daysRemaining: '剩余天数',
     edit: '编辑',
@@ -699,7 +650,65 @@ export default {
     countdownDisplayDesc: '是否在首页显示倒计时',
     sloganDisplayDesc: '是否在首页显示标语',
     cancel: '取消',
-    save: '保存'
+    save: '保存',
+    all: '全部',
+
+    // SloganAdmin
+    sloganManagement: '标语管理',
+    manageSloganInfo: '管理所有班级的标语内容',
+    createSlogan: '创建标语',
+    foundSlogansInfo: '共找到 {total} 个标语',
+    sloganContent: '标语内容',
+    createdAt: '创建时间',
+    noSlogans: '暂无标语',
+    editSlogan: '编辑标语',
+    enterSloganContent: '请输入标语内容',
+
+    // AdminManagement
+    adminManagement: '管理员管理',
+    manageAdminInfo: '管理管理员账号、角色和班级分配',
+    createAdmin: '创建管理员',
+    roleFilter: '角色筛选',
+    allRoles: '全部角色',
+    superadmin: '超级管理员',
+    admin: '管理员',
+    foundAdminsInfo: '共找到 {total} 个管理员',
+    username: '用户名',
+    role: '角色',
+    assignedClasses: '分配的班级',
+    noClassAssigned: '未分配班级',
+    noAdmins: '暂无管理员',
+    editAdmin: '编辑管理员',
+    enterUsername: '请输入用户名',
+    enterPassword: '请输入密码',
+    newPassword: '新密码',
+    optional: '可选',
+    leaveEmptyToKeep: '留空保持原密码',
+    classes: '班级',
+    manageClassAssignment: '管理班级分配',
+    cannotDeleteSelf: '不能删除当前登录的管理员账号',
+
+    // RateLimitAdmin
+    rateLimitManagement: '速率限制管理',
+    manageRateLimitInfo: '管理API速率限制配置',
+    createRateLimit: '创建配置',
+    foundRateLimitsInfo: '共找到 {total} 个配置',
+    configKey: '配置Key',
+    maxRequests: '最大请求数',
+    windowMs: '时间窗口(ms)',
+    windowDisplay: '时间窗口',
+    noRateLimits: '暂无速率限制配置',
+    editRateLimit: '编辑速率限制',
+    enterConfigKey: '请输入配置Key',
+    configKeyHint: '例如: read, write, auth 等',
+    enterMaxRequests: '请输入最大请求数',
+    seconds: '秒',
+    minutes: '分钟',
+    hours: '小时',
+    secondsUnit: '秒',
+    minutesUnit: '分钟',
+    hoursUnit: '小时',
+    currentValue: '当前值'
   },
 
   // 页脚

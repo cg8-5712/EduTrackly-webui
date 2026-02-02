@@ -94,11 +94,14 @@ const fetchStudents = async () => {
   if (!props.cid) return
   try {
     loading.value = true
-    const res = await StudentService.getStudentListAll(props.cid)
-    const analysis = await AnalysisService.getTodayAnalysis(props.cid)
+    // 并行请求学生列表和今日分析数据
+    const [res, analysis] = await Promise.all([
+      StudentService.getStudentListAll(props.cid),
+      AnalysisService.getTodayAnalysis(props.cid)
+    ])
     const existingEvents = {}
 
-    if (analysis.data?.data.event_list) {
+    if (analysis.data?.data?.event_list) {
       analysis.data.data.event_list.forEach(e => {
         const student = res.data?.find(s => s.student_name === e.student_name)
         if (student) existingEvents[student.sid] = e.event_type

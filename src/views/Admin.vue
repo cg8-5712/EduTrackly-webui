@@ -76,76 +76,38 @@
   </div>
 
   <!-- 管理界面 -->
-  <div v-else class="flex flex-col md:flex-row h-screen overflow-hidden bg-slate-50">
+  <div v-else class="flex flex-col md:flex-row h-screen overflow-hidden">
     <!-- 移动端横向滚动导航 + 桌面端侧边栏 -->
-    <div class="bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white md:w-64 md:min-w-64 flex flex-col shadow-2xl relative">
-      <!-- 装饰性渐变覆盖层 -->
-      <div class="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-cyan-600/10 pointer-events-none"></div>
-
-      <!-- Logo区域 -->
-      <div class="relative p-5 sm:p-6 border-b border-slate-700/50">
-        <div class="flex items-center justify-center gap-3">
-          <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/50">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-          </div>
-          <h3 class="m-0 text-lg font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-            {{ $t('admin.dashboard') }}
-          </h3>
-        </div>
+    <div class="bg-slate-700 text-white md:w-60 md:min-w-60 flex flex-col shadow-lg">
+      <div class="p-3 sm:p-5 border-b border-slate-600 bg-slate-800">
+        <h3 class="m-0 text-base sm:text-lg font-semibold text-center">{{ $t('admin.dashboard') }}</h3>
       </div>
-
-      <!-- 导航菜单 -->
-      <div class="flex-1 md:overflow-y-auto overflow-x-auto md:overflow-x-visible py-4 relative">
-        <ul class="list-none p-0 m-0 flex md:block whitespace-nowrap md:whitespace-normal md:px-3 gap-2">
+      <!-- 移动端横向滚动 -->
+      <div class="flex-1 md:overflow-y-auto overflow-x-auto md:overflow-x-visible md:pt-2">
+        <ul class="list-none p-0 m-0 flex md:block whitespace-nowrap md:whitespace-normal">
           <li
               v-for="(item, index) in navigation"
               :key="index"
               @click="changeComponent(item)"
               @keydown.enter="changeComponent(item)"
-              :class="{
-                'bg-gradient-to-r from-blue-600 to-cyan-500 shadow-lg shadow-blue-500/30': item.current,
-                'bg-slate-800/40 hover:bg-slate-700/60': !item.current
-              }"
-              class="group relative py-3 px-4 md:mx-2 my-1 cursor-pointer flex items-center transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900 inline-flex md:flex backdrop-blur-sm"
+              :class="{'bg-slate-600 border-b-cyan-400 md:border-l-cyan-400 md:border-b-transparent font-semibold': item.current}"
+              class="py-3 px-4 md:py-4 md:px-5 cursor-pointer flex items-center transition-all duration-300 border-b-4 md:border-b-0 md:border-l-4 border-transparent hover:bg-slate-600 hover:border-b-cyan-400 md:hover:border-l-cyan-400 md:hover:border-b-transparent focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-inset inline-flex md:flex"
               tabindex="0"
               role="button"
               :aria-label="$t(item.nameKey)"
               :aria-current="item.current ? 'page' : undefined"
           >
-            <!-- 内容 -->
-            <div class="relative flex items-center w-full z-10">
-              <div :class="item.current ? 'text-white' : 'text-slate-300 group-hover:text-white'" class="transition-colors duration-200">
-                <component :is="item.icon" class="w-5 h-5 md:w-5 md:h-5 flex-shrink-0" />
-              </div>
-              <span
-                :class="item.current ? 'text-white font-semibold' : 'text-slate-300 group-hover:text-white font-medium'"
-                class="ml-3 text-sm md:text-base transition-all duration-200"
-              >
-                {{ $t(item.nameKey) }}
-              </span>
-            </div>
-
-            <!-- Active状态的脉冲效果 -->
-            <div
-              v-if="item.current"
-              class="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-xl opacity-20 animate-pulse pointer-events-none"
-            ></div>
+            <component :is="item.icon" class="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3 flex-shrink-0" />
+            <span class="text-xs sm:text-sm md:text-base">{{ $t(item.nameKey) }}</span>
           </li>
         </ul>
       </div>
-
-      <!-- 登出按钮区域 -->
-      <div class="relative p-4 border-t border-slate-700/50">
+      <div class="p-3 sm:p-4 border-t border-slate-600">
         <button
           @click="handleLogout"
-          class="group w-full py-2.5 px-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 active:scale-95 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-lg shadow-red-500/30 hover:shadow-xl hover:shadow-red-500/50 flex items-center justify-center gap-2"
+          class="w-full py-2 px-3 sm:px-4 bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs sm:text-sm rounded-md transition-all duration-200"
         >
-          <svg class="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
-          <span>{{ $t('common.logout') }}</span>
+          {{ $t('common.logout') }}
         </button>
       </div>
     </div>
@@ -169,12 +131,9 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AuthService from '@/services/common/auth'
-import AdminManagementService from '@/services/admin/admin'
 import notificationService from '@/services/common/notification'
-import { useAdminPermission } from '@/composables/useAdminPermission'
 
 const { t: $t } = useI18n()
-const { setAdminInfo, clearAdminInfo } = useAdminPermission()
 
 // 引入各个管理组件
 import CurrentAdmin from '@/components/admin/CurrentAdmin.vue'
@@ -182,15 +141,17 @@ import ClassAdmin from '@/components/admin/ClassAdmin.vue'
 import StudentAdmin from '@/components/admin/StudentAdmin.vue'
 import HomeworkAdmin from '@/components/admin/HomeworkAdmin.vue'
 import CountdownAdmin from '@/components/admin/CountdownAdmin.vue'
+import SloganAdmin from '@/components/admin/SloganAdmin.vue'
 import SettingAdmin from '@/components/admin/SettingAdmin.vue'
 import AdminManagement from '@/components/admin/AdminManagement.vue'
+import RateLimitAdmin from '@/components/admin/RateLimitAdmin.vue'
 import System from '@/components/admin/System.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ThemeToggle from '@/components/common/ThemeToggle.vue'
 import LanguageToggle from '@/components/common/LanguageToggle.vue'
 
 // 引入图标组件（你需要根据实际使用的图标库调整）
-import { AcademicCapIcon, BookOpenIcon, UsersIcon, Cog8ToothIcon, ClockIcon, AdjustmentsHorizontalIcon, ShieldCheckIcon } from '@heroicons/vue/24/outline'
+import { AcademicCapIcon, BookOpenIcon, UsersIcon, Cog8ToothIcon, ClockIcon, AdjustmentsHorizontalIcon, ChatBubbleBottomCenterTextIcon, ShieldCheckIcon, BoltIcon } from '@heroicons/vue/24/outline'
 
 // 检测微信浏览器
 const checkWechatBrowser = () => {
@@ -208,9 +169,7 @@ const isAuthenticated = ref(false)
 const password = ref('')
 const loginError = ref('')
 const isLogging = ref(false)
-
-// 当前管理员角色
-const currentAdminRole = ref(null)
+const adminRole = ref('')  // 管理员角色
 
 // 定时器ID，用于定期检查token有效性
 let authCheckInterval = null
@@ -222,64 +181,43 @@ const components = {
   studentadmin: StudentAdmin,
   homeworkadmin: HomeworkAdmin,
   countdownadmin: CountdownAdmin,
+  sloganadmin: SloganAdmin,
   settingadmin: SettingAdmin,
   adminmanagement: AdminManagement,
+  ratelimitadmin: RateLimitAdmin,
   system: System
 }
 
-// 所有可用的导航菜单配置
-const allNavigationItems = [
+// 导航菜单配置
+const allNavigation = [
   { nameKey: 'nav.currentadmin', href: '#', icon: AcademicCapIcon, current: true, componentName: 'currentadmin'  },
   { nameKey: 'nav.classadmin', href: '#', icon: UsersIcon, current: false, componentName: 'classadmin'  },
   { nameKey: 'nav.studentadmin', href: '#', icon: UsersIcon, current: false, componentName: 'studentadmin'  },
   { nameKey: 'nav.homeworkadmin', href: '#', icon: BookOpenIcon, current: false, componentName: 'homeworkadmin'  },
   { nameKey: 'nav.countdownadmin', href: '#', icon: ClockIcon, current: false, componentName: 'countdownadmin'  },
+  { nameKey: 'nav.sloganadmin', href: '#', icon: ChatBubbleBottomCenterTextIcon, current: false, componentName: 'sloganadmin'  },
   { nameKey: 'nav.settingadmin', href: '#', icon: AdjustmentsHorizontalIcon, current: false, componentName: 'settingadmin'  },
-  { nameKey: 'nav.adminmanagement', href: '#', icon: ShieldCheckIcon, current: false, componentName: 'adminmanagement', requireSuperAdmin: true  },
+  { nameKey: 'nav.adminmanagement', href: '#', icon: ShieldCheckIcon, current: false, componentName: 'adminmanagement', superadminOnly: true  },
+  { nameKey: 'nav.ratelimitadmin', href: '#', icon: BoltIcon, current: false, componentName: 'ratelimitadmin', superadminOnly: true  },
   { nameKey: 'nav.system', href: '#', icon: Cog8ToothIcon, current: false, componentName: 'system'  }
 ]
 
 // 根据角色过滤导航菜单
 const navigation = computed(() => {
-  return allNavigationItems.filter(item => {
-    // 如果菜单项需要 superadmin 权限
-    if (item.requireSuperAdmin) {
-      return currentAdminRole.value === 'superadmin'
-    }
-    // 其他菜单项都显示
-    return true
-  })
+  if (adminRole.value === 'superadmin') {
+    return allNavigation
+  }
+  return allNavigation.filter(item => !item.superadminOnly)
 })
 
 // 当前选中的菜单项
-const currentComponent = ref(components[ navigation.value.find(item => item.current).componentName ])
+const currentComponent = ref(components.currentadmin)
 
 // 当前菜单名称（用于显示页面标题）
 const currentMenuName = computed(() => {
   const currentItem = navigation.value.find(item => item.current)
   return currentItem ? $t(currentItem.nameKey) : ''
 })
-
-// 获取当前管理员信息
-const fetchCurrentAdminInfo = async () => {
-  try {
-    console.log('[Admin.vue] Fetching current admin info...')
-    const response = await AdminManagementService.getCurrentAdmin()
-    console.log('[Admin.vue] /admin/me response:', response)
-
-    if (response.code === 0 && response.data) {
-      currentAdminRole.value = response.data.role
-      // 设置权限管理中的管理员信息和可管理班级
-      console.log('[Admin.vue] Setting admin info - role:', response.data.role, 'classes:', response.data.classes)
-      setAdminInfo(response.data.role, response.data.classes)
-    }
-  } catch (error) {
-    console.error('[Admin.vue] Failed to fetch current admin info:', error)
-    // 如果获取失败，默认为 admin 角色且无可管理班级
-    currentAdminRole.value = 'admin'
-    setAdminInfo('admin', [])
-  }
-}
 
 // 检查登录状态
 const checkAuthStatus = () => {
@@ -291,7 +229,11 @@ const checkAuthStatus = () => {
     if (!authStatus) {
       password.value = ''
       loginError.value = ''
-      currentAdminRole.value = null
+      adminRole.value = ''
+    } else {
+      // 获取角色信息
+      const adminInfo = AuthService.getAdminInfo()
+      adminRole.value = adminInfo.role || ''
     }
   }
   return authStatus
@@ -335,8 +277,9 @@ const handleLogin = async () => {
     if (response.code === 0) {
       isAuthenticated.value = true
       password.value = ''
-      // 获取当前管理员信息和角色
-      await fetchCurrentAdminInfo()
+      // 获取角色信息
+      const adminInfo = AuthService.getAdminInfo()
+      adminRole.value = adminInfo.role || ''
       // 登录成功后启动定期检查
       startAuthCheck()
     } else {
@@ -356,9 +299,10 @@ const handleLogout = () => {
   isAuthenticated.value = false
   password.value = ''
   loginError.value = ''
-  currentAdminRole.value = null
-  // 清空权限信息
-  clearAdminInfo()
+  adminRole.value = ''
+  // 重置导航状态
+  allNavigation.forEach(item => item.current = item.componentName === 'currentadmin')
+  currentComponent.value = components.currentadmin
   // 停止定期检查
   stopAuthCheck()
 }
@@ -366,7 +310,7 @@ const handleLogout = () => {
 // 处理菜单项选择
 const changeComponent = (item) => {
   // 设置当前选中项
-  navigation.value.forEach(navItem => navItem.current = false)
+  allNavigation.forEach(navItem => navItem.current = false)
   item.current = true
 
   // 切换显示的组件
@@ -374,13 +318,8 @@ const changeComponent = (item) => {
 }
 
 // 组件挂载时检查登录状态
-onMounted(async () => {
+onMounted(() => {
   startAuthCheck()
-
-  // 如果已经登录，获取管理员信息
-  if (isAuthenticated.value) {
-    await fetchCurrentAdminInfo()
-  }
 
   // 检测微信浏览器并显示提示
   if (checkWechatBrowser() && !hasShownWechatTip()) {
@@ -405,111 +344,70 @@ document.addEventListener('visibilitychange', () => {
 </script>
 
 <style scoped>
-/* 自定义缩放类 */
-.scale-102 {
-  transform: scale(1.02);
-}
-
-.scale-105 {
-  transform: scale(1.05);
-}
-
-/* 自定义滚动条样式 - 深色侧边栏 */
+/* 自定义滚动条样式 */
 .overflow-y-auto::-webkit-scrollbar {
   width: 6px;
 }
 
-.bg-gradient-to-b::-webkit-scrollbar-track {
-  background: transparent;
+.bg-slate-700 .overflow-y-auto::-webkit-scrollbar-track {
+  background: #334155;
 }
 
-.bg-gradient-to-b::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #2563eb 0%, #06b6d4 100%);
-  border-radius: 10px;
+.bg-slate-700 .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #06b6d4;
+  border-radius: 3px;
 }
 
-.bg-gradient-to-b::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #1d4ed8 0%, #0891b2 100%);
+.bg-slate-700 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #0891b2;
 }
 
-/* 主内容区滚动条 */
 .bg-gray-50 .overflow-y-auto::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #f1f1f1;
 }
 
 .bg-gray-50 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #cbd5e1 0%, #94a3b8 100%);
-  border-radius: 10px;
+  background: #c1c1c1;
+  border-radius: 3px;
 }
 
 .bg-gray-50 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%);
-}
-
-/* 脉冲动画优化 */
-@keyframes soft-pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-.animate-pulse {
-  animation: soft-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  background: #a1a1a1;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  /* 移动端侧边栏调整 */
-  .md\:w-64 {
+  .flex {
+    flex-direction: column;
+  }
+
+  .w-60 {
     width: 100%;
-    max-height: 180px;
+    height: auto;
+    max-height: 200px;
   }
 
-  /* 移动端横向滚动优化 */
-  .overflow-x-auto::-webkit-scrollbar {
-    height: 4px;
+  .flex-1.overflow-y-auto {
+    overflow-x: auto;
   }
 
-  .overflow-x-auto::-webkit-scrollbar-track {
-    background: transparent;
+  .list-none {
+    display: flex;
+    flex-direction: row;
   }
 
-  .overflow-x-auto::-webkit-scrollbar-thumb {
-    background: rgba(37, 99, 235, 0.5);
-    border-radius: 10px;
+  .py-4.px-5 {
+    white-space: nowrap;
+    min-width: 120px;
+  }
+
+  .p-8 {
+    padding: 20px 15px;
   }
 }
 
 /* 确保子组件能够正确滚动 */
 div >>> * {
   max-width: 100%;
-}
-
-/* 渐变文字动画 */
-@keyframes gradient-shift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-/* Focus状态优化 */
-.focus\:ring-blue-400:focus {
-  --tw-ring-opacity: 0.5;
-  --tw-ring-color: rgb(96 165 250 / var(--tw-ring-opacity));
-}
-
-/* 移除webkit自动填充背景色 */
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0px 1000px #1e293b inset;
-  -webkit-text-fill-color: white;
-  transition: background-color 5000s ease-in-out 0s;
 }
 </style>
