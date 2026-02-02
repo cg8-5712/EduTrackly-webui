@@ -439,6 +439,10 @@ export default {
     confirmDeleteStudent: '確定要刪除學生 {studentName} 嗎？此操作不可恢復。',
     statusChangedTo: '狀態已更改為',
 
+    // Export
+    exportSuccess: '匯出成功',
+    exportFailed: '匯出失敗',
+
     // HomeworkAdmin
     homeworkCreatedSuccess: '作業建立成功',
     createHomeworkFailed: '建立作業失敗',
@@ -588,6 +592,19 @@ export default {
     confirm: '確定',
     unknownClass: '未知班級({cid})',
     allClasses: '全部班級 ({count}個)',
+
+    // Export
+    classData: '班級資料',
+    studentData: '學生資料',
+    selectStudents: '選擇學生',
+    selectedCount: '已選擇 {count} 人',
+    startDate: '開始日期',
+    endDate: '結束日期',
+    quickSelect: '快捷選擇',
+    lastWeek: '最近一週',
+    lastMonth: '最近一月',
+    lastQuarter: '最近一季',
+    exporting: '匯出中...',
 
     // CountdownAdmin
     countdownManagement: '倒數計時管理',

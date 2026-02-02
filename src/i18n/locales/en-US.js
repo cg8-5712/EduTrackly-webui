@@ -442,6 +442,10 @@ export default {
     confirmDeleteStudent: 'Are you sure you want to delete student {studentName}? This action cannot be undone.',
     statusChangedTo: 'Status changed to',
 
+    // Export
+    exportSuccess: 'Export successful',
+    exportFailed: 'Export failed',
+
     // HomeworkAdmin
     homeworkCreatedSuccess: 'Homework created successfully',
     createHomeworkFailed: 'Failed to create homework',
@@ -591,6 +595,19 @@ export default {
     confirm: 'Confirm',
     unknownClass: 'Unknown Class({cid})',
     allClasses: 'All Classes ({count})',
+
+    // Export
+    classData: 'Class Data',
+    studentData: 'Student Data',
+    selectStudents: 'Select Students',
+    selectedCount: '{count} selected',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    quickSelect: 'Quick Select',
+    lastWeek: 'Last Week',
+    lastMonth: 'Last Month',
+    lastQuarter: 'Last Quarter',
+    exporting: 'Exporting...',
 
     // CountdownAdmin
     countdownManagement: 'Countdown Management',

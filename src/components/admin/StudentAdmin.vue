@@ -101,6 +101,14 @@
           <!-- 操作按钮 -->
           <div class="flex items-center gap-3">
             <button
+              @click="openExportDialog"
+              :disabled="filteredStudents.length === 0"
+              class="px-4 py-2 bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
+            >
+              <span>📊</span>
+              {{ $t('analysis.export') }}
+            </button>
+            <button
               @click="showAddModal = true"
               class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
             >
@@ -396,6 +404,96 @@
         :student="selectedStudent"
         @close="closeDetailModal"
       />
+
+      <!-- 导出对话框 -->
+      <div v-if="showExportDialog" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showExportDialog = false">
+        <div class="bg-white rounded-2xl w-[90%] max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div class="flex justify-between items-center p-6 border-b border-gray-200">
+            <h3 class="m-0 text-xl font-bold text-gray-800">{{ $t('analysis.export') }} - {{ $t('ui.studentData') }}</h3>
+            <button @click="showExportDialog = false" class="bg-none border-none text-lg cursor-pointer p-1 rounded transition-colors hover:bg-gray-100">✖️</button>
+          </div>
+          <div class="p-6">
+            <!-- 学生选择 -->
+            <div class="mb-5">
+              <label class="block mb-2 font-semibold text-gray-700">{{ $t('ui.selectStudents') }}</label>
+              <div class="flex items-center gap-3 mb-3">
+                <label class="flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    :checked="isAllStudentsSelected"
+                    :indeterminate="isStudentsIndeterminate"
+                    @change="toggleSelectAllStudents"
+                    class="mr-2"
+                  />
+                  <span class="text-sm text-gray-700">{{ $t('ui.selectAll') }} ({{ filteredStudents.length }}{{ $t('pagination.peopleUnit') }})</span>
+                </label>
+              </div>
+              <div class="max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-2">
+                <label
+                  v-for="student in filteredStudents"
+                  :key="student.sid"
+                  class="flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors"
+                >
+                  <input
+                    type="checkbox"
+                    :value="student.sid"
+                    v-model="exportStudentIds"
+                    class="mr-2"
+                  />
+                  <span class="text-sm text-gray-800">{{ student.student_name }}</span>
+                  <span class="text-xs text-gray-500 ml-2">(ID: {{ student.sid }})</span>
+                </label>
+              </div>
+              <div class="text-sm text-gray-500 mt-2">
+                {{ $t('ui.selectedCount', { count: exportStudentIds.length }) }}
+              </div>
+            </div>
+
+            <!-- 日期范围选择 -->
+            <div class="mb-5">
+              <label class="block mb-2 font-semibold text-gray-700">{{ $t('analysis.dateRange') }}</label>
+              <div class="flex gap-4 items-center">
+                <div class="flex-1">
+                  <label class="block mb-1 text-sm text-gray-500">{{ $t('ui.startDate') }}</label>
+                  <input
+                    type="date"
+                    v-model="exportStartDate"
+                    :max="exportEndDate || todayDate"
+                    class="w-full py-2 px-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-blue-600"
+                  />
+                </div>
+                <span class="text-gray-400 mt-6">~</span>
+                <div class="flex-1">
+                  <label class="block mb-1 text-sm text-gray-500">{{ $t('ui.endDate') }}</label>
+                  <input
+                    type="date"
+                    v-model="exportEndDate"
+                    :min="exportStartDate"
+                    :max="todayDate"
+                    class="w-full py-2 px-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-blue-600"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- 快捷选择 -->
+            <div class="mb-5">
+              <label class="block mb-2 text-sm text-gray-500">{{ $t('ui.quickSelect') }}</label>
+              <div class="flex gap-2 flex-wrap">
+                <button @click="setDateRange('week')" class="py-1.5 px-3 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">{{ $t('ui.lastWeek') }}</button>
+                <button @click="setDateRange('month')" class="py-1.5 px-3 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">{{ $t('ui.lastMonth') }}</button>
+                <button @click="setDateRange('quarter')" class="py-1.5 px-3 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">{{ $t('ui.lastQuarter') }}</button>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-3 justify-end p-6 border-t border-gray-200">
+            <button @click="showExportDialog = false" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-gray-100 text-gray-700 border-none hover:bg-gray-200">{{ $t('common.cancel') }}</button>
+            <button @click="exportStudentData" :disabled="exporting || !canExport" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-teal-600 text-white border-none hover:bg-teal-700 disabled:opacity-60 disabled:cursor-not-allowed">
+              {{ exporting ? $t('ui.exporting') : $t('analysis.export') }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -410,6 +508,7 @@ import StudentService from '@/services/basic/student.js'
 import StudentAdminService from '@/services/admin/student.js'
 import ClassService from '@/services/basic/class.js'
 import AuthService from '@/services/common/auth.js'
+import AnalysisService from '@/services/basic/analysis.js'
 import notificationService from '@/services/common/notification.js'
 
 const { t: $t } = useI18n()
@@ -432,6 +531,13 @@ const showClassDropdown = ref(false)
 const showAddModal = ref(false)
 const showDetailModal = ref(false)
 const selectedStudent = ref(null)
+const showExportDialog = ref(false)
+
+// 导出相关状态
+const exportStudentIds = ref([])
+const exportStartDate = ref('')
+const exportEndDate = ref('')
+const exporting = ref(false)
 
 // 班级选择相关计算属性
 const isAllSelected = computed(() => {
@@ -488,6 +594,24 @@ const visiblePages = computed(() => {
   }
 
   return pages
+})
+
+// 导出相关计算属性
+const todayDate = computed(() => {
+  const today = new Date()
+  return today.toISOString().split('T')[0]
+})
+
+const canExport = computed(() => {
+  return exportStudentIds.value.length > 0 && exportStartDate.value && exportEndDate.value
+})
+
+const isAllStudentsSelected = computed(() => {
+  return filteredStudents.value.length > 0 && exportStudentIds.value.length === filteredStudents.value.length
+})
+
+const isStudentsIndeterminate = computed(() => {
+  return exportStudentIds.value.length > 0 && exportStudentIds.value.length < filteredStudents.value.length
 })
 
 // 获取班级名称
@@ -683,6 +807,74 @@ const handleJumpToPage = () => {
     currentPage.value = page
   }
   jumpToPage.value = currentPage.value
+}
+
+// 导出相关方法
+const openExportDialog = () => {
+  exportStudentIds.value = []
+  exportStartDate.value = ''
+  exportEndDate.value = ''
+  showExportDialog.value = true
+}
+
+const toggleSelectAllStudents = () => {
+  if (isAllStudentsSelected.value) {
+    exportStudentIds.value = []
+  } else {
+    exportStudentIds.value = filteredStudents.value.map(s => s.sid)
+  }
+}
+
+const setDateRange = (range) => {
+  const today = new Date()
+  const end = new Date(today)
+  let start = new Date(today)
+
+  switch (range) {
+    case 'week':
+      start.setDate(start.getDate() - 7)
+      break
+    case 'month':
+      start.setMonth(start.getMonth() - 1)
+      break
+    case 'quarter':
+      start.setMonth(start.getMonth() - 3)
+      break
+  }
+
+  exportStartDate.value = start.toISOString().split('T')[0]
+  exportEndDate.value = end.toISOString().split('T')[0]
+}
+
+const formatDateToYYYYMMDD = (dateStr) => {
+  return dateStr.replace(/-/g, '')
+}
+
+const exportStudentData = async () => {
+  if (!canExport.value) return
+
+  try {
+    exporting.value = true
+    const startDate = formatDateToYYYYMMDD(exportStartDate.value)
+    const endDate = formatDateToYYYYMMDD(exportEndDate.value)
+
+    const blob = await AnalysisService.exportStudentsAttendance(
+      exportStudentIds.value,
+      startDate,
+      endDate
+    )
+
+    const filename = `students_attendance_${startDate}_${endDate}.xlsx`
+    AnalysisService.downloadExcel(blob, filename)
+
+    notificationService.success($t('component.exportSuccess'))
+    showExportDialog.value = false
+  } catch (err) {
+    console.error('Export failed:', err)
+    notificationService.error(err.message || $t('component.exportFailed'))
+  } finally {
+    exporting.value = false
+  }
 }
 
 // 监听搜索变化，重置页码
