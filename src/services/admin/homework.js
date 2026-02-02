@@ -97,7 +97,7 @@ class AdminHomeworkService extends ApiPrefix {
       }
 
       const url = '/homework/post';
-      const response = await this.adminPost(url, data);
+      const response = await this.optionalAuthPost(url, data);
       console.log(t('service.createHomeworkSuccess') + ':', response.message);
 
       if (response.code !== 0) {
@@ -125,7 +125,7 @@ class AdminHomeworkService extends ApiPrefix {
       }
 
       const url = '/homework/post';
-      const response = await this.adminPost(url, data);
+      const response = await this.optionalAuthPost(url, data);
       console.log(t('service.updateHomeworkSuccess') + ':', response.message);
 
       if (response.code !== 0) {

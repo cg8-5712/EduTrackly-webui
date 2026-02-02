@@ -1,4 +1,5 @@
 import ApiPrefix from '@/utils/ApiPrefix';
+import AuthService from '@/services/common/auth';
 
 class HomeworkService extends ApiPrefix {
     constructor() {
@@ -39,7 +40,20 @@ class HomeworkService extends ApiPrefix {
     // 新增函数：提交作业
     async postHomework(payload) {
         try {
-            const data = await this.api.post('/homework/post', payload);
+            // 使用 AuthService 获取 token
+            const token = AuthService.getToken();
+
+            let data;
+            if (token) {
+                // 有 token 就带上
+                data = await this.api.post('/homework/post', payload, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            } else {
+                // 没有 token 就不带（当天作业可以不需要认证）
+                data = await this.api.post('/homework/post', payload);
+            }
+
             if (data.data.code !== 0) {
                 throw new Error(data.data.message);
             }
