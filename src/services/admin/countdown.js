@@ -18,7 +18,7 @@ class CountdownService extends ApiPrefix {
         throw new Error('Class ID, content, and deadline are required');
       }
 
-      const response = await this.post('/countdown/create', data);
+      const response = await this.adminPost('/countdown/create', data);
       console.log('Create countdown success:', response.message);
 
       if (response.code !== 0) {
@@ -42,7 +42,7 @@ class CountdownService extends ApiPrefix {
         throw new Error('Countdown ID is required');
       }
 
-      const response = await this.get(`/countdown/get?cdid=${cdid}`);
+      const response = await this.adminGet(`/countdown/get?cdid=${cdid}`);
       console.log('Get countdown success:', response.message);
 
       if (response.code !== 0) {
@@ -78,7 +78,7 @@ class CountdownService extends ApiPrefix {
       }
 
       const bodyData = { page, size };
-      const response = await this.get(url, bodyData);
+      const response = await this.adminGet(url, bodyData);
       console.log('Get countdown list success:', response.message);
 
       if (response.code !== 0) {
@@ -105,7 +105,7 @@ class CountdownService extends ApiPrefix {
         throw new Error('Countdown ID is required');
       }
 
-      const response = await this.put(`/countdown/update?cdid=${cdid}`, data);
+      const response = await this.adminPut(`/countdown/update?cdid=${cdid}`, data);
       console.log('Update countdown success:', response.message);
 
       if (response.code !== 0) {
@@ -129,7 +129,7 @@ class CountdownService extends ApiPrefix {
         throw new Error('Countdown ID is required');
       }
 
-      const response = await this.delete(`/countdown/delete?cdid=${cdid}`);
+      const response = await this.adminDelete(`/countdown/delete?cdid=${cdid}`);
       console.log('Delete countdown success:', response.message);
 
       if (response.code !== 0) {
