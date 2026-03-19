@@ -117,6 +117,30 @@ class SloganService extends ApiPrefix {
   }
 
   /**
+   * 随机获取标语
+   * @param {number} cid - 班级ID
+   * @param {number} count - 数量 (默认3)
+   */
+  async getRandomSlogans(cid, count = 3) {
+    try {
+      if (!cid) {
+        throw new Error('Class ID is required');
+      }
+
+      const response = await this.get(`/slogan/random?cid=${cid}&count=${count}`);
+
+      if (response.code !== 0) {
+        throw new Error(response.message);
+      }
+
+      return response;
+    } catch (error) {
+      console.error('Get random slogans failed:', error);
+      throw error;
+    }
+  }
+
+  /**
    * 删除标语
    * @param {number} slid - 标语ID
    */

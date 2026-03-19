@@ -40,7 +40,6 @@ const props = defineProps({
 
 // 状态
 const slogans = ref([])
-const randomSlogans = ref([])
 const isVisible = ref(true)
 const loading = ref(false)
 const position = ref({ x: 20, y: 300 })
@@ -52,20 +51,9 @@ const hasMoved = ref(false)
 const animationFrameId = ref(null)
 const refreshTimerId = ref(null)
 
-// 随机选择3个标语
-const selectRandomSlogans = () => {
-  if (slogans.value.length <= 3) {
-    randomSlogans.value = [...slogans.value]
-    return
-  }
-
-  const shuffled = [...slogans.value].sort(() => Math.random() - 0.5)
-  randomSlogans.value = shuffled.slice(0, 3)
-}
-
 // 计算属性
 const displaySlogans = computed(() => {
-  return randomSlogans.value
+  return slogans.value
 })
 
 const shouldShow = computed(() => {
@@ -102,16 +90,10 @@ const fetchSlogans = async () => {
 
     isVisible.value = true
 
-    const response = await sloganService.getSloganList({
-      cid: props.selectedCid,
-      order: 'asc',
-      page: 1,
-      size: 10
-    })
+    const response = await sloganService.getRandomSlogans(props.selectedCid)
 
     if (response.code === 0 && response.data && Array.isArray(response.data)) {
       slogans.value = response.data
-      selectRandomSlogans()
       startRefreshTimer()
     } else {
       slogans.value = []
@@ -125,17 +107,17 @@ const fetchSlogans = async () => {
   }
 }
 
-// 启动15分钟定时刷新
+// 启动5分钟定时刷新
 const startRefreshTimer = () => {
   // 清除已有的定时器
   if (refreshTimerId.value) {
     clearInterval(refreshTimerId.value)
   }
 
-  // 每15分钟刷新一次 (15 * 60 * 1000 = 900000ms)
+  // 每5分钟刷新一次 (5 * 60 * 1000 = 300000ms)
   refreshTimerId.value = setInterval(() => {
-    selectRandomSlogans()
-  }, 15 * 60 * 1000)
+    fetchSlogans()
+  }, 5 * 60 * 1000)
 }
 
 // 拖动相关
