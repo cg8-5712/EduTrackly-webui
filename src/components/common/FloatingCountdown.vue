@@ -333,34 +333,37 @@ onUnmounted(() => {
 .floating-countdown {
   position: fixed;
   z-index: 9999;
-  background: var(--color-surface);
-  border: 2px solid var(--color-primary);
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  min-width: 280px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 24%),
+    var(--panel-strong);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: var(--shadow-panel);
+  min-width: 320px;
   max-width: 400px;
   user-select: none;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(22px);
   transition: all 0.2s;
+  overflow: hidden;
 }
 
 .floating-countdown:hover {
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
-  border-color: var(--color-secondary);
+  box-shadow: var(--shadow-glow);
+  border-color: rgba(var(--color-primary-rgb), 0.18);
 }
 
 .countdown-content {
-  padding: 12px;
+  padding: 14px;
   max-height: 400px;
   overflow-y: auto;
 }
 
 .countdown-item {
-  padding: 12px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
+  padding: 14px;
+  margin-bottom: 10px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   transition: all 0.2s;
 }
 
@@ -369,19 +372,17 @@ onUnmounted(() => {
 }
 
 .countdown-item:hover {
-  border-color: var(--color-primary);
+  border-color: rgba(var(--color-primary-rgb), 0.18);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .countdown-item.expired {
-  opacity: 0.5;
-  background: var(--color-background);
+  opacity: 0.55;
 }
 
 .countdown-text {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 8px;
   line-height: 1.4;
@@ -397,13 +398,15 @@ onUnmounted(() => {
 .countdown-date {
   font-size: 12px;
   color: var(--color-text-secondary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .countdown-days {
   font-size: 13px;
   font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
   white-space: nowrap;
   color: white;
 }
@@ -483,7 +486,7 @@ onUnmounted(() => {
 /* 响应式 */
 @media (max-width: 768px) {
   .floating-countdown {
-    min-width: 240px;
+    min-width: 260px;
     max-width: 90vw;
   }
 

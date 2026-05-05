@@ -124,7 +124,7 @@
           <div
             v-for="classItem in sortedClassList"
             :key="classItem.cid"
-            class="flex items-center py-4 px-6 border-b border-gray-100 transition-all duration-200 last:border-b-0 hover:bg-gray-50 hover:shadow-md hover:-translate-y-0.5"
+            class="flex items-center py-4 px-6 border-b border-gray-100 transition-all duration-200 last:border-b-0 hover:bg-white/5 hover:shadow-md hover:-translate-y-0.5"
           >
             <div class="flex items-center px-2 min-w-0 flex-[2]">
               <h3 class="text-lg font-semibold text-gray-800 m-0 truncate">{{ classItem.class_name }}</h3>
@@ -145,14 +145,14 @@
               <div class="flex gap-2">
                 <button
                   @click="viewClassDetail(classItem)"
-                  class="flex items-center justify-center w-9 h-9 border-none rounded-lg text-sm cursor-pointer transition-all duration-200 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:scale-105"
+                  class="flex items-center justify-center w-9 h-9 border-none rounded-lg text-sm cursor-pointer transition-all duration-200 bg-blue-50 text-blue-600 hover:bg-white/8 hover:scale-105"
                   :title="$t('ui.viewDetails')"
                 >
                   <span class="text-base">👁️</span>
                 </button>
                 <button
                   @click="confirmDelete(classItem)"
-                  class="flex items-center justify-center w-9 h-9 border-none rounded-lg text-sm cursor-pointer transition-all duration-200 bg-red-50 text-red-600 hover:bg-red-100 hover:scale-105"
+                  class="flex items-center justify-center w-9 h-9 border-none rounded-lg text-sm cursor-pointer transition-all duration-200 bg-red-50 text-red-600 hover:bg-white/8 hover:scale-105"
                   :title="$t('ui.deleteClass')"
                 >
                   <span class="text-base">🗑️</span>
@@ -897,10 +897,6 @@ onUnmounted(() => {
     font-size: 0.6rem;
   }
 
-  .w-\[95%\] {
-    width: 95%;
-    margin: 16px;
-  }
 }
 
 @media (max-width: 480px) {

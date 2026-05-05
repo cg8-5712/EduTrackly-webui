@@ -1,42 +1,28 @@
-/**
- * 浅色主题配置
- */
 export default {
-  id: 'light',
-  name: '浅色',
-  description: '明亮清爽的浅色主题',
+  id: "light",
+  name: "Archive Paper",
+  description: "Soft premium paper for non-projection admin work.",
   colors: {
-    // 主色调
-    primary: '#3b82f6',
-    secondary: '#8b5cf6',
-
-    // 背景色
-    background: '#f9fafb',
-    surface: '#ffffff',
-    headerFooter: '#ffffff', // 顶栏和底栏专用颜色
-
-    // 文字颜色
+    primary: "#4f5f78",
+    secondary: "#a88757",
+    background: "#ede8df",
+    surface: "#f7f4ed",
+    headerFooter: "#f0ece4",
     text: {
-      primary: '#111827',
-      secondary: '#6b7280',
-      tertiary: '#9ca3af',
+      primary: "#232935",
+      secondary: "#596171",
+      tertiary: "#828999",
     },
-
-    // 边框颜色
-    border: '#e5e7eb',
-
-    // 状态颜色
-    error: '#ef4444',
-    success: '#10b981',
-    warning: '#f59e0b',
-    info: '#3b82f6',
+    border: "#d4cdc0",
+    error: "#b86874",
+    success: "#607f75",
+    warning: "#b5884e",
+    info: "#687ea3",
   },
-
-  // 阴影配置
   shadows: {
-    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-    md: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+    sm: "0 2px 8px rgba(28, 31, 39, 0.08)",
+    md: "0 12px 28px rgba(28, 31, 39, 0.11)",
+    lg: "0 20px 46px rgba(28, 31, 39, 0.14)",
+    xl: "0 28px 60px rgba(28, 31, 39, 0.18)",
   },
 }

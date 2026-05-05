@@ -1,42 +1,28 @@
-/**
- * 蓝色主题配置
- */
 export default {
-  id: 'blue',
-  name: '海洋蓝',
-  description: '清新海洋风格的蓝色主题',
+  id: "blue",
+  name: "Midnight Blue",
+  description: "Blue-black slate with restrained metallic warmth.",
   colors: {
-    // 主色调
-    primary: '#0ea5e9',
-    secondary: '#06b6d4',
-
-    // 背景色
-    background: '#0c4a6e',
-    surface: '#075985',
-    headerFooter: '#0c4a6e', // 顶栏和底栏专用颜色
-
-    // 文字颜色
+    primary: "#88a0cd",
+    secondary: "#b89967",
+    background: "#090c13",
+    surface: "#111823",
+    headerFooter: "#0c121c",
     text: {
-      primary: '#f0f9ff',
-      secondary: '#bae6fd',
-      tertiary: '#7dd3fc',
+      primary: "#eff3fb",
+      secondary: "#c0cbdb",
+      tertiary: "#78849a",
     },
-
-    // 边框颜色
-    border: '#0369a1',
-
-    // 状态颜色
-    error: '#f87171',
-    success: '#34d399',
-    warning: '#fbbf24',
-    info: '#38bdf8',
+    border: "#1f2b3a",
+    error: "#c87a84",
+    success: "#739589",
+    warning: "#c89a63",
+    info: "#87a2d4",
   },
-
-  // 阴影配置
   shadows: {
-    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.3)',
-    md: '0 4px 6px -1px rgba(0, 0, 0, 0.35)',
-    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.4)',
-    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
+    sm: "0 6px 14px rgba(0, 0, 0, 0.24)",
+    md: "0 18px 42px rgba(0, 0, 0, 0.32)",
+    lg: "0 28px 64px rgba(0, 0, 0, 0.38)",
+    xl: "0 40px 96px rgba(0, 0, 0, 0.46)",
   },
 }

@@ -337,19 +337,19 @@ export default {
 
     // 获取使用率颜色
     const getUsageColor = (percent) => {
-      if (percent >= 90) return '#e74c3c'
-      if (percent >= 70) return '#f39c12'
-      if (percent >= 50) return '#f1c40f'
-      return '#27ae60'
+      if (percent >= 90) return '#c77986'
+      if (percent >= 70) return '#c79a61'
+      if (percent >= 50) return '#b89a68'
+      return '#6f978a'
     }
 
     // 获取状态颜色
     const getStatusColor = (status) => {
       switch (status) {
-        case '已连接': return '#27ae60'
-        case '连接中...': return '#f39c12'
-        case '连接失败': return '#e74c3c'
-        default: return '#95a5a6'
+        case '已连接': return '#6f978a'
+        case '连接中...': return '#c79a61'
+        case '连接失败': return '#c77986'
+        default: return '#8094bf'
       }
     }
 
@@ -409,7 +409,7 @@ export default {
         const chartHeight = canvasHeight - padding * 2
 
         // 绘制背景网格
-        ctx.strokeStyle = '#e5e7eb'
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)'
         ctx.lineWidth = 1
 
         // 垂直网格线
@@ -431,7 +431,7 @@ export default {
         }
 
         // 绘制Y轴刻度
-        ctx.fillStyle = '#6b7280'
+        ctx.fillStyle = '#9aa4b4'
         ctx.font = '12px Arial'
         ctx.textAlign = 'right'
         for (let i = 0; i <= 10; i++) {
@@ -588,22 +588,22 @@ export default {
         }
 
         // 绘制CPU线
-        drawLine('cpu', '#e74c3c')
+        drawLine('cpu', '#c77986')
 
         // 绘制内存线
-        drawLine('memory', '#3498db')
+        drawLine('memory', '#8094bf')
 
         // 绘制负载线
-        drawLine('load', '#f39c12')
+        drawLine('load', '#c79a61')
 
         // 绘制图例
         ctx.font = '14px Arial'
         ctx.textAlign = 'left'
         const legendY = 30
         const legendItems = [
-          { color: '#e74c3c', text: 'CPU使用率', x: padding },
-          { color: '#3498db', text: '内存使用率', x: padding + 120 },
-          { color: '#f39c12', text: '系统负载', x: padding + 250 }
+          { color: '#c77986', text: 'CPU使用率', x: padding },
+          { color: '#8094bf', text: '内存使用率', x: padding + 120 },
+          { color: '#c79a61', text: '系统负载', x: padding + 250 }
         ]
 
         legendItems.forEach(item => {
@@ -612,7 +612,7 @@ export default {
           ctx.fillRect(item.x, legendY - 8, 15, 3)
 
           // 绘制文本
-          ctx.fillStyle = '#374151'
+          ctx.fillStyle = '#d5dbe7'
           ctx.fillText(item.text, item.x + 25, legendY)
         })
       }

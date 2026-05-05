@@ -1,161 +1,164 @@
 <template>
-  <div class="h-screen w-full bg-[var(--color-background)] text-[var(--color-text-primary)] flex flex-col p-2 md:p-4 box-border overflow-hidden transition-colors duration-200" @click="handleGlobalClick">
-    <!-- 可拖动的倒计时组件 -->
+  <div class="h-screen w-full overflow-hidden p-3 md:p-4" @click="handleGlobalClick">
     <FloatingCountdown :selected-cid="selectedCid" />
 
-    <!-- 顶部栏 -->
-    <div class="flex flex-wrap md:flex-nowrap justify-between items-center gap-3 md:gap-4 p-3 md:p-4 md:pt-8 bg-[var(--color-surface)] rounded-xl shadow-lg transition-colors duration-200">
-      <!-- 日期和日历 -->
-      <div class="relative flex items-center gap-2 md:gap-4 text-2xl md:text-4xl font-semibold text-[var(--color-primary)]">
-        <div class="flex flex-col gap-1 md:gap-2">
-          <span class="text-lg sm:text-[1.875rem] md:text-5xl font-bold text-[var(--color-primary)] transition-colors duration-200">{{ $t('common.today') }}：{{ todayDate }}</span>
-          <span v-if="selectedDate && selectedDate !== todayDateInt" class="text-base sm:text-2xl md:text-[2.5rem] text-[var(--color-secondary)] transition-colors duration-200">
-            {{ $t('datetime.selectDate') }}：{{ formattedSelectedDate }}
-          </span>
+    <div class="flex h-full flex-col gap-3">
+      <section class="board-shell px-5 py-5 md:px-7 md:py-6">
+        <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
+          <div class="space-y-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <Badge variant="primary">Homework Mode</Badge>
+              <Badge variant="warning">{{ $t("common.today") }}</Badge>
+            </div>
+            <div>
+              <h1 class="board-heading">{{ $t("homework.homeworkContent") }}</h1>
+              <p class="board-subcopy">
+                {{ todayDate }}
+                <span v-if="selectedDate && selectedDate !== todayDateInt">
+                  · {{ formattedSelectedDate }}
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 md:gap-3">
+            <LanguageToggle />
+            <ThemeToggle />
+            <Button variant="outline" @click.stop="showCalendar = !showCalendar">
+              {{ selectedDate && selectedDate !== todayDateInt ? formattedSelectedDate : "Pick Date" }}
+            </Button>
+            <Button variant="default" @click.stop="toggleFullscreen">
+              {{ isFullscreen ? $t("common.exitFullscreen") : $t("common.fullscreen") }}
+            </Button>
+            <div class="rounded-[1.7rem] border border-white/10 bg-white/6 px-5 py-3 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+              <div class="text-xs uppercase tracking-[0.24em] text-[var(--color-text-tertiary)]">Clock</div>
+              <div class="font-display text-5xl tracking-[-0.08em] text-foreground md:text-6xl">{{ currentTime }}</div>
+            </div>
+          </div>
         </div>
-        <button @click="showCalendar = !showCalendar" class="bg-transparent border-none text-2xl md:text-5xl cursor-pointer p-1 rounded-lg transition-transform duration-200 hover:scale-110">
-          📅
-        </button>
-        <div v-if="showCalendar" class="absolute top-full left-0 mt-2 z-50 bg-[var(--color-surface)] rounded-xl shadow-lg transition-colors duration-200 animate-fade-in">
+
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <ClassSwitch v-model:cid="selectedCid" />
+          <div class="flex flex-wrap gap-2">
+            <span class="info-pill">{{ selectedDateText }}</span>
+            <span class="info-pill">Single Focus View</span>
+          </div>
+        </div>
+
+        <div
+          v-if="showCalendar"
+          class="calendar-popup board-shell absolute right-4 top-[9.5rem] z-[1000] p-2"
+          @click.stop
+        >
           <Calendar mode="single" @select-date="onDateSelect" />
         </div>
-      </div>
+      </section>
 
-      <!-- 班级选择 -->
-      <ClassSwitch v-model:cid="selectedCid" class="w-full md:w-auto" />
-
-      <!-- 操作按钮区 -->
-      <div class="flex items-center gap-2 sm:gap-4 md:gap-6 w-full md:w-auto justify-end">
-        <LanguageToggle />
-        <ThemeToggle />
-        <div class="text-2xl sm:text-[2rem] md:text-[3.75rem] font-black text-[var(--color-primary)] transition-colors duration-200 whitespace-nowrap">{{ currentTime }}</div>
-        <button @click.stop="toggleFullscreen" class="bg-[var(--color-surface)] text-[var(--color-primary)] border-2 border-[var(--color-border)] px-3 py-1.5 sm:px-4 sm:py-2 md:px-8 md:py-4 rounded-lg text-sm sm:text-lg md:text-[1.875rem] cursor-pointer transition-all duration-200 font-semibold whitespace-nowrap hover:bg-[var(--color-primary)] hover:text-[var(--color-surface)]">
-          <span class="hidden sm:inline">{{ isFullscreen ? $t('common.exitFullscreen') : $t('common.fullscreen') }}</span>
-          <span class="sm:hidden">{{ isFullscreen ? '退出' : '全屏' }}</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- 主要内容区域 -->
-    <div class="flex-1 grid grid-cols-1 gap-2 md:gap-4 min-h-0 py-1 md:py-2 mt-2">
-      <!-- 右侧作业信息 -->
-      <div class="bg-[var(--color-surface)] rounded-xl p-3 sm:p-4 md:p-6 shadow-lg overflow-y-auto overflow-x-hidden min-h-0 transition-colors duration-200">
-        <div class="flex justify-between items-center flex-wrap gap-2 m-0 py-1">
-          <h2 class="text-2xl sm:text-4xl md:text-[3.75rem] font-bold text-[var(--color-primary)] m-0 transition-colors duration-200">{{ $t('homework.homeworkContent') }}</h2>
-          <span class="text-xl sm:text-[1.875rem] md:text-5xl text-[var(--color-secondary)] transition-colors duration-200">{{ selectedDateText }}</span>
+      <section class="board-shell min-h-0 flex-1 overflow-auto">
+        <div class="flex items-center justify-between gap-4 px-5 pt-5 md:px-6 md:pt-6">
+          <div>
+            <div class="board-kicker mb-2">All Subjects</div>
+            <h2 class="panel-title">{{ $t("homework.homeworkContent") }}</h2>
+          </div>
+          <span class="info-pill">{{ selectedDateText }}</span>
         </div>
-        <Homework
+
+        <div class="px-5 pb-5 pt-4 md:px-6 md:pb-6">
+          <Homework
             :selected-date="selectedDate"
             :selected-cid="selectedCid"
             :columns="2"
-        />
-      </div>
-    </div>
-
-    <footer v-if="!isFullscreen" class="bg-[var(--color-surface)] text-[var(--color-text-tertiary)] p-2 px-3 md:p-3 md:px-4 mt-auto transition-colors duration-200 border-t border-[var(--color-border)]">
-      <div class="flex justify-between items-center max-w-full gap-4 flex-wrap max-md:flex-col max-md:items-center max-md:text-center">
-        <div class="flex-1 min-w-[200px] max-md:justify-center max-md:min-w-full">
-          <router-link to="/about" class="no-underline text-[var(--color-text-tertiary)] transition-colors duration-200 block hover:text-[var(--color-primary)]">
-            <p class="m-0 text-xs md:text-sm leading-6">© 2025 EduTrackly. All rights reserved.</p>
-            <p class="text-[0.625rem] md:text-xs opacity-70 mt-1">Licensed under GNU General Public License v3.0</p>
-          </router-link>
+          />
         </div>
-      </div>
-    </footer>
+      </section>
+
+      <footer v-if="!isFullscreen" class="board-shell px-5 py-4 text-sm text-[var(--color-text-secondary)]">
+        <router-link to="/about" class="flex items-center justify-between gap-4 no-underline">
+          <span>Focused homework projection board</span>
+          <span class="text-[var(--color-text-tertiary)]">EduTrackly</span>
+        </router-link>
+      </footer>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-import Homework from '@/components/homework/homework.vue'
-import Calendar from '@/components/common/calendar.vue'
-import ClassSwitch from '@/components/common/ClassSwitch.vue'
-import ThemeToggle from '@/components/common/ThemeToggle.vue'
-import LanguageToggle from '@/components/common/LanguageToggle.vue'
-import FloatingCountdown from '@/components/common/FloatingCountdown.vue'
-import VersionInfo from '@/components/VersionInfo.vue'
-import { formatYYYYMMDDToDate } from '@/utils/formatDate'
-import notificationService from '@/services/common/notification'
+import { computed, onMounted, onUnmounted, ref } from "vue"
+import { useI18n } from "vue-i18n"
+import Homework from "@/components/homework/homework.vue"
+import Calendar from "@/components/common/calendar.vue"
+import ClassSwitch from "@/components/common/ClassSwitch.vue"
+import ThemeToggle from "@/components/common/ThemeToggle.vue"
+import LanguageToggle from "@/components/common/LanguageToggle.vue"
+import FloatingCountdown from "@/components/common/FloatingCountdown.vue"
+import { formatYYYYMMDDToDate } from "@/utils/formatDate"
+import Button from "@/components/ui/button/Button.vue"
+import Badge from "@/components/ui/badge/Badge.vue"
 
 const { t: $t } = useI18n()
 
-// 检测微信浏览器
-const checkWechatBrowser = () => {
-  const ua = navigator.userAgent.toLowerCase()
-  return /micromessenger/i.test(ua)
-}
-
-// 检查是否已经显示过提示
-const hasShownWechatTip = () => {
-  return sessionStorage.getItem('edutrackly-cg8-5712-wechat-tip-shown') === 'true'
-}
-
-const currentTime = ref('')
-const todayDate = ref('')
-const todayDateInt = ref('')
+const currentTime = ref("")
+const todayDate = ref("")
+const todayDateInt = ref("")
 const showCalendar = ref(false)
 const selectedDate = ref(null)
 const isFullscreen = ref(false)
-
-// 班级相关
 const selectedCid = ref(null)
 
-// 计算属性
+let clockTimer = null
+
 const formattedSelectedDate = computed(() => {
-  if (selectedDate.value) {
-    return formatYYYYMMDDToDate(parseInt(selectedDate.value))
+  if (!selectedDate.value) {
+    return ""
   }
-  return ''
+
+  return formatYYYYMMDDToDate(Number.parseInt(selectedDate.value, 10))
 })
 
 const selectedDateText = computed(() => {
   if (selectedDate.value && selectedDate.value !== todayDateInt.value) {
-    return formattedSelectedDate.value + ' ' + $t('homework.title')
+    return `${formattedSelectedDate.value} ${$t("homework.title")}`
   }
-  return $t('homework.todayHomework')
+
+  return $t("homework.todayHomework")
 })
 
-// 更新时间
-const updateTime = () => {
+function updateTime() {
   const now = new Date()
-  const hours = String(now.getHours()).padStart(2, '0')
-  const minutes = String(now.getMinutes()).padStart(2, '0')
-  currentTime.value = `${hours}:${minutes}`
+  currentTime.value = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`
 }
 
-// 更新日期
-const updateDate = () => {
+function updateDate() {
   const now = new Date()
-  const dateInt = parseInt(
-      now.getFullYear() +
-      String(now.getMonth() + 1).padStart(2, '0') +
-      String(now.getDate()).padStart(2, '0')
+  const dateInt = Number.parseInt(
+    now.getFullYear() +
+      String(now.getMonth() + 1).padStart(2, "0") +
+      String(now.getDate()).padStart(2, "0"),
+    10
   )
+
   todayDateInt.value = String(dateInt)
   todayDate.value = formatYYYYMMDDToDate(dateInt)
 }
 
-// 日期选择
-const onDateSelect = (date) => {
+function onDateSelect(date) {
   selectedDate.value = date
   showCalendar.value = false
 }
 
-// 切换全屏
-const toggleFullscreen = () => {
+function toggleFullscreen() {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen()
     isFullscreen.value = true
-  } else {
-    document.exitFullscreen()
-    isFullscreen.value = false
+    return
   }
+
+  document.exitFullscreen()
+  isFullscreen.value = false
 }
 
-// 点击空白关闭日历
-const handleGlobalClick = (event) => {
-  if (showCalendar.value && !event.target.closest('.calendar-popup') && !event.target.closest('.calendar-button')) {
+function handleGlobalClick(event) {
+  if (showCalendar.value && !event.target.closest(".calendar-popup")) {
     showCalendar.value = false
   }
 }
@@ -163,55 +166,16 @@ const handleGlobalClick = (event) => {
 onMounted(() => {
   updateDate()
   updateTime()
-  setInterval(updateTime, 60000)
-  document.addEventListener('fullscreenchange', () => {
-    isFullscreen.value = !!document.fullscreenElement
-  })
+  clockTimer = window.setInterval(updateTime, 60000)
 
-  // 检测微信浏览器并显示提示
-  if (checkWechatBrowser() && !hasShownWechatTip()) {
-    setTimeout(() => {
-      notificationService.info($t('wechatTip.message'));
-      sessionStorage.setItem('edutrackly-cg8-5712-wechat-tip-shown', 'true')
-    }, 1000) // 延迟1秒显示，避免干扰页面加载
+  document.addEventListener("fullscreenchange", () => {
+    isFullscreen.value = Boolean(document.fullscreenElement)
+  })
+})
+
+onUnmounted(() => {
+  if (clockTimer) {
+    window.clearInterval(clockTimer)
   }
 })
 </script>
-
-<style scoped>
-/* 日历弹出动画 */
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.2s ease-in-out;
-}
-
-/* 自定义滚动条样式 */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-background);
-  border-radius: 6px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 6px;
-  transition: background var(--transition-fast);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-tertiary);
-}
-</style>

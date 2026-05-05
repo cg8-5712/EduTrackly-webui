@@ -1,42 +1,28 @@
-/**
- * 深色主题配置
- */
 export default {
-  id: 'dark',
-  name: '深色',
-  description: '护眼舒适的深色主题',
+  id: "dark",
+  name: "Obsidian",
+  description: "Deep charcoal with cool steel highlights.",
   colors: {
-    // 主色调
-    primary: '#60a5fa',
-    secondary: '#a78bfa',
-
-    // 背景色
-    background: '#111827',
-    surface: '#1f2937',
-    headerFooter: '#212936', // 顶栏和底栏专用颜色
-
-    // 文字颜色
+    primary: "#93a1bb",
+    secondary: "#b89a68",
+    background: "#080a0f",
+    surface: "#12151c",
+    headerFooter: "#0d1016",
     text: {
-      primary: '#f9fafb',
-      secondary: '#d1d5db',
-      tertiary: '#9ca3af',
+      primary: "#f1f4fb",
+      secondary: "#c0c7d4",
+      tertiary: "#727887",
     },
-
-    // 边框颜色
-    border: '#374151',
-
-    // 状态颜色
-    error: '#f87171',
-    success: '#34d399',
-    warning: '#fbbf24',
-    info: '#60a5fa',
+    border: "#232936",
+    error: "#c77986",
+    success: "#6f978a",
+    warning: "#c79a61",
+    info: "#8094bf",
   },
-
-  // 阴影配置
   shadows: {
-    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.25)',
-    md: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
-    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.4)',
-    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
+    sm: "0 6px 14px rgba(0, 0, 0, 0.24)",
+    md: "0 18px 42px rgba(0, 0, 0, 0.32)",
+    lg: "0 28px 64px rgba(0, 0, 0, 0.38)",
+    xl: "0 40px 96px rgba(0, 0, 0, 0.46)",
   },
 }

@@ -245,21 +245,32 @@ onUnmounted(() => {
 .floating-slogan {
   position: fixed;
   z-index: 9998;
-  min-width: 280px;
+  min-width: 320px;
   max-width: 400px;
   user-select: none;
   transition: all 0.2s;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 24%),
+    var(--panel-strong);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(22px);
+  overflow: hidden;
 }
 
 .slogan-content {
-  padding: 12px;
+  padding: 14px;
   max-height: 300px;
   overflow-y: auto;
 }
 
 .slogan-item {
-  padding: 8px 12px;
-  margin-bottom: 4px;
+  padding: 12px 14px;
+  margin-bottom: 6px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
   transition: all 0.2s;
 }
 
@@ -268,14 +279,15 @@ onUnmounted(() => {
 }
 
 .slogan-item:hover {
-  opacity: 0.8;
+  border-color: rgba(var(--color-primary-rgb), 0.18);
+  transform: translateY(-1px);
 }
 
 .slogan-text {
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-text-primary);
-  line-height: 1.5;
+  line-height: 1.65;
   text-align: center;
 }
 
@@ -300,7 +312,7 @@ onUnmounted(() => {
 
 @media (max-width: 768px) {
   .floating-slogan {
-    min-width: 240px;
+    min-width: 260px;
     max-width: 90vw;
   }
 

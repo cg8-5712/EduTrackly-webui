@@ -1,109 +1,121 @@
-import { reactive, watch } from 'vue'
-import { themes, defaultTheme, getThemeById, getAllThemes } from '@/config/themes'
-import i18n from '@/i18n'
+import { reactive, watch } from "vue"
+import { defaultTheme, getAllThemes, getThemeById } from "@/config/themes"
+import i18n from "@/i18n"
 
 const t = (key) => i18n.global.t(key)
 
-/**
- * 本地存储管理类
- * 负责主题偏好的持久化存储
- */
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max)
+}
+
+function hexToRgb(hex) {
+  const sanitized = hex.replace("#", "")
+  const normalized =
+    sanitized.length === 3
+      ? sanitized
+          .split("")
+          .map((char) => char + char)
+          .join("")
+      : sanitized
+
+  const int = Number.parseInt(normalized, 16)
+
+  return {
+    r: (int >> 16) & 255,
+    g: (int >> 8) & 255,
+    b: int & 255,
+  }
+}
+
+function rgbToString({ r, g, b }) {
+  return `${r}, ${g}, ${b}`
+}
+
+function rgbToHex({ r, g, b }) {
+  return `#${[r, g, b]
+    .map((channel) => clamp(channel, 0, 255).toString(16).padStart(2, "0"))
+    .join("")}`
+}
+
+function mixColors(colorA, colorB, weight = 0.5) {
+  const a = hexToRgb(colorA)
+  const b = hexToRgb(colorB)
+  const ratio = clamp(weight, 0, 1)
+
+  return rgbToHex({
+    r: Math.round(a.r * (1 - ratio) + b.r * ratio),
+    g: Math.round(a.g * (1 - ratio) + b.g * ratio),
+    b: Math.round(a.b * (1 - ratio) + b.b * ratio),
+  })
+}
+
+function withAlpha(hex, alpha) {
+  const { r, g, b } = hexToRgb(hex)
+  return `rgba(${r}, ${g}, ${b}, ${clamp(alpha, 0, 1)})`
+}
+
+function getContrastColor(hex) {
+  const { r, g, b } = hexToRgb(hex)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance > 0.65 ? "#09100c" : "#f7fbf4"
+}
+
 class ThemeStorage {
   constructor() {
-    this.STORAGE_KEY = 'edutrackly-cg8-5712-edu-trackly-theme'
-    this.ADMIN_STORAGE_KEY = 'edutrackly-cg8-5712-edu-trackly-theme-admin'
+    this.STORAGE_KEY = "edutrackly-cg8-5712-edu-trackly-theme"
+    this.ADMIN_STORAGE_KEY = "edutrackly-cg8-5712-edu-trackly-theme-admin"
   }
 
-  /**
-   * 保存主题到本地存储
-   * @param {string} themeId - 主题 ID
-   * @param {boolean} isAdmin - 是否为 admin 页面
-   */
   save(themeId, isAdmin = false) {
     try {
-      const key = isAdmin ? this.ADMIN_STORAGE_KEY : this.STORAGE_KEY
-      localStorage.setItem(key, themeId)
-      console.log(`${t('service.themeSaved')}: ${themeId} (${isAdmin ? 'admin' : 'normal'})`)
+      localStorage.setItem(isAdmin ? this.ADMIN_STORAGE_KEY : this.STORAGE_KEY, themeId)
     } catch (error) {
-      console.error(t('service.saveThemeFailed') + ':', error)
+      console.error(`${t("service.saveThemeFailed")}:`, error)
     }
   }
 
-  /**
-   * 从本地存储加载主题
-   * @param {boolean} isAdmin - 是否为 admin 页面
-   * @returns {string|null} 主题 ID
-   */
   load(isAdmin = false) {
     try {
-      const key = isAdmin ? this.ADMIN_STORAGE_KEY : this.STORAGE_KEY
-      const savedTheme = localStorage.getItem(key)
-
+      const storageKey = isAdmin ? this.ADMIN_STORAGE_KEY : this.STORAGE_KEY
+      const savedTheme = localStorage.getItem(storageKey)
       if (savedTheme && getThemeById(savedTheme)) {
-        console.log(`${t('service.loadingCachedTheme')}: ${savedTheme} (${isAdmin ? 'admin' : 'normal'})`)
         return savedTheme
       }
-
-      // 没有缓存，返回默认主题
-      const defaultThemeId = isAdmin ? defaultTheme.admin : defaultTheme.normal
-      console.log(`${t('service.usingDefaultTheme')}: ${defaultThemeId} (${isAdmin ? 'admin' : 'normal'})`)
-      return defaultThemeId
     } catch (error) {
-      console.error(t('service.loadThemeFailed') + ':', error)
-      return isAdmin ? defaultTheme.admin : defaultTheme.normal
+      console.error(`${t("service.loadThemeFailed")}:`, error)
     }
+
+    return isAdmin ? defaultTheme.admin : defaultTheme.normal
   }
 
-  /**
-   * 清除本地存储的主题
-   * @param {boolean} isAdmin - 是否为 admin 页面
-   */
   clear(isAdmin = false) {
     try {
-      const key = isAdmin ? this.ADMIN_STORAGE_KEY : this.STORAGE_KEY
-      localStorage.removeItem(key)
-      console.log(`${t('service.themeCacheCleared')} (${isAdmin ? 'admin' : 'normal'})`)
+      localStorage.removeItem(isAdmin ? this.ADMIN_STORAGE_KEY : this.STORAGE_KEY)
     } catch (error) {
-      console.error(t('service.clearThemeCacheFailed') + ':', error)
+      console.error(`${t("service.clearThemeCacheFailed")}:`, error)
     }
   }
 
-  /**
-   * 清除所有主题缓存
-   */
   clearAll() {
     this.clear(false)
     this.clear(true)
   }
 }
 
-/**
- * 主题服务类
- * 管理全局主题状态，支持主题切换和持久化
- */
 class ThemeService {
   constructor() {
-    // 存储管理器
     this.storage = new ThemeStorage()
-
-    // 响应式主题状态
     this.state = reactive({
-      currentThemeId: defaultTheme.normal, // 当前主题 ID
-      isAdmin: false, // 是否在 admin 页面
+      currentThemeId: defaultTheme.normal,
+      isAdmin: false,
     })
 
-    // 初始化主题
     this.init()
   }
 
-  /**
-   * 初始化主题服务
-   */
   init() {
-    // 从本地存储恢复主题设置
     this.loadThemeFromStorage()
 
-    // 监听主题变化，自动应用到 DOM
     watch(
       () => this.state.currentThemeId,
       (newThemeId) => {
@@ -114,198 +126,153 @@ class ThemeService {
     )
   }
 
-  /**
-   * 从本地存储加载主题设置
-   */
   loadThemeFromStorage() {
-    const savedTheme = this.storage.load(this.state.isAdmin)
-    this.state.currentThemeId = savedTheme
+    this.state.currentThemeId = this.storage.load(this.state.isAdmin)
   }
 
-  /**
-   * 应用主题到 DOM
-   * @param {string} themeId - 主题 ID
-   */
   applyTheme(themeId) {
     const themeConfig = getThemeById(themeId)
-
     if (!themeConfig) {
-      console.warn(`${t('error.themeConfigNotFound')}: ${themeId}`)
+      console.warn(`${t("error.themeConfigNotFound")}: ${themeId}`)
       return
     }
 
     const root = document.documentElement
-    const colors = themeConfig.colors
-    const shadows = themeConfig.shadows
+    const { colors, shadows } = themeConfig
+    const primaryForeground = getContrastColor(colors.primary)
+    const secondaryForeground = colors.text.primary
+    const panelSoft = withAlpha(colors.surface, 0.74)
+    const panelStrong = withAlpha(colors.headerFooter || colors.surface, 0.94)
 
-    // 设置主题 class
     root.className = `theme-${themeId}`
 
-    // 设置 CSS 变量 - 颜色
-    root.style.setProperty('--color-primary', colors.primary)
-    root.style.setProperty('--color-secondary', colors.secondary)
-    root.style.setProperty('--color-background', colors.background)
-    root.style.setProperty('--color-surface', colors.surface)
-    root.style.setProperty('--color-header-footer', colors.headerFooter || colors.surface)
-    root.style.setProperty('--color-text-primary', colors.text.primary)
-    root.style.setProperty('--color-text-secondary', colors.text.secondary)
-    root.style.setProperty('--color-text-tertiary', colors.text.tertiary)
-    root.style.setProperty('--color-border', colors.border)
-    root.style.setProperty('--color-error', colors.error)
-    root.style.setProperty('--color-success', colors.success)
-    root.style.setProperty('--color-warning', colors.warning)
-    root.style.setProperty('--color-info', colors.info)
+    root.style.setProperty("--color-primary", colors.primary)
+    root.style.setProperty("--color-primary-rgb", rgbToString(hexToRgb(colors.primary)))
+    root.style.setProperty("--color-secondary", colors.secondary)
+    root.style.setProperty("--color-secondary-rgb", rgbToString(hexToRgb(colors.secondary)))
+    root.style.setProperty("--color-background", colors.background)
+    root.style.setProperty("--color-surface", colors.surface)
+    root.style.setProperty("--color-header-footer", colors.headerFooter || colors.surface)
+    root.style.setProperty("--color-text-primary", colors.text.primary)
+    root.style.setProperty("--color-text-secondary", colors.text.secondary)
+    root.style.setProperty("--color-text-tertiary", colors.text.tertiary)
+    root.style.setProperty("--color-border", colors.border)
+    root.style.setProperty("--color-error", colors.error)
+    root.style.setProperty("--color-success", colors.success)
+    root.style.setProperty("--color-warning", colors.warning)
+    root.style.setProperty("--color-info", colors.info)
 
-    // 设置 CSS 变量 - 阴影
-    root.style.setProperty('--shadow-sm', shadows.sm)
-    root.style.setProperty('--shadow-md', shadows.md)
-    root.style.setProperty('--shadow-lg', shadows.lg)
-    root.style.setProperty('--shadow-xl', shadows.xl)
+    root.style.setProperty("--shadow-sm", shadows.sm)
+    root.style.setProperty("--shadow-md", shadows.md)
+    root.style.setProperty("--shadow-lg", shadows.lg)
+    root.style.setProperty("--shadow-xl", shadows.xl)
 
-    console.log(`${t('service.themeApplied')}: ${themeId} (${themeConfig.name})`)
+    root.style.setProperty("--background", colors.background)
+    root.style.setProperty("--foreground", colors.text.primary)
+    root.style.setProperty("--card", colors.surface)
+    root.style.setProperty("--card-foreground", colors.text.primary)
+    root.style.setProperty("--popover", colors.surface)
+    root.style.setProperty("--popover-foreground", colors.text.primary)
+    root.style.setProperty("--primary", colors.primary)
+    root.style.setProperty("--primary-foreground", primaryForeground)
+    root.style.setProperty("--secondary", withAlpha(colors.secondary, 0.14))
+    root.style.setProperty("--secondary-foreground", secondaryForeground)
+    root.style.setProperty("--muted", withAlpha(mixColors(colors.surface, colors.background, 0.22), 0.88))
+    root.style.setProperty("--muted-foreground", colors.text.secondary)
+    root.style.setProperty("--accent", withAlpha(colors.primary, 0.14))
+    root.style.setProperty("--accent-foreground", colors.text.primary)
+    root.style.setProperty("--destructive", colors.error)
+    root.style.setProperty("--destructive-foreground", getContrastColor(colors.error))
+    root.style.setProperty("--border", withAlpha(mixColors(colors.border, "#ffffff", 0.12), 0.9))
+    root.style.setProperty("--input", withAlpha(mixColors(colors.surface, "#ffffff", 0.08), 0.88))
+    root.style.setProperty("--ring", withAlpha(colors.primary, 0.42))
+    root.style.setProperty("--panel-soft", panelSoft)
+    root.style.setProperty("--panel-strong", panelStrong)
+    root.style.setProperty("--shadow-panel", shadows.lg)
+    root.style.setProperty(
+      "--shadow-glow",
+      `0 0 0 1px ${withAlpha(colors.primary, 0.12)}, 0 18px 42px rgba(0, 0, 0, 0.28)`
+    )
   }
 
-  /**
-   * 切换到指定主题
-   * @param {string} themeId - 主题 ID
-   */
   setTheme(themeId) {
     if (!getThemeById(themeId)) {
-      console.warn(`${t('error.invalidThemeId')}: ${themeId}`)
+      console.warn(`${t("error.invalidThemeId")}: ${themeId}`)
       return
     }
+
     this.state.currentThemeId = themeId
   }
 
-  /**
-   * 切换浅色/深色主题（简化方法）
-   */
   toggleTheme() {
-    const newTheme = this.state.currentThemeId === 'light' ? 'dark' : 'light'
-    this.setTheme(newTheme)
+    this.setTheme(this.state.currentThemeId === "light" ? "dark" : "light")
   }
 
-  /**
-   * 获取当前主题的模式(light/dark)
-   * @returns {string} 'light' 或 'dark'
-   */
   getThemeMode() {
-    return this.state.currentThemeId === 'light' ? 'light' : 'dark'
+    return this.state.currentThemeId === "light" ? "light" : "dark"
   }
 
-  /**
-   * 切换到下一个同模式的主题
-   * 例如: dark -> blue -> green -> purple -> dark
-   */
   cycleTheme() {
-    const allThemes = this.getAvailableThemes()
-    const currentMode = this.getThemeMode()
+    const themes = this.getAvailableThemes()
+    const inCurrentMode =
+      this.getThemeMode() === "light"
+        ? themes.filter((theme) => theme.id === "light")
+        : themes.filter((theme) => theme.id !== "light")
 
-    // 获取当前模式下的所有主题
-    const themesInMode = currentMode === 'light'
-      ? allThemes.filter(t => t.id === 'light')
-      : allThemes.filter(t => t.id !== 'light')
-
-    if (themesInMode.length <= 1) {
+    if (inCurrentMode.length <= 1) {
       return
     }
 
-    // 找到当前主题在列表中的索引
-    const currentIndex = themesInMode.findIndex(t => t.id === this.state.currentThemeId)
-    // 切换到下一个主题
-    const nextIndex = (currentIndex + 1) % themesInMode.length
-    this.setTheme(themesInMode[nextIndex].id)
+    const currentIndex = inCurrentMode.findIndex((theme) => theme.id === this.state.currentThemeId)
+    const nextTheme = inCurrentMode[(currentIndex + 1) % inCurrentMode.length]
+    this.setTheme(nextTheme.id)
   }
 
-  /**
-   * 获取所有暗色主题
-   * @returns {Array} 暗色主题配置数组
-   */
   getDarkThemes() {
-    return this.getAvailableThemes().filter(t => t.id !== 'light')
+    return this.getAvailableThemes().filter((theme) => theme.id !== "light")
   }
 
-  /**
-   * 获取所有亮色主题
-   * @returns {Array} 亮色主题配置数组
-   */
   getLightThemes() {
-    return this.getAvailableThemes().filter(t => t.id === 'light')
+    return this.getAvailableThemes().filter((theme) => theme.id === "light")
   }
 
-  /**
-   * 获取当前主题 ID
-   * @returns {string} 当前主题 ID
-   */
   getCurrentThemeId() {
     return this.state.currentThemeId
   }
 
-  /**
-   * 获取当前主题配置
-   * @returns {object} 主题配置对象
-   */
   getCurrentTheme() {
     return getThemeById(this.state.currentThemeId)
   }
 
-  /**
-   * 设置是否为 admin 页面
-   * @param {boolean} isAdmin - 是否在 admin 页面
-   */
   setIsAdmin(isAdmin) {
-    const wasAdmin = this.state.isAdmin
+    const previousMode = this.state.isAdmin
     this.state.isAdmin = isAdmin
 
-    // 如果从 admin 切换到非 admin 或反之，重新加载主题
-    if (wasAdmin !== isAdmin) {
+    if (previousMode !== isAdmin) {
       this.loadThemeFromStorage()
     }
   }
 
-  /**
-   * 检查是否为深色主题
-   * @returns {boolean}
-   */
   isDark() {
-    return this.state.currentThemeId === 'dark'
+    return this.state.currentThemeId !== "light"
   }
 
-  /**
-   * 检查是否为浅色主题
-   * @returns {boolean}
-   */
   isLight() {
-    return this.state.currentThemeId === 'light'
+    return this.state.currentThemeId === "light"
   }
 
-  /**
-   * 获取所有可用主题
-   * @returns {Array} 主题配置数组
-   */
   getAvailableThemes() {
     return getAllThemes()
   }
 
-  /**
-   * 重置主题为默认值
-   */
   resetTheme() {
-    const defaultThemeId = this.state.isAdmin ? defaultTheme.admin : defaultTheme.normal
-    this.setTheme(defaultThemeId)
+    this.setTheme(this.state.isAdmin ? defaultTheme.admin : defaultTheme.normal)
   }
 
-  /**
-   * 清除主题缓存
-   */
   clearCache() {
     this.storage.clearAll()
-    console.log(t('service.allThemeCacheCleared'))
   }
 }
 
-// 导出单例
 export default new ThemeService()
-
-// 同时导出主题配置，方便其他地方使用
-export { themes, defaultTheme, getThemeById, getAllThemes }
+export { defaultTheme, getAllThemes, getThemeById }

@@ -1,42 +1,28 @@
-/**
- * 紫色主题配置
- */
 export default {
-  id: 'purple',
-  name: '优雅紫',
-  description: '优雅神秘的紫色主题',
+  id: "purple",
+  name: "Velvet Plum",
+  description: "Muted plum depth with cool alloy highlights.",
   colors: {
-    // 主色调
-    primary: '#a855f7',
-    secondary: '#8b5cf6',
-
-    // 背景色
-    background: '#581c87',
-    surface: '#6b21a8',
-    headerFooter: '#581c87', // 顶栏和底栏专用颜色
-
-    // 文字颜色
+    primary: "#9d97bd",
+    secondary: "#ba9865",
+    background: "#0d0b11",
+    surface: "#171420",
+    headerFooter: "#120f19",
     text: {
-      primary: '#faf5ff',
-      secondary: '#e9d5ff',
-      tertiary: '#d8b4fe',
+      primary: "#f2f0f8",
+      secondary: "#c9c3d8",
+      tertiary: "#847d95",
     },
-
-    // 边框颜色
-    border: '#7e22ce',
-
-    // 状态颜色
-    error: '#f87171',
-    success: '#34d399',
-    warning: '#fbbf24',
-    info: '#c084fc',
+    border: "#292433",
+    error: "#cb7885",
+    success: "#80968a",
+    warning: "#c49761",
+    info: "#8e93b8",
   },
-
-  // 阴影配置
   shadows: {
-    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.3)',
-    md: '0 4px 6px -1px rgba(0, 0, 0, 0.35)',
-    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.4)',
-    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
+    sm: "0 6px 14px rgba(0, 0, 0, 0.24)",
+    md: "0 18px 42px rgba(0, 0, 0, 0.32)",
+    lg: "0 28px 64px rgba(0, 0, 0, 0.38)",
+    xl: "0 40px 96px rgba(0, 0, 0, 0.46)",
   },
 }

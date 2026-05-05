@@ -1,113 +1,98 @@
-/* 主题样式变量配置 */
+:root {
+  --radius: 1.35rem;
 
-/*
- * CSS 变量将由 ThemeService 动态设置
- * 这里只定义默认值和过渡动画
- */
+  --color-primary: #93a1bb;
+  --color-primary-rgb: 147, 161, 187;
+  --color-secondary: #b89a68;
+  --color-secondary-rgb: 184, 154, 104;
+  --color-background: #080a0f;
+  --color-surface: #12151c;
+  --color-header-footer: #0d1016;
+  --color-text-primary: #f1f4fb;
+  --color-text-secondary: #c0c7d4;
+  --color-text-tertiary: #727887;
+  --color-border: #232936;
+  --color-error: #c77986;
+  --color-success: #6f978a;
+  --color-warning: #c79a61;
+  --color-info: #8094bf;
 
-/* 设置基础字体大小为75%，实现整体缩小效果 */
+  --background: var(--color-background);
+  --foreground: var(--color-text-primary);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-text-primary);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-text-primary);
+  --primary: var(--color-primary);
+  --primary-foreground: #07090e;
+  --secondary: rgba(var(--color-secondary-rgb), 0.14);
+  --secondary-foreground: var(--color-text-primary);
+  --muted: rgba(255, 255, 255, 0.05);
+  --muted-foreground: var(--color-text-secondary);
+  --accent: rgba(var(--color-primary-rgb), 0.14);
+  --accent-foreground: var(--color-text-primary);
+  --destructive: var(--color-error);
+  --destructive-foreground: #fff8fb;
+  --border: rgba(255, 255, 255, 0.09);
+  --input: rgba(255, 255, 255, 0.075);
+  --ring: rgba(var(--color-primary-rgb), 0.42);
+  --panel-soft: rgba(18, 21, 28, 0.72);
+  --panel-strong: rgba(13, 16, 22, 0.94);
+  --shadow-panel: 0 22px 64px rgba(0, 0, 0, 0.34);
+  --shadow-glow:
+    0 0 0 1px rgba(var(--color-primary-rgb), 0.1),
+    0 20px 46px rgba(0, 0, 0, 0.32);
+
+  --transition-fast: 160ms ease;
+  --transition-base: 280ms ease;
+  --transition-slow: 520ms ease;
+}
+
 html {
   font-size: 75%;
+  color-scheme: dark;
 }
 
-/* 默认主题变量（深色） */
-:root {
-  /* 主色调 */
-  --color-primary: #60a5fa;
-  --color-secondary: #a78bfa;
-
-  /* 背景色 */
-  --color-background: #111827;
-  --color-surface: #1f2937;
-  --color-header-footer: #212936;
-
-  /* 文字颜色 */
-  --color-text-primary: #f9fafb;
-  --color-text-secondary: #d1d5db;
-  --color-text-tertiary: #9ca3af;
-
-  /* 边框颜色 */
-  --color-border: #374151;
-
-  /* 状态颜色 */
-  --color-error: #f87171;
-  --color-success: #34d399;
-  --color-warning: #fbbf24;
-  --color-info: #60a5fa;
-
-  /* 阴影 */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-
-  /* 过渡时间 */
-  --transition-fast: 150ms ease-in-out;
-  --transition-base: 300ms ease-in-out;
-  --transition-slow: 500ms ease-in-out;
-}
-
-/* 全局样式应用 */
 body {
-  background-color: var(--color-background);
-  color: var(--color-text-primary);
-  transition: background-color var(--transition-base), color var(--transition-base);
+  background: var(--background);
+  color: var(--foreground);
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base),
+    border-color var(--transition-base);
 }
 
-/* 滚动条样式（适配主题） */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  transition-property: background-color, border-color, color, box-shadow, opacity, transform;
+  transition-duration: var(--transition-base);
+  transition-timing-function: ease;
+}
+
+::selection {
+  background: rgba(var(--color-primary-rgb), 0.28);
+  color: var(--foreground);
+}
+
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-background);
-  transition: background var(--transition-base);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 4px;
-  transition: background var(--transition-fast);
+  background: rgba(var(--color-primary-rgb), 0.28);
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-tertiary);
-}
-
-/* 选中文本样式 */
-::selection {
-  background-color: var(--color-primary);
-  color: var(--color-surface);
-}
-
-/* 链接样式 */
-a {
-  color: var(--color-primary);
-  transition: color var(--transition-fast);
-}
-
-a:hover {
-  color: var(--color-secondary);
-}
-
-/* 主题切换过渡动画 */
-* {
-  transition-property: background-color, color, border-color, box-shadow;
-  transition-duration: var(--transition-base);
-  transition-timing-function: ease-in-out;
-}
-
-/* 排除某些不需要过渡的元素 */
-*:not(body):not(html):not([class*="transition-none"]) {
-  transition-property: background-color, color, border-color;
-}
-
-/* 主题类名（保留用于特殊样式） */
-.theme-light,
-.theme-dark,
-.theme-blue,
-.theme-green,
-.theme-purple {
-  /* 主题特定样式可以在这里定义 */
+  background: rgba(var(--color-primary-rgb), 0.44);
 }

@@ -1,25 +1,366 @@
 @import "tailwindcss";
 
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    font-family:
+      "Aptos",
+      "Segoe UI Variable Display",
+      "Microsoft YaHei UI",
+      "PingFang SC",
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--background);
+    color: var(--foreground);
+    background-image:
+      radial-gradient(circle at 14% 12%, rgba(var(--color-primary-rgb), 0.12), transparent 24%),
+      radial-gradient(circle at 88% 14%, rgba(var(--color-secondary-rgb), 0.11), transparent 18%),
+      linear-gradient(140deg, rgba(255, 255, 255, 0.035), transparent 28%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 28%),
+      linear-gradient(180deg, #080a0f 0%, #0b0e14 52%, #090b10 100%);
+    background-size: auto, auto, auto, auto, 100% 100%;
+    background-position: center, center, center, center, center;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    outline: none;
+  }
+
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+}
+
 @layer components {
-  .btn-primary {
-    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  .board-shell {
+    position: relative;
+    overflow: hidden;
+    border-radius: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
+      var(--panel-strong);
+    box-shadow: var(--shadow-panel);
+    backdrop-filter: blur(24px);
   }
 
-  .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  .board-shell::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: calc(2rem - 1px);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 18%),
+      radial-gradient(circle at top right, rgba(var(--color-primary-rgb), 0.08), transparent 32%);
+    pointer-events: none;
   }
 
-  .card {
-    @apply bg-white rounded-xl shadow-lg border border-gray-200;
+  .board-shell > * {
+    position: relative;
+    z-index: 1;
   }
 
-  .input-field {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200;
+  .board-heading {
+    font-family:
+      "Aptos Display",
+      "Segoe UI Variable Display",
+      "Microsoft YaHei UI",
+      "PingFang SC",
+      sans-serif;
+    font-size: clamp(3rem, 4.4vw, 4.6rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    color: var(--foreground);
+  }
+
+  .board-kicker {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+  }
+
+  .board-subcopy {
+    max-width: 58rem;
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: var(--color-text-secondary);
+  }
+
+  .panel-title {
+    font-family:
+      "Aptos Display",
+      "Segoe UI Variable Display",
+      "Microsoft YaHei UI",
+      "PingFang SC",
+      sans-serif;
+    font-size: clamp(1.9rem, 2.2vw, 2.7rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    color: var(--foreground);
+  }
+
+  .panel-caption {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+  }
+
+  .glass-strip {
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .status-dot {
+    display: inline-flex;
+    height: 0.625rem;
+    width: 0.625rem;
+    border-radius: 999px;
+    background: var(--color-primary);
+    box-shadow: 0 0 0 6px rgba(var(--color-primary-rgb), 0.16);
+  }
+
+  .info-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 0.6rem 1rem;
+    font-size: 0.92rem;
+    color: var(--color-text-secondary);
+  }
+
+  .metric-panel {
+    border-radius: 1.7rem;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
+      rgba(255, 255, 255, 0.035);
+    padding: 1.5rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  }
+
+  .metric-value {
+    font-family:
+      "Aptos Display",
+      "Segoe UI Variable Display",
+      "Microsoft YaHei UI",
+      "PingFang SC",
+      sans-serif;
+    font-size: clamp(3rem, 3.8vw, 4.6rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.06em;
+    color: var(--foreground);
+  }
+
+  .metric-label {
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+  }
+
+  .subject-chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.4rem 0.9rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .admin-page {
+    position: relative;
+    min-height: 100%;
+    border-radius: 1.75rem;
+    background:
+      radial-gradient(circle at 10% 8%, rgba(var(--color-primary-rgb), 0.08), transparent 18%),
+      radial-gradient(circle at 92% 10%, rgba(var(--color-secondary-rgb), 0.06), transparent 18%);
+  }
+
+  .admin-page .bg-gradient-to-br.from-gray-50.to-slate-200,
+  .admin-page .bg-gray-50 {
+    background-color: rgba(255, 255, 255, 0.025) !important;
+    background-image: none !important;
+  }
+
+  .admin-page .bg-white {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
+      var(--panel-strong) !important;
+    backdrop-filter: blur(20px);
+  }
+
+  .admin-page .bg-gray-100 {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .admin-page .bg-gray-200 {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .admin-page .bg-blue-50 {
+    background-color: rgba(var(--color-primary-rgb), 0.14) !important;
+  }
+
+  .admin-page .bg-blue-100 {
+    background-color: rgba(var(--color-primary-rgb), 0.18) !important;
+  }
+
+  .admin-page .bg-green-50 {
+    background-color: rgba(111, 151, 138, 0.14) !important;
+  }
+
+  .admin-page .bg-green-100 {
+    background-color: rgba(111, 151, 138, 0.18) !important;
+  }
+
+  .admin-page .bg-red-50 {
+    background-color: rgba(199, 121, 134, 0.14) !important;
+  }
+
+  .admin-page .bg-red-100 {
+    background-color: rgba(199, 121, 134, 0.18) !important;
+  }
+
+  .admin-page .bg-purple-50 {
+    background-color: rgba(157, 151, 189, 0.16) !important;
+  }
+
+  .admin-page .bg-teal-50 {
+    background-color: rgba(111, 151, 138, 0.14) !important;
+  }
+
+  .admin-page .border-gray-100,
+  .admin-page .border-gray-200,
+  .admin-page .border-gray-300,
+  .admin-page .border-gray-600,
+  .admin-page .border-red-300,
+  .admin-page .border-green-300,
+  .admin-page .border-orange-300 {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .admin-page .text-gray-900,
+  .admin-page .text-gray-800 {
+    color: var(--foreground) !important;
+  }
+
+  .admin-page .text-gray-700,
+  .admin-page .text-gray-600 {
+    color: var(--color-text-secondary) !important;
+  }
+
+  .admin-page .text-gray-500,
+  .admin-page .text-gray-400 {
+    color: var(--color-text-tertiary) !important;
+  }
+
+  .admin-page .text-blue-700,
+  .admin-page .text-blue-600 {
+    color: #b3c0d8 !important;
+  }
+
+  .admin-page .text-green-700,
+  .admin-page .text-green-600 {
+    color: #95b8ad !important;
+  }
+
+  .admin-page .text-red-700,
+  .admin-page .text-red-600 {
+    color: #d09da8 !important;
+  }
+
+  .admin-page .text-purple-700,
+  .admin-page .text-purple-600 {
+    color: #bbb4d4 !important;
+  }
+
+  .admin-page .shadow-sm,
+  .admin-page .shadow-lg,
+  .admin-page .shadow-xl,
+  .admin-page .shadow-2xl {
+    box-shadow: var(--shadow-panel) !important;
+  }
+
+  .admin-page .hover\:bg-gray-50:hover,
+  .admin-page .hover\:bg-gray-100:hover,
+  .admin-page .hover\:bg-blue-50:hover,
+  .admin-page .hover\:bg-blue-100:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .admin-page .hover\:text-blue-600:hover {
+    color: #b3c0d8 !important;
+  }
+
+  .admin-page .bg-gradient-to-br.from-blue-600.to-purple-600 {
+    background-image: linear-gradient(135deg, #44556f 0%, #7a6a53 100%) !important;
+  }
+
+  .admin-page .bg-gradient-to-br.from-teal-600.to-teal-700 {
+    background-image: linear-gradient(135deg, #476a68 0%, #5f7d77 100%) !important;
+  }
+
+  .admin-page .bg-gradient-to-br.from-green-600.to-green-700 {
+    background-image: linear-gradient(135deg, #49645d 0%, #5f7b73 100%) !important;
+  }
+
+  .admin-page .bg-gradient-to-br.from-red-600.to-red-700 {
+    background-image: linear-gradient(135deg, #6d4d58 0%, #875f69 100%) !important;
+  }
+
+  .admin-page input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  .admin-page select,
+  .admin-page textarea {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    background-color: rgba(255, 255, 255, 0.035) !important;
+    color: var(--foreground) !important;
+  }
+
+  .admin-page input::placeholder,
+  .admin-page textarea::placeholder {
+    color: var(--color-text-tertiary) !important;
+  }
+
+  .admin-page code {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: var(--foreground);
   }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  .fade-mask {
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 78%, transparent);
+    -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 78%, transparent);
   }
 }

@@ -5,167 +5,180 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import VChart from 'vue-echarts'
-import { use } from 'echarts/core'
-import { LineChart } from 'echarts/charts'
+import { computed } from "vue"
+import VChart from "vue-echarts"
+import { use } from "echarts/core"
+import { LineChart } from "echarts/charts"
 import {
+  GridComponent,
+  LegendComponent,
   TitleComponent,
   TooltipComponent,
-  GridComponent,
-  LegendComponent
-} from 'echarts/components'
-import { CanvasRenderer } from 'echarts/renderers'
-import { formatYYYYMMDDToShort } from '@/utils/formatDate'
+} from "echarts/components"
+import { CanvasRenderer } from "echarts/renderers"
+import { formatYYYYMMDDToShort } from "@/utils/formatDate"
 
-// 注册 ECharts 组件
 use([
   LineChart,
   TitleComponent,
   TooltipComponent,
   GridComponent,
   LegendComponent,
-  CanvasRenderer
+  CanvasRenderer,
 ])
 
 const props = defineProps({
   data: {
     type: Array,
-    default: () => []
-  }
+    default: () => [],
+  },
 })
 
-// 计算图表配置
+function getCssVar(name, fallback) {
+  if (typeof window === "undefined") {
+    return fallback
+  }
+
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback
+}
+
 const chartOption = computed(() => {
-  const dates = props.data.map(item => formatYYYYMMDDToShort(item.date))
-  const rates = props.data.map(item => Number(item.attendance_rate).toFixed(1))
+  const dates = props.data.map((item) => formatYYYYMMDDToShort(item.date))
+  const rates = props.data.map((item) => Number(item.attendance_rate).toFixed(1))
+
+  const foreground = getCssVar("--color-text-primary", "#f1f4fb")
+  const secondary = getCssVar("--color-text-secondary", "#c0c7d4")
+  const tertiary = getCssVar("--color-text-tertiary", "#727887")
+  const primary = getCssVar("--color-primary", "#93a1bb")
+  const border = getCssVar("--border", "rgba(255,255,255,0.08)")
 
   return {
+    backgroundColor: "transparent",
     title: {
-      text: '每日出勤率趋势',
-      left: 'center',
+      text: "每日出勤率趋势",
+      left: "center",
       textStyle: {
         fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333'
-      }
+        fontWeight: "bold",
+        color: foreground,
+      },
     },
     tooltip: {
-      trigger: 'axis',
+      trigger: "axis",
       formatter: (params) => {
         const param = params[0]
-        return `${param.name}<br/>出勤率: ${param.value}%`
+        return `${param.name}<br/>出勤率 ${param.value}%`
       },
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      borderColor: '#3b82f6',
+      backgroundColor: "rgba(10, 13, 18, 0.96)",
+      borderColor: border,
       borderWidth: 1,
       textStyle: {
-        color: '#333'
-      }
+        color: foreground,
+      },
     },
     grid: {
-      left: '50px',
-      right: '30px',
-      top: '60px',
-      bottom: '50px',
-      containLabel: false
+      left: "48px",
+      right: "28px",
+      top: "62px",
+      bottom: "42px",
+      containLabel: false,
     },
     xAxis: {
-      type: 'category',
+      type: "category",
       data: dates,
       boundaryGap: false,
       axisLine: {
         lineStyle: {
-          color: '#e5e7eb'
-        }
+          color: border,
+        },
       },
       axisLabel: {
-        color: '#6b7280',
+        color: tertiary,
         fontSize: 12,
-        rotate: dates.length > 10 ? 45 : 0
-      }
+        rotate: dates.length > 10 ? 45 : 0,
+      },
     },
     yAxis: {
-      type: 'value',
+      type: "value",
       min: 0,
       max: 100,
       axisLabel: {
-        formatter: '{value}%',
-        color: '#6b7280',
-        fontSize: 12
+        formatter: "{value}%",
+        color: tertiary,
+        fontSize: 12,
       },
       axisLine: {
-        show: false
+        show: false,
       },
       splitLine: {
         lineStyle: {
-          color: '#f3f4f6',
-          type: 'dashed'
-        }
-      }
+          color: border,
+          type: "dashed",
+        },
+      },
     },
     series: [
       {
-        name: '出勤率',
-        type: 'line',
+        name: "出勤率",
+        type: "line",
         data: rates,
         smooth: true,
-        smoothMonotone: 'x',
-        symbol: 'circle',
-        symbolSize: 8,
+        smoothMonotone: "x",
+        symbol: "circle",
+        symbolSize: 7,
         lineStyle: {
           width: 3,
           color: {
-            type: 'linear',
+            type: "linear",
             x: 0,
             y: 0,
             x2: 1,
             y2: 0,
             colorStops: [
-              { offset: 0, color: '#3b82f6' },
-              { offset: 1, color: '#8b5cf6' }
-            ]
-          }
+              { offset: 0, color: primary },
+              { offset: 1, color: "#b89a68" },
+            ],
+          },
         },
         itemStyle: {
-          color: '#3b82f6',
-          borderColor: '#fff',
-          borderWidth: 2
+          color: primary,
+          borderColor: "#080a0f",
+          borderWidth: 2,
         },
         areaStyle: {
           color: {
-            type: 'linear',
+            type: "linear",
             x: 0,
             y: 0,
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(59, 130, 246, 0.3)' },
-              { offset: 1, color: 'rgba(59, 130, 246, 0.05)' }
-            ]
-          }
+              { offset: 0, color: "rgba(147, 161, 187, 0.24)" },
+              { offset: 1, color: "rgba(147, 161, 187, 0.03)" },
+            ],
+          },
         },
         emphasis: {
-          focus: 'series',
+          focus: "series",
           itemStyle: {
-            color: '#3b82f6',
-            borderColor: '#fff',
-            borderWidth: 3,
-            shadowBlur: 10,
-            shadowColor: 'rgba(59, 130, 246, 0.5)'
-          }
-        }
-      }
-    ]
+            color: primary,
+            borderColor: secondary,
+            borderWidth: 2,
+            shadowBlur: 12,
+            shadowColor: "rgba(147, 161, 187, 0.34)",
+          },
+        },
+      },
+    ],
   }
 })
 </script>
 
 <style scoped>
 @reference "tailwindcss";
-/* 已转换为 Tailwind: w-full h-full */
+
 .attendance-chart {
-  @apply w-full h-full;
+  @apply h-full w-full;
 }
 
 .chart-container {

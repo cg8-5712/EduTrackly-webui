@@ -1,90 +1,64 @@
 <template>
-  <div class="min-h-screen max-h-screen w-full bg-[var(--color-background)] text-[var(--color-text-primary)] flex flex-col gap-3 md:gap-4 p-2 sm:p-3 md:p-4 box-border overflow-y-auto overflow-x-hidden transition-colors duration-200">
-    <ClassSwitch @update:cid="handleClassChange" class="w-full" />
-    <StudentEventSelector :cid="selectedCid" ref="studentListComponent" class="w-full" />
-    <!-- 引入作业提交组件 -->
-    <SubmitHomework :cid="selectedCid" class="w-full" />
+  <div class="h-screen w-full overflow-hidden p-3 md:p-4">
+    <div class="mx-auto flex h-full max-w-[1800px] flex-col gap-3">
+      <section class="board-shell px-5 py-4 md:px-6 md:py-4">
+        <div class="mb-4 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div class="board-kicker mb-3">Teacher Console</div>
+            <h1 class="board-heading !text-[clamp(2.5rem,3.9vw,4rem)]">Attendance + Homework Input</h1>
+            <p class="board-subcopy !text-sm md:!text-base">
+              Mark student events and publish the night-study homework board from one place.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="info-pill">Input Mode</span>
+            <span class="info-pill">{{ selectedCid ? `Class ${selectedCid}` : "Select Class" }}</span>
+          </div>
+        </div>
+
+        <ClassSwitch @update:cid="handleClassChange" class="w-full" />
+      </section>
+
+      <main class="grid min-h-0 flex-1 gap-3 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+        <StudentEventSelector :cid="selectedCid" ref="studentListComponent" class="min-h-0" />
+        <SubmitHomework :cid="selectedCid" class="min-h-0" />
+      </main>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
-import ClassSwitch from '@/components/common/ClassSwitch.vue'
-import StudentEventSelector from '@/components/student/StudentEventSelector.vue'
-import SubmitHomework from '@/components/homework/SubmitHomework.vue' // 引入组件
-import notificationService from '@/services/common/notification'
+import { ref, onMounted } from "vue"
+import { useI18n } from "vue-i18n"
+import ClassSwitch from "@/components/common/ClassSwitch.vue"
+import StudentEventSelector from "@/components/student/StudentEventSelector.vue"
+import SubmitHomework from "@/components/homework/SubmitHomework.vue"
+import notificationService from "@/services/common/notification"
 
 const { t: $t } = useI18n()
 
-// 检测微信浏览器
-const checkWechatBrowser = () => {
-  const ua = navigator.userAgent.toLowerCase()
-  return /micromessenger/i.test(ua)
-}
-
-// 检查是否已经显示过提示
-const hasShownWechatTip = () => {
-  return sessionStorage.getItem('edutrackly-cg8-5712-wechat-tip-shown') === 'true'
-}
-
-// 选中的班级ID
-const selectedCid = ref(1) // 默认 cid=1
-
-// ref StudentList组件
+const selectedCid = ref(1)
 const studentListComponent = ref(null)
 
-// 处理班级变化
-const handleClassChange = (newCid) => {
-  console.log('Class changed:', newCid)
+function checkWechatBrowser() {
+  const userAgent = navigator.userAgent.toLowerCase()
+  return /micromessenger/i.test(userAgent)
+}
+
+function hasShownWechatTip() {
+  return sessionStorage.getItem("edutrackly-cg8-5712-wechat-tip-shown") === "true"
+}
+
+function handleClassChange(newCid) {
   selectedCid.value = newCid
 }
 
-// watch selectedCid，班级变化时刷新学生列表
-watch(
-    selectedCid,
-    (newVal) => {
-      console.log('Selected CID changed:', newVal)
-      // StudentEventSelector 组件内部已有 watch 监听 cid 变化，无需重复调用
-    }
-)
-
-// 页面加载时检测微信浏览器
 onMounted(() => {
-  // 检测微信浏览器并显示提示
   if (checkWechatBrowser() && !hasShownWechatTip()) {
     setTimeout(() => {
-      notificationService.info($t('wechatTip.message'))
-      sessionStorage.setItem('edutrackly-cg8-5712-wechat-tip-shown', 'true')
-    }, 1000) // 延迟1秒显示，避免干扰页面加载
+      notificationService.info($t("wechatTip.message"))
+      sessionStorage.setItem("edutrackly-cg8-5712-wechat-tip-shown", "true")
+    }, 1000)
   }
 })
 </script>
-
-<style scoped>
-/* 自定义滚动条样式 */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-@media (max-width: 768px) {
-  ::-webkit-scrollbar {
-    width: 4px;
-  }
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-surface);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 4px;
-  transition: background var(--transition-fast);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-tertiary);
-}
-</style>

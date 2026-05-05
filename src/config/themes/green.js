@@ -1,42 +1,28 @@
-/**
- * 绿色主题配置
- */
 export default {
-  id: 'green',
-  name: '自然绿',
-  description: '清新自然的绿色主题',
+  id: "green",
+  name: "Graphite Sage",
+  description: "Muted sage accents over near-black graphite.",
   colors: {
-    // 主色调
-    primary: '#10b981',
-    secondary: '#059669',
-
-    // 背景色
-    background: '#064e3b',
-    surface: '#065f46',
-    headerFooter: '#064e3b', // 顶栏和底栏专用颜色
-
-    // 文字颜色
+    primary: "#8f9c8b",
+    secondary: "#b99764",
+    background: "#090b0c",
+    surface: "#131716",
+    headerFooter: "#0e1211",
     text: {
-      primary: '#ecfdf5',
-      secondary: '#a7f3d0',
-      tertiary: '#6ee7b7',
+      primary: "#eff1ef",
+      secondary: "#c1c6c1",
+      tertiary: "#7d867d",
     },
-
-    // 边框颜色
-    border: '#047857',
-
-    // 状态颜色
-    error: '#f87171',
-    success: '#34d399',
-    warning: '#fbbf24',
-    info: '#22d3ee',
+    border: "#252b29",
+    error: "#c27a82",
+    success: "#81998a",
+    warning: "#bd9560",
+    info: "#8a99ac",
   },
-
-  // 阴影配置
   shadows: {
-    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.3)',
-    md: '0 4px 6px -1px rgba(0, 0, 0, 0.35)',
-    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.4)',
-    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
+    sm: "0 6px 14px rgba(0, 0, 0, 0.24)",
+    md: "0 18px 42px rgba(0, 0, 0, 0.32)",
+    lg: "0 28px 64px rgba(0, 0, 0, 0.38)",
+    xl: "0 40px 96px rgba(0, 0, 0, 0.46)",
   },
 }

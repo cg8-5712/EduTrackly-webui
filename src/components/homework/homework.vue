@@ -1,114 +1,125 @@
 <template>
-  <div class="flex flex-col gap-4">
-    <!-- 加载中 -->
-    <div v-if="loading" class="p-4 bg-surface text-text-primary rounded-xl shadow-lg flex items-center justify-center min-h-[200px] transition-colors duration-200">
-      <LoadingSpinner :size="60" color="var(--color-primary)" message="" />
+  <div class="space-y-4">
+    <div
+      v-if="loading"
+      class="board-shell flex min-h-[18rem] items-center justify-center p-10"
+    >
+      <LoadingSpinner :size="56" color="var(--color-primary)" message="" />
     </div>
 
-    <!-- 作业内容展示 -->
-    <template v-else>
-      <!-- 如果无作业数据 -->
-      <div v-if="error === 'no-homework'" class="p-4 bg-surface text-text-primary rounded-xl shadow-lg flex text-3xl font-extrabold transition-colors duration-200">
-        <div class="flex items-center justify-center w-full text-center flex-col">
-          <div class="text-8xl mb-4">📝</div>
-          <div class="text-4xl text-primary mb-2 transition-colors duration-200">{{ $t('homework.noHomework') }}</div>
-          <div class="text-2xl text-text-tertiary mt-2 transition-colors duration-200">{{ $t('homework.noHomeworkToday') }}</div>
-        </div>
+    <div
+      v-else-if="error === 'no-homework'"
+      class="board-shell flex min-h-[18rem] items-center justify-center p-10 text-center"
+    >
+      <div>
+        <div class="board-kicker mb-3">Clear Board</div>
+        <div class="board-heading mb-4 !text-4xl md:!text-5xl">{{ $t("homework.noHomework") }}</div>
+        <p class="panel-caption text-base md:text-lg">{{ $t("homework.noHomeworkToday") }}</p>
       </div>
-      <!-- 显示分科目作业内容 -->
-      <template v-else>
-        <div class="grid gap-4" :style="gridStyle">
-          <div v-for="subject in subjectsWithContent"
-               :key="subject.key"
-               class="p-4 bg-surface text-text-primary rounded-xl shadow-lg flex text-4xl font-extrabold transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5 max-md:text-[1.65rem] max-md:p-3 max-md:flex-col max-md:gap-2">
-            <div class="text-2xl font-bold min-w-[3.75rem] flex-shrink-0 text-center p-2 rounded-lg border max-md:text-[1.35rem] max-md:min-w-0" :style="getSubjectStyle(subject.key)">
+    </div>
+
+    <div
+      v-else-if="error"
+      class="board-shell flex min-h-[18rem] items-center justify-center p-10 text-center text-lg text-[var(--color-error)]"
+    >
+      {{ error }}
+    </div>
+
+    <div v-else class="grid gap-4" :style="gridStyle">
+      <article
+        v-for="subject in subjectsWithContent"
+        :key="subject.key"
+        class="board-shell overflow-hidden p-5 md:p-6"
+      >
+        <div class="mb-5 flex items-start justify-between gap-4">
+          <div>
+            <div class="subject-chip" :style="getSubjectStyle(subject.key)">
               {{ subject.name }}
             </div>
-            <div class="flex-1 flex flex-col gap-1 pt-2 pl-3 max-md:pt-0 max-md:pl-0">
-              <div v-for="(line, index) in subject.lines"
-                   :key="index"
-                   class="text-[1.65rem] leading-7 text-text-primary break-words transition-colors duration-200 max-md:text-[1.45rem]">
-                {{ line }}
-              </div>
-            </div>
+          </div>
+          <span class="text-xs uppercase tracking-[0.22em] text-[var(--color-text-tertiary)]">
+            {{ subject.lines.length }} line<span v-if="subject.lines.length > 1">s</span>
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          <div
+            v-for="(line, index) in subject.lines"
+            :key="index"
+            class="rounded-[1.4rem] border border-white/8 bg-white/6 px-4 py-4 text-[1.45rem] leading-9 text-foreground md:text-[1.65rem]"
+          >
+            {{ line }}
           </div>
         </div>
-      </template>
-    </template>
+      </article>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-import HomeworkService from '@/services/basic/homework'
-import notificationService from '@/services/common/notification'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import { computed, ref, watch } from "vue"
+import { useI18n } from "vue-i18n"
+import HomeworkService from "@/services/basic/homework"
+import notificationService from "@/services/common/notification"
+import LoadingSpinner from "@/components/common/LoadingSpinner.vue"
 
 const { t: $t } = useI18n()
 
-// Props：选中日期 + 选中班级 + 列数（默认值为 1）
 const props = defineProps({
   selectedDate: {
     type: String,
-    default: null
+    default: null,
   },
   selectedCid: {
     type: Number,
-    default: 1
+    default: 1,
   },
   columns: {
     type: Number,
-    default: 1
-  }
+    default: 1,
+  },
 })
 
-// 作业数据与状态
 const homework = ref(null)
 const loading = ref(false)
 const error = ref(null)
 
-// 科目映射配置
 const subjectConfig = computed(() => ({
-  chinese: $t('homework.subjects.chinese'),
-  maths: $t('homework.subjects.math'),
-  english: $t('homework.subjects.english'),
-  physics: $t('homework.subjects.physics'),
-  chemistry: $t('homework.subjects.chemistry'),
-  biology: $t('homework.subjects.biology'),
-  history: $t('homework.subjects.history'),
-  geography: $t('homework.subjects.geography'),
-  politics: $t('homework.subjects.politics'),
-  others: $t('homework.subjects.others')
+  chinese: $t("homework.subjects.chinese"),
+  maths: $t("homework.subjects.math"),
+  english: $t("homework.subjects.english"),
+  physics: $t("homework.subjects.physics"),
+  chemistry: $t("homework.subjects.chemistry"),
+  biology: $t("homework.subjects.biology"),
+  history: $t("homework.subjects.history"),
+  geography: $t("homework.subjects.geography"),
+  politics: $t("homework.subjects.politics"),
+  others: $t("homework.subjects.others"),
 }))
 
-// 学科颜色配置（使用CSS变量和透明度）
 const subjectColors = {
-  chinese: { base: '#ef4444', opacity: 0.15 },     // 红色
-  maths: { base: '#3b82f6', opacity: 0.15 },       // 蓝色
-  english: { base: '#10b981', opacity: 0.15 },     // 绿色
-  physics: { base: '#8b5cf6', opacity: 0.15 },     // 紫色
-  chemistry: { base: '#f59e0b', opacity: 0.15 },   // 黄色
-  biology: { base: '#059669', opacity: 0.15 },     // 翠绿色
-  history: { base: '#f97316', opacity: 0.15 },     // 橙色
-  geography: { base: '#06b6d4', opacity: 0.15 },   // 青色
-  politics: { base: '#ec4899', opacity: 0.15 },    // 粉色
-  others: { base: '#6b7280', opacity: 0.15 }       // 灰色
+  chinese: { border: "#be6f6a", background: "rgba(190,111,106,0.12)", text: "#f1cbc8" },
+  maths: { border: "#7fbaae", background: "rgba(127,186,174,0.12)", text: "#cfe9e2" },
+  english: { border: "#9abf79", background: "rgba(154,191,121,0.12)", text: "#def0d0" },
+  physics: { border: "#8ea2d1", background: "rgba(142,162,209,0.12)", text: "#d8e0f6" },
+  chemistry: { border: "#caa26f", background: "rgba(202,162,111,0.14)", text: "#f4dfc1" },
+  biology: { border: "#84b38b", background: "rgba(132,179,139,0.12)", text: "#d7eed9" },
+  history: { border: "#bc8670", background: "rgba(188,134,112,0.12)", text: "#f2d5cb" },
+  geography: { border: "#74a3b3", background: "rgba(116,163,179,0.12)", text: "#cee5ec" },
+  politics: { border: "#b095b9", background: "rgba(176,149,185,0.12)", text: "#e7d7ec" },
+  others: { border: "#90a294", background: "rgba(144,162,148,0.12)", text: "#e4ece6" },
 }
 
-// 获取学科样式（动态生成）
-const getSubjectStyle = (key) => {
+function getSubjectStyle(key) {
   const color = subjectColors[key] || subjectColors.others
   return {
-    backgroundColor: `${color.base}${Math.floor(color.opacity * 255).toString(16).padStart(2, '0')}`,
-    borderColor: `${color.base}${Math.floor(color.opacity * 2 * 255).toString(16).padStart(2, '0')}`,
-    color: color.base
+    borderColor: color.border,
+    background: color.background,
+    color: color.text,
   }
 }
 
-// 获取作业函数
-const fetchHomework = async () => {
-  // 如果没有选择班级，不发送请求
+async function fetchHomework() {
   if (!props.selectedCid) {
     loading.value = false
     homework.value = null
@@ -122,83 +133,62 @@ const fetchHomework = async () => {
 
   try {
     const response = props.selectedDate
-        ? await HomeworkService.getHomeworkByDate(props.selectedCid, props.selectedDate)
-        : await HomeworkService.getTodayHomework(props.selectedCid)
+      ? await HomeworkService.getHomeworkByDate(props.selectedCid, props.selectedDate)
+      : await HomeworkService.getTodayHomework(props.selectedCid)
 
-    // 处理无作业
     if (response.data.code === 2001) {
-      homework.value = null
-      error.value = 'no-homework'
+      error.value = "no-homework"
       return
     }
 
-    // 处理其他错误码
     if (response.data.code !== 0) {
       throw new Error(response.data.message)
     }
 
     homework.value = response.data.data || null
   } catch (err) {
-    console.error('获取作业失败:', err)
-    error.value = $t('homework.fetchFailed')
-    notificationService.error($t('homework.fetchFailed'))
+    console.error("[Homework] fetch failed:", err)
+    error.value = $t("homework.fetchFailed")
+    notificationService.error($t("homework.fetchFailed"))
   } finally {
     loading.value = false
   }
 }
 
-// 监听日期或班级变化，立即执行
 watch(
-    () => [props.selectedDate, props.selectedCid],
-    () => {
-      fetchHomework()
-    },
-    { immediate: true }
+  () => [props.selectedDate, props.selectedCid],
+  () => {
+    fetchHomework()
+  },
+  { immediate: true }
 )
 
-// 计算有内容的科目
 const subjectsWithContent = computed(() => {
-  if (!homework.value?.homework_content) return []
+  if (!homework.value?.homework_content) {
+    return []
+  }
 
-  const subjects = []
-  const homeworkContent = homework.value.homework_content
+  return Object.keys(subjectConfig.value)
+    .map((key) => {
+      const content = homework.value.homework_content[key]
+      if (!content || !content.trim()) {
+        return null
+      }
 
-  // 遍历所有科目，只显示有内容的科目
-  Object.keys(subjectConfig.value).forEach(key => {
-    const content = homeworkContent[key]
-    if (content && content.trim()) {
-      // 先将字符串形式的 \n 替换为真正的换行符，然后再分割
-      const normalizedContent = content.trim().replace(/\\n/g, '\n')
-      subjects.push({
+      const normalizedContent = content.trim().replace(/\\n/g, "\n")
+
+      return {
         key,
         name: subjectConfig.value[key],
-        content: normalizedContent,
-        lines: normalizedContent.split('\n').filter(line => line.trim() !== '')
-      })
-    }
-  })
-
-  return subjects
+        lines: normalizedContent.split("\n").filter((line) => line.trim() !== ""),
+      }
+    })
+    .filter(Boolean)
 })
 
-// 计算动态样式，用于控制显示列数
-const gridStyle = computed(() => {
-  return {
-    display: 'grid',
-    gridTemplateColumns: `repeat(${props.columns}, 1fr)`,
-    gap: '1rem'
-  }
-})
+const gridStyle = computed(() => ({
+  gridTemplateColumns: `repeat(${props.columns}, minmax(0, 1fr))`,
+}))
+
+defineExpose({ fetchHomework })
 </script>
-
-<style scoped>
-/* 当只有一个科目时的特殊样式 - 使用深度选择器 */
-:deep(.grid:has(> div:only-child)) > div {
-  min-height: 200px;
-}
-
-:deep(.grid:has(> div:only-child)) .text-\[1\.65rem\] {
-  font-size: 2rem;
-  line-height: 1.8;
-}
-</style>
