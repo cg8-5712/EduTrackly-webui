@@ -55,6 +55,7 @@ export default {
           light: '#f87171',
           dark: '#dc2626',
         },
+        'foreground': 'var(--color-text-primary)',
       },
       animation: {
         'in': 'fadeIn 0.2s ease-in-out',
