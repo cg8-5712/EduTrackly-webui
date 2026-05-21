@@ -54,6 +54,23 @@ const displaySettings = ref(null)
 const dragStartPos = ref({ x: 0, y: 0 }) // 记录拖动起始位置
 const hasMoved = ref(false) // 记录是否发生了拖动
 const animationFrameId = ref(null) // 用于 requestAnimationFrame
+const resizeHandler = ref(null) // 用于 resize 事件
+
+// 约束位置在视口内
+const constrainPosition = () => {
+  const componentWidth = 300
+  const componentHeight = 100
+  const maxX = window.innerWidth - componentWidth
+  const maxY = window.innerHeight - componentHeight
+
+  let newX = Math.max(0, Math.min(position.value.x, maxX))
+  let newY = Math.max(0, Math.min(position.value.y, maxY))
+
+  if (newX !== position.value.x || newY !== position.value.y) {
+    position.value = { x: newX, y: newY }
+    localStorage.setItem('floating-countdown-position', JSON.stringify(position.value))
+  }
+}
 
 // 计算属性
 const displayCountdowns = computed(() => {
@@ -309,6 +326,9 @@ onMounted(() => {
     }
   }
 
+  // 约束位置确保在视口内（处理缩放等情况）
+  constrainPosition()
+
   // 检查是否已关闭
   const isClosed = sessionStorage.getItem('floating-countdown-closed')
   if (isClosed === 'true') {
@@ -319,6 +339,12 @@ onMounted(() => {
   if (props.selectedCid) {
     fetchCountdowns()
   }
+
+  // 监听窗口大小变化（处理 Ctrl++/-- 缩放）
+  resizeHandler.value = () => {
+    constrainPosition()
+  }
+  window.addEventListener('resize', resizeHandler.value)
 })
 
 onUnmounted(() => {
@@ -326,6 +352,9 @@ onUnmounted(() => {
   document.removeEventListener('touchmove', onDrag)
   document.removeEventListener('mouseup', stopDrag)
   document.removeEventListener('touchend', stopDrag)
+  if (resizeHandler.value) {
+    window.removeEventListener('resize', resizeHandler.value)
+  }
 })
 </script>
 
