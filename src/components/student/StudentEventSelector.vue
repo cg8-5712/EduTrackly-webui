@@ -27,7 +27,7 @@
       </span>
     </div>
 
-    <div class="max-h-[34rem] overflow-auto pr-1">
+    <div class="flex-1 min-h-0 overflow-auto pr-1">
       <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         <div
           v-for="student in students"
@@ -260,6 +260,9 @@ defineExpose({ fetchStudents })
   background-color: var(--color-surface);
   border-radius: 1.5rem;
   box-shadow: var(--shadow-xl);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .board-kicker {
@@ -299,20 +302,20 @@ defineExpose({ fetchStudents })
 }
 
 /* Custom scrollbar */
-.max-h-\[34rem\]::-webkit-scrollbar {
+.flex-1::-webkit-scrollbar {
   width: 6px;
 }
 
-.max-h-\[34rem\]::-webkit-scrollbar-track {
+.flex-1::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.max-h-\[34rem\]::-webkit-scrollbar-thumb {
+.flex-1::-webkit-scrollbar-thumb {
   background: var(--color-border);
   border-radius: 3px;
 }
 
-.max-h-\[34rem\]::-webkit-scrollbar-thumb:hover {
+.flex-1::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-tertiary);
 }
 

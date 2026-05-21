@@ -180,31 +180,36 @@ async function submitHomework() {
 
 <style scoped>
 .submit-homework-wrapper {
-  width: 90%;
-  max-width: 1152px;
+  height: 100%;
   padding: 1.5rem;
   background-color: var(--color-surface);
-  border-radius: 0.75rem;
+  border-radius: 1.5rem;
   color: var(--color-text-primary);
   box-shadow: var(--shadow-xl);
-  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   transition: all 0.3s ease;
 }
 
 .submit-title {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   color: var(--color-text-primary);
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: bold;
   transition: color 0.3s ease;
+  flex-shrink: 0;
 }
 
 .subjects-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .subject-item {
@@ -213,25 +218,26 @@ async function submitHomework() {
 }
 
 .subject-label {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
   font-weight: bold;
   color: var(--color-primary);
   text-align: center;
   transition: color 0.3s ease;
+  font-size: 0.875rem;
 }
 
 .subject-textarea {
   resize: none;
   overflow-y: auto;
-  padding: 0.75rem;
-  font-size: 1rem;
+  padding: 0.5rem;
+  font-size: 0.875rem;
   border-radius: 0.5rem;
   border: 2px solid var(--color-border);
   background-color: var(--color-background);
   color: var(--color-text-primary);
   outline: none;
   transition: all 0.2s ease;
-  max-height: 64px;
+  min-height: 60px;
 }
 
 .subject-textarea:focus {
@@ -245,20 +251,10 @@ async function submitHomework() {
   opacity: 0.7;
 }
 
-.other-subject-section {
-  margin-bottom: 1.5rem;
-}
-
-.other-subject-item {
-  display: flex;
-  flex-direction: column;
-  width: 33.333%;
-}
-
 .submit-button {
-  margin-top: 2rem;
-  padding: 1rem 2.5rem;
-  font-size: 1.25rem;
+  margin-top: auto;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   border: none;
@@ -269,13 +265,14 @@ async function submitHomework() {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
+  flex-shrink: 0;
 }
 
 .submit-button:hover {
   background-color: var(--color-secondary);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-lg);
 }
 
 .submit-button:active {
@@ -283,38 +280,18 @@ async function submitHomework() {
 }
 
 /* 响应式设计 */
-@media (max-width: 1024px) {
-  .subjects-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .other-subject-item {
-    width: 50%;
-  }
-}
-
-@media (max-width: 768px) {
-  .submit-homework-wrapper {
-    width: 95%;
-    padding: 1rem;
-  }
-
+@media (max-width: 640px) {
   .subjects-grid {
     grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .other-subject-item {
-    width: 100%;
   }
 
   .submit-title {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
   }
 
   .submit-button {
-    font-size: 1rem;
-    padding: 0.75rem 2rem;
+    font-size: 0.875rem;
+    padding: 0.5rem 1.5rem;
   }
 }
 </style>

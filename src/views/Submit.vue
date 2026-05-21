@@ -1,9 +1,15 @@
 <template>
-  <div class="min-h-screen max-h-screen w-full bg-[var(--color-background)] text-[var(--color-text-primary)] flex flex-col gap-3 md:gap-4 p-2 sm:p-3 md:p-4 box-border overflow-y-auto overflow-x-hidden transition-colors duration-200">
-    <ClassSwitch @update:cid="handleClassChange" class="w-full" />
-    <StudentEventSelector :cid="selectedCid" ref="studentListComponent" class="w-full" />
-    <!-- 引入作业提交组件 -->
-    <SubmitHomework :cid="selectedCid" class="w-full" />
+  <div class="min-h-screen max-h-screen w-full bg-[var(--color-background)] text-[var(--color-text-primary)] flex flex-col gap-3 md:gap-4 p-2 sm:p-3 md:p-4 box-border overflow-hidden transition-colors duration-200">
+    <ClassSwitch @update:cid="handleClassChange" class="w-full flex-shrink-0" />
+
+    <div class="flex-1 flex gap-3 md:gap-4 min-h-0">
+      <div class="flex-1 min-w-0 overflow-hidden">
+        <StudentEventSelector :cid="selectedCid" ref="studentListComponent" class="h-full" />
+      </div>
+      <div class="flex-1 min-w-0 overflow-hidden">
+        <SubmitHomework :cid="selectedCid" class="h-full" />
+      </div>
+    </div>
   </div>
 </template>
 
