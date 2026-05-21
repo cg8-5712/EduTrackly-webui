@@ -16,7 +16,7 @@
     <transition name="fade">
       <div
         v-if="showThemeMenu"
-        class="board-shell absolute right-0 top-[calc(100%+0.75rem)] z-[1000] min-w-[18rem] p-3"
+        class="topbar-popover board-shell absolute right-0 top-[calc(100%+0.75rem)] min-w-[18rem] p-3"
       >
         <div class="mb-3 px-2">
           <p class="board-kicker mb-2">{{ isDark ? "Night Themes" : "Light Theme" }}</p>

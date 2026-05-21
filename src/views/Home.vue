@@ -4,8 +4,8 @@
     <FloatingSlogan :selected-cid="selectedCid" />
 
     <div class="flex h-full flex-col gap-3">
-      <section class="board-shell relative overflow-visible px-5 py-3 md:px-6 md:py-3.5">
-        <div class="flex flex-wrap items-start justify-between gap-4">
+      <section class="board-shell relative z-30 overflow-visible px-5 py-3 md:px-6 md:py-3.5">
+        <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(24rem,30rem)_auto] xl:items-center">
           <div class="space-y-2.5">
             <div class="flex flex-wrap items-center gap-2">
               <Badge variant="primary">Night Study Board</Badge>
@@ -22,9 +22,11 @@
             </div>
           </div>
 
-          <div class="flex max-w-[72rem] flex-wrap items-center justify-end gap-2 md:gap-3">
-            <ClassSwitch v-model:cid="selectedCid" compact class="w-full md:w-auto" />
+          <div class="w-full xl:justify-self-center">
+            <ClassSwitch v-model:cid="selectedCid" prominent class="mx-auto w-full" />
+          </div>
 
+          <div class="flex flex-wrap items-center justify-end gap-3 md:gap-4 xl:justify-self-end">
             <LanguageToggle />
             <ThemeToggle />
 
@@ -35,7 +37,7 @@
 
               <div
                 v-if="showCalendar"
-                class="calendar-popup board-shell absolute right-0 top-[calc(100%+0.75rem)] z-[1000] p-2"
+                class="calendar-popup board-shell absolute right-0 top-[calc(100%+0.9rem)] w-[22rem] p-2 md:w-[24rem]"
                 @click.stop
               >
                 <Calendar mode="single" @select-date="onDateSelect" />
@@ -49,9 +51,9 @@
             <span class="info-pill !px-3 !py-1.5">{{ selectedDateText }}</span>
             <span class="info-pill !px-3 !py-1.5">Projection Ready</span>
 
-            <div class="rounded-[1.35rem] border border-white/10 bg-white/6 px-4 py-2 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+            <div class="rounded-[1.5rem] border border-white/10 bg-white/6 px-5 py-3 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
               <div class="text-[10px] uppercase tracking-[0.24em] text-[var(--color-text-tertiary)]">Clock</div>
-              <div class="font-display text-3xl tracking-[-0.08em] text-foreground md:text-4xl">
+              <div class="font-display text-4xl tracking-[-0.08em] text-foreground md:text-6xl">
                 {{ currentTime }}
               </div>
             </div>
@@ -59,7 +61,7 @@
         </div>
       </section>
 
-      <main class="grid min-h-0 flex-1 gap-3 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1.55fr)]">
+      <main class="relative z-0 grid min-h-0 flex-1 gap-3 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1.55fr)]">
         <section class="board-shell min-h-0 overflow-auto">
           <div class="flex items-center justify-between gap-4 px-5 pt-5 md:px-6 md:pt-6">
             <div>

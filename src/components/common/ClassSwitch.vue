@@ -1,9 +1,9 @@
 <template>
-  <div :class="compact ? 'w-full max-w-[22rem]' : 'w-full max-w-[30rem]'">
-    <div class="board-shell" :class="compact ? 'p-2' : 'p-2.5'">
+  <div :class="wrapperClass">
+    <div class="board-shell" :class="shellClass">
       <div
         class="flex items-center justify-between px-3"
-        :class="compact ? 'mb-1.5 pt-0.5' : 'mb-2 pt-1'"
+        :class="headerClass"
       >
         <span class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-tertiary)]">
           {{ $t("class.selectClass") }}
@@ -11,7 +11,7 @@
         <button
           type="button"
           class="info-pill"
-          :class="compact ? '!px-2.5 !py-1 text-[0.66rem]' : '!px-3 !py-1 text-[0.7rem]'"
+          :class="pillClass"
           @click="isSearching = !isSearching"
         >
           {{ isSearching ? $t("common.cancel") : $t("class.searchPlaceholder") }}
@@ -23,7 +23,7 @@
           v-if="isSearching"
           v-model="searchQuery"
           :placeholder="$t('class.searchPlaceholder')"
-          :class="compact ? 'h-10' : 'h-12'"
+          :class="inputClass"
           @blur="handleBlur"
         />
 
@@ -31,9 +31,7 @@
           v-else
           v-model="selectedCid"
           class="flex w-full border border-white/10 bg-white/6 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm"
-          :class="compact
-            ? 'h-10 rounded-[1.15rem] px-3 py-2 text-[0.92rem]'
-            : 'h-12 rounded-[1.35rem] px-4 py-3 text-sm'"
+          :class="selectClass"
           @change="onClassChange"
         >
           <option value="" disabled>
@@ -69,6 +67,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  prominent: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(["update:cid"])
@@ -91,6 +93,56 @@ const filteredClasses = computed(() => {
   return classes.value.filter((classItem) =>
     classItem.class_name.toLowerCase().includes(searchQuery.value.trim().toLowerCase())
   )
+})
+
+const wrapperClass = computed(() => {
+  if (props.prominent) {
+    return "w-full max-w-[30rem]"
+  }
+
+  return props.compact ? "w-full max-w-[22rem]" : "w-full max-w-[30rem]"
+})
+
+const shellClass = computed(() => {
+  if (props.prominent) {
+    return "p-3"
+  }
+
+  return props.compact ? "p-2" : "p-2.5"
+})
+
+const headerClass = computed(() => {
+  if (props.prominent) {
+    return "mb-2.5 pt-1"
+  }
+
+  return props.compact ? "mb-1.5 pt-0.5" : "mb-2 pt-1"
+})
+
+const pillClass = computed(() => {
+  if (props.prominent) {
+    return "!px-3 !py-1.5 text-[0.72rem]"
+  }
+
+  return props.compact ? "!px-2.5 !py-1 text-[0.66rem]" : "!px-3 !py-1 text-[0.7rem]"
+})
+
+const inputClass = computed(() => {
+  if (props.prominent) {
+    return "h-14 text-base"
+  }
+
+  return props.compact ? "h-10" : "h-12"
+})
+
+const selectClass = computed(() => {
+  if (props.prominent) {
+    return "h-14 rounded-[1.5rem] px-4 py-3 text-base"
+  }
+
+  return props.compact
+    ? "h-10 rounded-[1.15rem] px-3 py-2 text-[0.92rem]"
+    : "h-12 rounded-[1.35rem] px-4 py-3 text-sm"
 })
 
 function getLastSelectedClass() {

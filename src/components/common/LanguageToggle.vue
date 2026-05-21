@@ -16,7 +16,7 @@
     <transition name="fade">
       <div
         v-if="showLanguageMenu"
-        class="board-shell absolute right-0 top-[calc(100%+0.75rem)] z-[1000] min-w-[14rem] p-3"
+        class="topbar-popover board-shell absolute right-0 top-[calc(100%+0.75rem)] min-w-[14rem] p-3"
       >
         <div class="mb-2 px-2">
           <p class="board-kicker mb-2">Language</p>

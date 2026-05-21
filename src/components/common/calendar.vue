@@ -1,14 +1,16 @@
 <template>
-  <div class="w-80 rounded-[1.6rem] border border-white/8 bg-[var(--panel-strong)] p-4 shadow-[var(--shadow-panel)] backdrop-blur-xl">
-    <div class="mb-4 flex items-center justify-between">
+  <div class="w-full rounded-[1.6rem] border border-white/8 bg-[var(--panel-strong)] p-4 shadow-[var(--shadow-panel)] backdrop-blur-xl">
+    <div class="mb-4 flex items-center justify-between gap-3">
       <button
+        type="button"
         @click="prevMonth"
         class="rounded-xl border border-white/8 bg-white/5 px-3 py-2 text-xl text-[var(--color-text-secondary)] transition-colors hover:bg-white/8 hover:text-foreground"
       >
         &#8249;
       </button>
-      <span class="text-lg font-semibold text-foreground">{{ currentMonth }}</span>
+      <span class="min-w-0 text-center text-lg font-semibold text-foreground">{{ currentMonth }}</span>
       <button
+        type="button"
         @click="nextMonth"
         class="rounded-xl border border-white/8 bg-white/5 px-3 py-2 text-xl text-[var(--color-text-secondary)] transition-colors hover:bg-white/8 hover:text-foreground"
       >
@@ -176,8 +178,8 @@ function formatDate(date) {
 function isFutureDate(day) {
   const today = new Date()
   const currentYear = currentDate.value.getFullYear()
-  const currentMonth = currentDate.value.getMonth()
-  const dateToCheck = new Date(currentYear, currentMonth, day)
+  const currentMonthValue = currentDate.value.getMonth()
+  const dateToCheck = new Date(currentYear, currentMonthValue, day)
   const todayEnd = new Date(today)
 
   todayEnd.setHours(23, 59, 59, 999)
@@ -194,11 +196,11 @@ function isSelected(day) {
 function isToday(day) {
   const today = new Date()
   const currentYear = currentDate.value.getFullYear()
-  const currentMonth = currentDate.value.getMonth()
+  const currentMonthValue = currentDate.value.getMonth()
 
   return (
     today.getFullYear() === currentYear &&
-    today.getMonth() === currentMonth &&
+    today.getMonth() === currentMonthValue &&
     today.getDate() === day
   )
 }
