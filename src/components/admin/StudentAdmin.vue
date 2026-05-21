@@ -1,497 +1,471 @@
 <template>
-  <div class="min-h-screen bg-gray-50 text-gray-800 p-6">
-    <div class="max-w-7xl mx-auto">
-      <!-- 标题 -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ $t('ui.studentManagement') }}</h1>
-        <p class="text-gray-600">{{ $t('ui.manageStudentInfo') }}</p>
+  <div class="space-y-6">
+    <header class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <div class="board-kicker mb-2">Student Operations</div>
+        <h1 class="panel-title !text-3xl md:!text-4xl">{{ $t('ui.studentManagement') }}</h1>
+        <p class="mt-2 text-sm leading-7 text-[var(--color-text-secondary)]">
+          {{ $t('ui.manageStudentInfo') }}
+        </p>
       </div>
+      <span class="info-pill !px-3 !py-1.5">
+        {{ $t('ui.selectedClasses', { count: selectedClassIds.length }) }}
+      </span>
+    </header>
 
-      <!-- 班级选择和操作栏 -->
-      <div class="bg-white rounded-xl p-6 mb-6 shadow-lg border border-gray-200">
-        <!-- 班级选择器 -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('ui.selectClass') }}</label>
-          <div class="relative">
-            <button
-              @click="showClassDropdown = !showClassDropdown"
-              class="w-full max-w-md px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 text-left focus:border-blue-500 focus:outline-none flex items-center justify-between shadow-sm hover:border-gray-400"
-            >
-              <span>{{ getSelectedClassesText() }}</span>
-              <span class="text-gray-500">{{ showClassDropdown ? '▲' : '▼' }}</span>
-            </button>
+    <section class="board-shell p-5 md:p-6">
+      <div class="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div class="space-y-4">
+          <div>
+            <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-text-tertiary)]">
+              {{ $t('ui.selectClass') }}
+            </label>
+            <div class="relative student-class-dropdown">
+              <button
+                @click="showClassDropdown = !showClassDropdown"
+                class="flex w-full items-center justify-between rounded-[1.35rem] border border-white/10 bg-white/6 px-4 py-3 text-left text-sm text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition hover:bg-white/8"
+              >
+                <span class="truncate">{{ getSelectedClassesText() }}</span>
+                <span class="ml-3 text-[var(--color-text-tertiary)]">{{ showClassDropdown ? '▲' : '▼' }}</span>
+              </button>
 
-            <!-- 下拉菜单 -->
-            <div v-if="showClassDropdown" class="absolute z-10 w-full max-w-md mt-1 bg-white border border-gray-300 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-              <!-- 全选选项 -->
-              <div class="p-3 border-b border-gray-200">
-                <label class="flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded">
-                  <input
-                    type="checkbox"
-                    :checked="isAllSelected"
-                    :indeterminate="isIndeterminate"
-                    @change="toggleSelectAll"
-                    class="mr-3"
-                  />
-                  <span class="font-medium text-blue-600">{{ $t('ui.selectAll') }} ({{ classList.length }}{{ $t('ui.classes') }})</span>
-                </label>
-              </div>
+              <div
+                v-if="showClassDropdown"
+                class="board-shell absolute left-0 right-0 top-[calc(100%+0.65rem)] z-20 overflow-hidden rounded-[1.5rem]"
+              >
+                <div class="border-b border-white/8 p-3">
+                  <label class="flex cursor-pointer items-center gap-3 rounded-[1rem] px-3 py-2 transition hover:bg-white/5">
+                    <input
+                      type="checkbox"
+                      :checked="isAllSelected"
+                      :indeterminate="isIndeterminate"
+                      @change="toggleSelectAll"
+                      class="h-4 w-4"
+                    />
+                    <span class="text-sm font-medium text-foreground">
+                      {{ $t('ui.selectAll') }} ({{ classList.length }}{{ $t('ui.classes') }})
+                    </span>
+                  </label>
+                </div>
 
-              <!-- 班级列表 -->
-              <div class="max-h-40 overflow-y-auto">
-                <label
-                  v-for="classItem in classList"
-                  :key="classItem.cid"
-                  class="flex items-center cursor-pointer hover:bg-gray-50 p-3 transition-colors duration-200"
-                >
-                  <input
-                    type="checkbox"
-                    :value="classItem.cid"
-                    v-model="selectedClassIds"
-                    class="mr-3"
-                  />
-                  <div class="flex-1">
-                    <span class="text-gray-800">{{ classItem.class_name }}</span>
-                    <span class="text-sm text-gray-500 ml-2">(ID: {{ classItem.cid }})</span>
-                  </div>
-                </label>
-              </div>
+                <div class="max-h-56 overflow-y-auto p-2">
+                  <label
+                    v-for="classItem in classList"
+                    :key="classItem.cid"
+                    class="flex cursor-pointer items-center gap-3 rounded-[1rem] px-3 py-3 transition hover:bg-white/5"
+                  >
+                    <input
+                      type="checkbox"
+                      :value="classItem.cid"
+                      v-model="selectedClassIds"
+                      class="h-4 w-4"
+                    />
+                    <div class="min-w-0 flex-1">
+                      <div class="truncate text-sm text-foreground">{{ classItem.class_name }}</div>
+                      <div class="text-xs text-[var(--color-text-tertiary)]">ID {{ classItem.cid }}</div>
+                    </div>
+                  </label>
+                </div>
 
-              <!-- 操作按钮 -->
-              <div class="p-3 border-t border-gray-200 flex gap-2">
-                <button
-                  @click="confirmClassSelection"
-                  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors duration-200"
-                >
-                  {{ $t('ui.confirmSelection') }}
-                </button>
-                <button
-                  @click="showClassDropdown = false"
-                  class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg text-sm transition-colors duration-200"
-                >
-                  {{ $t('common.cancel') }}
-                </button>
+                <div class="flex gap-2 border-t border-white/8 p-3">
+                  <button
+                    @click="confirmClassSelection"
+                    class="rounded-[1rem] border border-[rgba(var(--color-primary-rgb),0.2)] bg-[rgba(var(--color-primary-rgb),0.16)] px-4 py-2 text-sm text-foreground transition hover:bg-[rgba(var(--color-primary-rgb),0.22)]"
+                  >
+                    {{ $t('ui.confirmSelection') }}
+                  </button>
+                  <button
+                    @click="showClassDropdown = false"
+                    class="rounded-[1rem] border border-white/10 bg-white/6 px-4 py-2 text-sm text-[var(--color-text-secondary)] transition hover:bg-white/8"
+                  >
+                    {{ $t('common.cancel') }}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- 搜索和操作 -->
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <!-- 搜索栏 -->
-          <div class="flex items-center gap-4">
-            <div class="relative">
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="relative min-w-[16rem] flex-1">
               <input
                 v-model="searchQuery"
                 type="text"
                 :placeholder="$t('ui.searchStudentPlaceholder')"
-                class="w-80 pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:border-blue-500 focus:outline-none shadow-sm"
+                class="w-full rounded-[1.25rem] border border-white/10 bg-white/6 py-3 pl-10 pr-4 text-sm text-foreground placeholder:text-[var(--color-text-tertiary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
               />
-              <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
+              <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-tertiary)]">/</span>
             </div>
             <button
-              @click="clearSearch"
               v-if="searchQuery"
-              class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-colors duration-200"
+              @click="clearSearch"
+              class="rounded-[1rem] border border-white/10 bg-white/6 px-4 py-3 text-sm text-[var(--color-text-secondary)] transition hover:bg-white/8"
             >
               {{ $t('ui.clear') }}
             </button>
           </div>
+        </div>
 
-          <!-- 操作按钮 -->
-          <div class="flex items-center gap-3">
-            <button
-              @click="openExportDialog"
-              :disabled="filteredStudents.length === 0"
-              class="px-4 py-2 bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
-            >
-              <span>📊</span>
-              {{ $t('analysis.export') }}
-            </button>
-            <button
-              @click="showAddModal = true"
-              class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200 flex items-center gap-2"
-            >
-              <span>➕</span>
-              {{ $t('ui.addStudent') }}
-            </button>
-            <button
-              @click="refreshData"
-              :disabled="loading"
-              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors duration-200"
-            >
-              {{ loading ? $t('ui.refreshing') : $t('ui.refresh') }}
-            </button>
-          </div>
+        <div class="flex flex-wrap items-start justify-end gap-3 xl:justify-end">
+          <button
+            @click="openExportDialog"
+            :disabled="filteredStudents.length === 0"
+            class="rounded-[1.1rem] border border-[rgba(111,151,138,0.24)] bg-[rgba(111,151,138,0.16)] px-4 py-3 text-sm text-[#d7e7e1] transition hover:bg-[rgba(111,151,138,0.22)] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {{ $t('analysis.export') }}
+          </button>
+          <button
+            @click="showAddModal = true"
+            class="rounded-[1.1rem] border border-[rgba(176,155,116,0.24)] bg-[rgba(176,155,116,0.16)] px-4 py-3 text-sm text-[#eadfc5] transition hover:bg-[rgba(176,155,116,0.22)]"
+          >
+            {{ $t('ui.addStudent') }}
+          </button>
+          <button
+            @click="refreshData"
+            :disabled="loading"
+            class="rounded-[1.1rem] border border-[rgba(var(--color-primary-rgb),0.22)] bg-[rgba(var(--color-primary-rgb),0.16)] px-4 py-3 text-sm text-foreground transition hover:bg-[rgba(var(--color-primary-rgb),0.22)] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {{ loading ? $t('ui.refreshing') : $t('ui.refresh') }}
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid gap-3 md:grid-cols-3">
+      <div class="rounded-[1.8rem] border border-white/8 bg-[linear-gradient(135deg,rgba(69,86,111,0.38),rgba(19,24,32,0.92))] p-5 shadow-[0_24px_60px_rgba(0,0,0,0.22)]">
+        <div class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#bdc8da]">{{ $t('ui.totalStudents') }}</div>
+        <div class="text-4xl font-semibold tracking-[-0.06em] text-white">{{ totalStudents }}</div>
+      </div>
+      <div class="rounded-[1.8rem] border border-white/8 bg-[linear-gradient(135deg,rgba(77,103,96,0.4),rgba(18,24,23,0.92))] p-5 shadow-[0_24px_60px_rgba(0,0,0,0.22)]">
+        <div class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#cfe1d9]">{{ $t('ui.studentsInSchool') }}</div>
+        <div class="text-4xl font-semibold tracking-[-0.06em] text-white">{{ attendingStudents }}</div>
+      </div>
+      <div class="rounded-[1.8rem] border border-white/8 bg-[linear-gradient(135deg,rgba(110,79,89,0.42),rgba(24,18,21,0.92))] p-5 shadow-[0_24px_60px_rgba(0,0,0,0.22)]">
+        <div class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#e1cad2]">{{ $t('ui.studentsLeftSchool') }}</div>
+        <div class="text-4xl font-semibold tracking-[-0.06em] text-white">{{ absentStudents }}</div>
+      </div>
+    </section>
+
+    <section class="board-shell overflow-hidden">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/8 px-5 py-5 md:px-6">
+        <div>
+          <div class="board-kicker mb-2">Roster</div>
+          <h2 class="text-2xl font-semibold tracking-[-0.04em] text-foreground">{{ $t('ui.studentList') }}</h2>
+        </div>
+        <div class="text-sm text-[var(--color-text-tertiary)]">
+          {{ $t('ui.showingRecords', { start: startItem, end: endItem, total: filteredStudents.length }) }}
         </div>
       </div>
 
-      <!-- 统计卡片 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white shadow-xl">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-blue-100 text-sm font-medium">{{ $t('ui.totalStudents') }}</p>
-              <p class="text-3xl font-bold">{{ totalStudents }}</p>
-            </div>
-            <div class="text-4xl opacity-80">👥</div>
-          </div>
+      <div class="overflow-x-auto">
+        <div v-if="loading" class="flex items-center justify-center gap-3 px-6 py-16">
+          <LoadingSpinner />
+          <span class="text-sm text-[var(--color-text-secondary)]">{{ $t('ui.loadingStudentList') }}</span>
         </div>
 
-        <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 text-white shadow-xl">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-green-100 text-sm font-medium">{{ $t('ui.studentsInSchool') }}</p>
-              <p class="text-3xl font-bold">{{ attendingStudents }}</p>
-            </div>
-            <div class="text-4xl opacity-80">✅</div>
+        <div v-else-if="filteredStudents.length === 0" class="flex flex-col items-center justify-center px-6 py-16 text-center">
+          <div class="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--color-text-tertiary)]">Empty State</div>
+          <div class="mt-3 text-2xl font-semibold tracking-[-0.04em] text-foreground">
+            {{ selectedClassIds.length === 0 ? $t('ui.pleaseSelectClass') :
+               searchQuery ? $t('ui.noMatchingStudents') : $t('ui.noStudentData') }}
           </div>
+          <div class="mt-3 max-w-xl text-sm leading-7 text-[var(--color-text-secondary)]">
+            {{ selectedClassIds.length === 0 ? $t('ui.selectClassFromDropdown') :
+               searchQuery ? $t('ui.tryOtherKeywords') : $t('ui.noStudentsAddedYet') }}
+          </div>
+          <button
+            v-if="selectedClassIds.length > 0 && !searchQuery"
+            @click="showAddModal = true"
+            class="mt-5 rounded-[1rem] border border-[rgba(176,155,116,0.24)] bg-[rgba(176,155,116,0.16)] px-4 py-3 text-sm text-[#eadfc5] transition hover:bg-[rgba(176,155,116,0.22)]"
+          >
+            {{ $t('ui.addStudentNow') }}
+          </button>
         </div>
 
-        <div class="bg-gradient-to-r from-red-600 to-red-700 rounded-xl p-6 text-white shadow-xl">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-red-100 text-sm font-medium">{{ $t('ui.studentsLeftSchool') }}</p>
-              <p class="text-3xl font-bold">{{ absentStudents }}</p>
-            </div>
-            <div class="text-4xl opacity-80">❌</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 学生表格 -->
-      <div class="bg-white rounded-xl shadow-lg border border-gray-200">
-        <div class="p-6 border-b border-gray-200">
-          <div class="flex items-center justify-between">
-            <h2 class="text-xl font-semibold text-gray-800">{{ $t('ui.studentList') }}</h2>
-            <div class="text-sm text-gray-500">
-              {{ $t('ui.selectedClasses', { count: selectedClassIds.length }) }}
-            </div>
-          </div>
-        </div>
-
-        <div class="overflow-x-auto">
-          <!-- 加载中状态 -->
-          <div v-if="loading" class="flex items-center justify-center py-12">
-            <LoadingSpinner />
-            <span class="ml-3 text-gray-500">{{ $t('ui.loadingStudentList') }}</span>
-          </div>
-
-          <!-- 无数据状态 -->
-          <div v-else-if="filteredStudents.length === 0" class="flex flex-col items-center justify-center py-12">
-            <div class="text-6xl mb-4">👥</div>
-            <div class="text-xl text-gray-500 mb-2">
-              {{ selectedClassIds.length === 0 ? $t('ui.pleaseSelectClass') :
-                 searchQuery ? $t('ui.noMatchingStudents') : $t('ui.noStudentData') }}
-            </div>
-            <div class="text-sm text-gray-400 mb-4">
-              {{ selectedClassIds.length === 0 ? $t('ui.selectClassFromDropdown') :
-                 searchQuery ? $t('ui.tryOtherKeywords') : $t('ui.noStudentsAddedYet') }}
-            </div>
-            <button
-              v-if="selectedClassIds.length > 0 && !searchQuery"
-              @click="showAddModal = true"
-              class="mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-200 flex items-center gap-2 active:scale-95"
+        <table v-else class="w-full min-w-[820px]">
+          <thead>
+            <tr class="border-b border-white/8 bg-white/[0.03]">
+              <th class="px-4 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-tertiary)]">{{ $t('ui.class') }}</th>
+              <th class="px-4 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-tertiary)]">{{ $t('ui.studentId') }}</th>
+              <th class="px-4 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-tertiary)]">{{ $t('ui.name') }}</th>
+              <th class="px-4 py-4 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-tertiary)]">{{ $t('ui.attendanceStatus') }}</th>
+              <th class="px-4 py-4 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-text-tertiary)]">{{ $t('ui.actions') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="student in paginatedStudents"
+              :key="`${student.cid}-${student.sid}`"
+              class="border-b border-white/6 transition hover:bg-white/[0.04]"
             >
-              <span>➕</span>
-              {{ $t('ui.addStudentNow') }}
-            </button>
-          </div>
-
-          <!-- 学生表格 -->
-          <table v-else class="w-full">
-            <thead>
-              <tr class="bg-gray-50 border-b border-gray-200">
-                <th class="text-left py-3 px-4 font-semibold text-gray-700">{{ $t('ui.class') }}</th>
-                <th class="text-left py-3 px-4 font-semibold text-gray-700">{{ $t('ui.studentId') }}</th>
-                <th class="text-left py-3 px-4 font-semibold text-gray-700">{{ $t('ui.name') }}</th>
-                <th class="text-center py-3 px-4 font-semibold text-gray-700">{{ $t('ui.attendanceStatus') }}</th>
-                <th class="text-center py-3 px-4 font-semibold text-gray-700">{{ $t('ui.actions') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="student in paginatedStudents"
-                :key="`${student.cid}-${student.sid}`"
-                class="border-b border-gray-200 even:bg-gray-50/50 hover:bg-blue-50 transition-all duration-200"
-              >
-                <!-- 班级 -->
-                <td class="py-3 px-4 text-gray-700">
-                  {{ getClassName(student.cid) }}
-                </td>
-
-                <!-- 学号 -->
-                <td class="py-3 px-4 text-gray-700">
-                  {{ student.sid }}
-                </td>
-
-                <!-- 姓名 -->
-                <td class="py-3 px-4">
-                  <div class="flex items-center">
-                    <div
-                      class="w-8 h-8 rounded-full flex items-center justify-center text-white font-medium mr-3"
-                      :class="getAvatarColor(student.student_name)"
-                    >
-                      {{ getNameInitial(student.student_name) }}
-                    </div>
-                    <span class="text-gray-800 font-medium">{{ student.student_name }}</span>
-                  </div>
-                </td>
-
-                <!-- 出勤状态 -->
-                <td class="py-3 px-4 text-center">
-                  <button
-                    @click="toggleAttendance(student)"
-                    class="px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200"
-                    :class="student.attendance
-                      ? 'bg-green-600 text-white hover:bg-green-700'
-                      : 'bg-red-600 text-white hover:bg-red-700'"
+              <td class="px-4 py-4 text-sm text-[var(--color-text-secondary)]">
+                {{ getClassName(student.cid) }}
+              </td>
+              <td class="px-4 py-4 text-sm text-[var(--color-text-secondary)]">
+                {{ student.sid }}
+              </td>
+              <td class="px-4 py-4">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold text-slate-100"
+                    :class="getAvatarColor(student.student_name)"
                   >
-                    {{ student.attendance ? $t('ui.inSchool') : $t('ui.leftSchool') }}
-                  </button>
-                </td>
-
-                <!-- 操作按钮 -->
-                <td class="py-3 px-4 text-center">
-                  <div class="flex items-center justify-center gap-2">
-                    <!-- 查看详情按钮 -->
-                    <button
-                      @click="showStudentDetail(student)"
-                      class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
-                      :title="$t('ui.viewDetails')"
-                    >
-                      {{ $t('ui.details') }}
-                    </button>
-
-                    <!-- 删除按钮 -->
-                    <button
-                      @click="deleteStudent(student)"
-                      class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
-                      :title="$t('ui.deleteStudent')"
-                    >
-                      {{ $t('ui.delete') }}
-                    </button>
+                    {{ getNameInitial(student.student_name) }}
                   </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- 分页 -->
-        <div v-if="filteredStudents.length > 0" class="p-6 border-t border-gray-200">
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <!-- 分页信息和每页大小选择 -->
-            <div class="flex items-center gap-4">
-              <div class="text-sm text-gray-600">
-                {{ $t('ui.showingRecords', { start: startItem, end: endItem, total: filteredStudents.length }) }}
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-sm text-gray-600">{{ $t('ui.itemsPerPage') }}</span>
-                <select
-                  v-model="pageSize"
-                  @change="currentPage = 1"
-                  class="px-2 py-1 bg-white border border-gray-300 rounded text-gray-800 text-sm focus:border-blue-500 focus:outline-none"
-                >
-                  <option value="10">10</option>
-                  <option value="20">20</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                </select>
-                <span class="text-sm text-gray-600">{{ $t('ui.items') }}</span>
-              </div>
-            </div>
-
-            <!-- 分页控件 -->
-            <div class="flex items-center gap-2">
-              <!-- 首页 -->
-              <button
-                @click="currentPage = 1"
-                :disabled="currentPage === 1"
-                class="px-3 py-1 rounded border transition-colors duration-200"
-                :class="currentPage === 1
-                  ? 'border-gray-300 text-gray-400 cursor-not-allowed'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
-              >
-                {{ $t('ui.firstPage') }}
-              </button>
-
-              <!-- 上一页 -->
-              <button
-                @click="currentPage--"
-                :disabled="currentPage === 1"
-                class="px-3 py-1 rounded border transition-colors duration-200"
-                :class="currentPage === 1
-                  ? 'border-gray-300 text-gray-400 cursor-not-allowed'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
-              >
-                {{ $t('ui.previousPage') }}
-              </button>
-
-              <!-- 页码按钮 -->
-              <button
-                v-for="page in visiblePages"
-                :key="page"
-                @click="currentPage = page"
-                class="px-3 py-1 rounded border transition-colors duration-200"
-                :class="page === currentPage
-                  ? 'border-blue-500 bg-blue-600 text-white'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
-              >
-                {{ page }}
-              </button>
-
-              <!-- 下一页 -->
-              <button
-                @click="currentPage++"
-                :disabled="currentPage === totalPages"
-                class="px-3 py-1 rounded border transition-colors duration-200"
-                :class="currentPage === totalPages
-                  ? 'border-gray-300 text-gray-400 cursor-not-allowed'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
-              >
-                {{ $t('ui.nextPage') }}
-              </button>
-
-              <!-- 末页 -->
-              <button
-                @click="currentPage = totalPages"
-                :disabled="currentPage === totalPages"
-                class="px-3 py-1 rounded border transition-colors duration-200"
-                :class="currentPage === totalPages
-                  ? 'border-gray-300 text-gray-400 cursor-not-allowed'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
-              >
-                {{ $t('ui.lastPage') }}
-              </button>
-
-              <!-- 页面跳转 -->
-              <div class="flex items-center gap-2 ml-4">
-                <span class="text-sm text-gray-600">{{ $t('ui.jumpTo') }}</span>
-                <input
-                  v-model="jumpToPage"
-                  @keyup.enter="handleJumpToPage"
-                  type="number"
-                  :min="1"
-                  :max="totalPages"
-                  class="w-16 px-2 py-1 bg-white border border-gray-300 rounded text-gray-800 text-center text-sm focus:border-blue-500 focus:outline-none"
-                />
-                <span class="text-sm text-gray-600">{{ $t('ui.page') }}</span>
+                  <span class="font-medium text-foreground">{{ student.student_name }}</span>
+                </div>
+              </td>
+              <td class="px-4 py-4 text-center">
                 <button
-                  @click="handleJumpToPage"
-                  class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors duration-200"
+                  @click="toggleAttendance(student)"
+                  class="rounded-full px-3 py-1.5 text-sm font-medium transition"
+                  :class="student.attendance
+                    ? 'border border-[rgba(111,151,138,0.24)] bg-[rgba(111,151,138,0.16)] text-[#d7e7e1] hover:bg-[rgba(111,151,138,0.22)]'
+                    : 'border border-[rgba(199,121,134,0.24)] bg-[rgba(199,121,134,0.16)] text-[#f0d7dd] hover:bg-[rgba(199,121,134,0.22)]'"
                 >
-                  {{ $t('ui.confirm') }}
+                  {{ student.attendance ? $t('ui.inSchool') : $t('ui.leftSchool') }}
                 </button>
-              </div>
-            </div>
-          </div>
-        </div>
+              </td>
+              <td class="px-4 py-4">
+                <div class="flex items-center justify-center gap-2">
+                  <button
+                    @click="showStudentDetail(student)"
+                    class="rounded-[0.9rem] border border-[rgba(157,151,189,0.24)] bg-[rgba(157,151,189,0.16)] px-3 py-1.5 text-sm text-[#e1dbf4] transition hover:bg-[rgba(157,151,189,0.22)]"
+                    :title="$t('ui.viewDetails')"
+                  >
+                    {{ $t('ui.details') }}
+                  </button>
+                  <button
+                    @click="deleteStudent(student)"
+                    class="rounded-[0.9rem] border border-[rgba(199,121,134,0.24)] bg-[rgba(199,121,134,0.14)] px-3 py-1.5 text-sm text-[#f0d7dd] transition hover:bg-[rgba(199,121,134,0.22)]"
+                    :title="$t('ui.deleteStudent')"
+                  >
+                    {{ $t('ui.delete') }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      <!-- 添加学生模态框 -->
-      <AddStudentModal
-        v-if="showAddModal"
-        :cid="selectedClassIds.length > 0 ? selectedClassIds[0] : null"
-        :classList="classList"
-        @close="showAddModal = false"
-        @success="handleAddStudentSuccess"
-      />
-
-      <!-- 学生详情模态框 -->
-      <StudentDetailModal
-        v-if="showDetailModal && selectedStudent"
-        :student="selectedStudent"
-        @close="closeDetailModal"
-      />
-
-      <!-- 导出对话框 -->
-      <div v-if="showExportDialog" class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showExportDialog = false">
-        <div class="bg-white rounded-2xl w-[90%] max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
-          <div class="flex justify-between items-center p-6 border-b border-gray-200">
-            <h3 class="m-0 text-xl font-bold text-gray-800">{{ $t('analysis.export') }} - {{ $t('ui.studentData') }}</h3>
-            <button @click="showExportDialog = false" class="bg-none border-none text-lg cursor-pointer p-1 rounded transition-colors hover:bg-gray-100">✖️</button>
+      <div v-if="filteredStudents.length > 0" class="flex flex-col gap-4 border-t border-white/8 px-5 py-5 md:px-6">
+        <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div class="flex flex-wrap items-center gap-3 text-sm text-[var(--color-text-secondary)]">
+            <span>{{ $t('ui.itemsPerPage') }}</span>
+            <select
+              v-model="pageSize"
+              @change="currentPage = 1"
+              class="rounded-[0.9rem] border border-white/10 bg-white/6 px-3 py-2 text-sm text-foreground"
+            >
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <span>{{ $t('ui.items') }}</span>
           </div>
-          <div class="p-6">
-            <!-- 学生选择 -->
-            <div class="mb-5">
-              <label class="block mb-2 font-semibold text-gray-700">{{ $t('ui.selectStudents') }}</label>
-              <div class="flex items-center gap-3 mb-3">
-                <label class="flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    :checked="isAllStudentsSelected"
-                    :indeterminate="isStudentsIndeterminate"
-                    @change="toggleSelectAllStudents"
-                    class="mr-2"
-                  />
-                  <span class="text-sm text-gray-700">{{ $t('ui.selectAll') }} ({{ filteredStudents.length }}{{ $t('pagination.peopleUnit') }})</span>
-                </label>
-              </div>
-              <div class="max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-2">
-                <label
-                  v-for="student in filteredStudents"
-                  :key="student.sid"
-                  class="flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors"
-                >
-                  <input
-                    type="checkbox"
-                    :value="student.sid"
-                    v-model="exportStudentIds"
-                    class="mr-2"
-                  />
-                  <span class="text-sm text-gray-800">{{ student.student_name }}</span>
-                  <span class="text-xs text-gray-500 ml-2">(ID: {{ student.sid }})</span>
-                </label>
-              </div>
-              <div class="text-sm text-gray-500 mt-2">
-                {{ $t('ui.selectedCount', { count: exportStudentIds.length }) }}
-              </div>
-            </div>
 
-            <!-- 日期范围选择 -->
-            <div class="mb-5">
-              <label class="block mb-2 font-semibold text-gray-700">{{ $t('analysis.dateRange') }}</label>
-              <div class="flex gap-4 items-center">
-                <div class="flex-1">
-                  <label class="block mb-1 text-sm text-gray-500">{{ $t('ui.startDate') }}</label>
-                  <input
-                    type="date"
-                    v-model="exportStartDate"
-                    :max="exportEndDate || todayDate"
-                    class="w-full py-2 px-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-blue-600"
-                  />
-                </div>
-                <span class="text-gray-400 mt-6">~</span>
-                <div class="flex-1">
-                  <label class="block mb-1 text-sm text-gray-500">{{ $t('ui.endDate') }}</label>
-                  <input
-                    type="date"
-                    v-model="exportEndDate"
-                    :min="exportStartDate"
-                    :max="todayDate"
-                    class="w-full py-2 px-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-blue-600"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <!-- 快捷选择 -->
-            <div class="mb-5">
-              <label class="block mb-2 text-sm text-gray-500">{{ $t('ui.quickSelect') }}</label>
-              <div class="flex gap-2 flex-wrap">
-                <button @click="setDateRange('week')" class="py-1.5 px-3 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">{{ $t('ui.lastWeek') }}</button>
-                <button @click="setDateRange('month')" class="py-1.5 px-3 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">{{ $t('ui.lastMonth') }}</button>
-                <button @click="setDateRange('quarter')" class="py-1.5 px-3 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">{{ $t('ui.lastQuarter') }}</button>
-              </div>
-            </div>
-          </div>
-          <div class="flex gap-3 justify-end p-6 border-t border-gray-200">
-            <button @click="showExportDialog = false" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-gray-100 text-gray-700 border-none hover:bg-gray-200">{{ $t('common.cancel') }}</button>
-            <button @click="exportStudentData" :disabled="exporting || !canExport" class="py-2.5 px-5 rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 bg-teal-600 text-white border-none hover:bg-teal-700 disabled:opacity-60 disabled:cursor-not-allowed">
-              {{ exporting ? $t('ui.exporting') : $t('analysis.export') }}
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              @click="currentPage = 1"
+              :disabled="currentPage === 1"
+              class="rounded-[0.9rem] border px-3 py-2 text-sm transition"
+              :class="currentPage === 1
+                ? 'cursor-not-allowed border-white/8 bg-white/[0.03] text-[var(--color-text-tertiary)]'
+                : 'border-white/10 bg-white/6 text-[var(--color-text-secondary)] hover:bg-white/8'"
+            >
+              {{ $t('ui.firstPage') }}
+            </button>
+            <button
+              @click="currentPage--"
+              :disabled="currentPage === 1"
+              class="rounded-[0.9rem] border px-3 py-2 text-sm transition"
+              :class="currentPage === 1
+                ? 'cursor-not-allowed border-white/8 bg-white/[0.03] text-[var(--color-text-tertiary)]'
+                : 'border-white/10 bg-white/6 text-[var(--color-text-secondary)] hover:bg-white/8'"
+            >
+              {{ $t('ui.previousPage') }}
+            </button>
+            <button
+              v-for="page in visiblePages"
+              :key="page"
+              @click="currentPage = page"
+              class="rounded-[0.9rem] border px-3 py-2 text-sm transition"
+              :class="page === currentPage
+                ? 'border-[rgba(var(--color-primary-rgb),0.24)] bg-[rgba(var(--color-primary-rgb),0.18)] text-foreground'
+                : 'border-white/10 bg-white/6 text-[var(--color-text-secondary)] hover:bg-white/8'"
+            >
+              {{ page }}
+            </button>
+            <button
+              @click="currentPage++"
+              :disabled="currentPage === totalPages"
+              class="rounded-[0.9rem] border px-3 py-2 text-sm transition"
+              :class="currentPage === totalPages
+                ? 'cursor-not-allowed border-white/8 bg-white/[0.03] text-[var(--color-text-tertiary)]'
+                : 'border-white/10 bg-white/6 text-[var(--color-text-secondary)] hover:bg-white/8'"
+            >
+              {{ $t('ui.nextPage') }}
+            </button>
+            <button
+              @click="currentPage = totalPages"
+              :disabled="currentPage === totalPages"
+              class="rounded-[0.9rem] border px-3 py-2 text-sm transition"
+              :class="currentPage === totalPages
+                ? 'cursor-not-allowed border-white/8 bg-white/[0.03] text-[var(--color-text-tertiary)]'
+                : 'border-white/10 bg-white/6 text-[var(--color-text-secondary)] hover:bg-white/8'"
+            >
+              {{ $t('ui.lastPage') }}
             </button>
           </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+          <span>{{ $t('ui.jumpTo') }}</span>
+          <input
+            v-model="jumpToPage"
+            @keyup.enter="handleJumpToPage"
+            type="number"
+            :min="1"
+            :max="totalPages"
+            class="w-20 rounded-[0.9rem] border border-white/10 bg-white/6 px-3 py-2 text-center text-sm text-foreground"
+          />
+          <span>{{ $t('ui.page') }}</span>
+          <button
+            @click="handleJumpToPage"
+            class="rounded-[0.9rem] border border-[rgba(var(--color-primary-rgb),0.22)] bg-[rgba(var(--color-primary-rgb),0.16)] px-3 py-2 text-sm text-foreground transition hover:bg-[rgba(var(--color-primary-rgb),0.22)]"
+          >
+            {{ $t('ui.confirm') }}
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <AddStudentModal
+      v-if="showAddModal"
+      :cid="selectedClassIds.length > 0 ? selectedClassIds[0] : null"
+      :classList="classList"
+      @close="showAddModal = false"
+      @success="handleAddStudentSuccess"
+    />
+
+    <StudentDetailModal
+      v-if="showDetailModal && selectedStudent"
+      :student="selectedStudent"
+      @close="closeDetailModal"
+    />
+
+    <div
+      v-if="showExportDialog"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(6,8,12,0.82)] px-4 backdrop-blur-md"
+      @click.self="showExportDialog = false"
+    >
+      <div class="board-shell w-full max-w-2xl overflow-hidden rounded-[2rem]">
+        <div class="flex items-center justify-between border-b border-white/8 px-6 py-5">
+          <div>
+            <div class="board-kicker mb-2">Export</div>
+            <h3 class="text-2xl font-semibold tracking-[-0.04em] text-foreground">
+              {{ $t('analysis.export') }} - {{ $t('ui.studentData') }}
+            </h3>
+          </div>
+          <button
+            @click="showExportDialog = false"
+            class="rounded-full border border-white/10 bg-white/6 p-2 text-[var(--color-text-secondary)] transition hover:bg-white/8"
+          >
+            X
+          </button>
+        </div>
+
+        <div class="space-y-6 px-6 py-6">
+          <div>
+            <label class="mb-3 block text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-text-tertiary)]">
+              {{ $t('ui.selectStudents') }}
+            </label>
+            <label class="mb-3 flex cursor-pointer items-center gap-3 text-sm text-[var(--color-text-secondary)]">
+              <input
+                type="checkbox"
+                :checked="isAllStudentsSelected"
+                :indeterminate="isStudentsIndeterminate"
+                @change="toggleSelectAllStudents"
+                class="h-4 w-4"
+              />
+              <span>{{ $t('ui.selectAll') }} ({{ filteredStudents.length }}{{ $t('pagination.peopleUnit') }})</span>
+            </label>
+            <div class="max-h-44 space-y-1 overflow-y-auto rounded-[1.3rem] border border-white/8 bg-white/[0.03] p-2">
+              <label
+                v-for="student in filteredStudents"
+                :key="student.sid"
+                class="flex cursor-pointer items-center gap-3 rounded-[1rem] px-3 py-2 transition hover:bg-white/5"
+              >
+                <input
+                  type="checkbox"
+                  :value="student.sid"
+                  v-model="exportStudentIds"
+                  class="h-4 w-4"
+                />
+                <span class="text-sm text-foreground">{{ student.student_name }}</span>
+                <span class="text-xs text-[var(--color-text-tertiary)]">ID {{ student.sid }}</span>
+              </label>
+            </div>
+            <div class="mt-2 text-sm text-[var(--color-text-tertiary)]">
+              {{ $t('ui.selectedCount', { count: exportStudentIds.length }) }}
+            </div>
+          </div>
+
+          <div>
+            <label class="mb-3 block text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-text-tertiary)]">
+              {{ $t('analysis.dateRange') }}
+            </label>
+            <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_2rem_minmax(0,1fr)] md:items-end">
+              <div>
+                <label class="mb-2 block text-sm text-[var(--color-text-secondary)]">{{ $t('ui.startDate') }}</label>
+                <input
+                  type="date"
+                  v-model="exportStartDate"
+                  :max="exportEndDate || todayDate"
+                  class="w-full rounded-[1rem] border border-white/10 bg-white/6 px-3 py-3 text-sm text-foreground"
+                />
+              </div>
+              <div class="text-center text-[var(--color-text-tertiary)]">~</div>
+              <div>
+                <label class="mb-2 block text-sm text-[var(--color-text-secondary)]">{{ $t('ui.endDate') }}</label>
+                <input
+                  type="date"
+                  v-model="exportEndDate"
+                  :min="exportStartDate"
+                  :max="todayDate"
+                  class="w-full rounded-[1rem] border border-white/10 bg-white/6 px-3 py-3 text-sm text-foreground"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="mb-3 block text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-text-tertiary)]">
+              {{ $t('ui.quickSelect') }}
+            </label>
+            <div class="flex flex-wrap gap-2">
+              <button @click="setDateRange('week')" class="rounded-[0.9rem] border border-white/10 bg-white/6 px-3 py-2 text-sm text-[var(--color-text-secondary)] transition hover:bg-white/8">{{ $t('ui.lastWeek') }}</button>
+              <button @click="setDateRange('month')" class="rounded-[0.9rem] border border-white/10 bg-white/6 px-3 py-2 text-sm text-[var(--color-text-secondary)] transition hover:bg-white/8">{{ $t('ui.lastMonth') }}</button>
+              <button @click="setDateRange('quarter')" class="rounded-[0.9rem] border border-white/10 bg-white/6 px-3 py-2 text-sm text-[var(--color-text-secondary)] transition hover:bg-white/8">{{ $t('ui.lastQuarter') }}</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap justify-end gap-3 border-t border-white/8 px-6 py-5">
+          <button
+            @click="showExportDialog = false"
+            class="rounded-[1rem] border border-white/10 bg-white/6 px-5 py-3 text-sm text-[var(--color-text-secondary)] transition hover:bg-white/8"
+          >
+            {{ $t('common.cancel') }}
+          </button>
+          <button
+            @click="exportStudentData"
+            :disabled="exporting || !canExport"
+            class="rounded-[1rem] border border-[rgba(111,151,138,0.24)] bg-[rgba(111,151,138,0.16)] px-5 py-3 text-sm text-[#d7e7e1] transition hover:bg-[rgba(111,151,138,0.22)] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {{ exporting ? $t('ui.exporting') : $t('analysis.export') }}
+          </button>
         </div>
       </div>
     </div>
@@ -499,7 +473,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import AddStudentModal from '@/components/student/AddStudentModal.vue'
@@ -513,7 +487,6 @@ import notificationService from '@/services/common/notification.js'
 
 const { t: $t } = useI18n()
 
-// 数据状态
 const students = ref([])
 const classList = ref([])
 const loading = ref(false)
@@ -523,23 +496,19 @@ const currentPage = ref(1)
 const pageSize = ref(20)
 const jumpToPage = ref(1)
 
-// 班级选择状态
 const selectedClassIds = ref([])
 const showClassDropdown = ref(false)
 
-// 模态框状态
 const showAddModal = ref(false)
 const showDetailModal = ref(false)
 const selectedStudent = ref(null)
 const showExportDialog = ref(false)
 
-// 导出相关状态
 const exportStudentIds = ref([])
 const exportStartDate = ref('')
 const exportEndDate = ref('')
 const exporting = ref(false)
 
-// 班级选择相关计算属性
 const isAllSelected = computed(() => {
   return classList.value.length > 0 && selectedClassIds.value.length === classList.value.length
 })
@@ -548,20 +517,19 @@ const isIndeterminate = computed(() => {
   return selectedClassIds.value.length > 0 && selectedClassIds.value.length < classList.value.length
 })
 
-// 数据相关计算属性
 const filteredStudents = computed(() => {
   if (!searchQuery.value.trim()) return students.value
 
   const query = searchQuery.value.toLowerCase().trim()
-  return students.value.filter(student =>
+  return students.value.filter((student) =>
     student.student_name.toLowerCase().includes(query) ||
     student.sid.toString().includes(query)
   )
 })
 
 const totalStudents = computed(() => students.value.length)
-const attendingStudents = computed(() => students.value.filter(s => s.attendance).length)
-const absentStudents = computed(() => students.value.filter(s => !s.attendance).length)
+const attendingStudents = computed(() => students.value.filter((student) => student.attendance).length)
+const absentStudents = computed(() => students.value.filter((student) => !student.attendance).length)
 
 const totalPages = computed(() => Math.ceil(filteredStudents.value.length / pageSize.value))
 
@@ -589,14 +557,13 @@ const visiblePages = computed(() => {
     start = Math.max(1, end - maxVisible + 1)
   }
 
-  for (let i = start; i <= end; i++) {
+  for (let i = start; i <= end; i += 1) {
     pages.push(i)
   }
 
   return pages
 })
 
-// 导出相关计算属性
 const todayDate = computed(() => {
   const today = new Date()
   return today.toISOString().split('T')[0]
@@ -614,78 +581,80 @@ const isStudentsIndeterminate = computed(() => {
   return exportStudentIds.value.length > 0 && exportStudentIds.value.length < filteredStudents.value.length
 })
 
-// 获取班级名称
 const getClassName = (cid) => {
-  const classItem = classList.value.find(c => c.cid === cid)
+  const classItem = classList.value.find((item) => item.cid === cid)
   return classItem ? classItem.class_name : $t('ui.unknownClass', { cid })
 }
 
-// 获取选中班级的显示文本
 const getSelectedClassesText = () => {
   if (selectedClassIds.value.length === 0) {
     return $t('ui.pleaseSelectClass')
-  } else if (selectedClassIds.value.length === 1) {
-    return getClassName(selectedClassIds.value[0])
-  } else if (selectedClassIds.value.length === classList.value.length) {
-    return $t('ui.allClasses', { count: selectedClassIds.value.length })
-  } else {
-    return $t('ui.selectedClasses', { count: selectedClassIds.value.length })
   }
+
+  if (selectedClassIds.value.length === 1) {
+    return getClassName(selectedClassIds.value[0])
+  }
+
+  if (selectedClassIds.value.length === classList.value.length) {
+    return $t('ui.allClasses', { count: selectedClassIds.value.length })
+  }
+
+  return $t('ui.selectedClasses', { count: selectedClassIds.value.length })
 }
 
-// 切换全选
 const toggleSelectAll = () => {
   if (isAllSelected.value) {
     selectedClassIds.value = []
-  } else {
-    selectedClassIds.value = classList.value.map(c => c.cid)
+    return
   }
+
+  selectedClassIds.value = classList.value.map((classItem) => classItem.cid)
 }
 
-// 确认班级选择
 const confirmClassSelection = () => {
   showClassDropdown.value = false
   fetchStudents()
 }
 
-// 获取姓名首字母
 const getNameInitial = (name) => {
   return name ? name.charAt(0).toUpperCase() : '?'
 }
 
-// 获取头像颜色
 const getAvatarColor = (name) => {
   const colors = [
-    'bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-yellow-500',
-    'bg-purple-500', 'bg-pink-500', 'bg-indigo-500', 'bg-teal-500'
+    'bg-[linear-gradient(135deg,#7f5f72,#57414d)]',
+    'bg-[linear-gradient(135deg,#5b6d8a,#445165)]',
+    'bg-[linear-gradient(135deg,#5c776d,#41584f)]',
+    'bg-[linear-gradient(135deg,#8a7756,#5f523b)]',
+    'bg-[linear-gradient(135deg,#6e668b,#4b4561)]',
+    'bg-[linear-gradient(135deg,#8b6374,#5b4450)]',
+    'bg-[linear-gradient(135deg,#61708d,#46526a)]',
+    'bg-[linear-gradient(135deg,#5b7e7e,#436060)]',
   ]
-  const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+  const hash = name.split('').reduce((accumulator, char) => accumulator + char.charCodeAt(0), 0)
   return colors[hash % colors.length]
 }
 
-// 获取班级列表
 const fetchClassList = async () => {
   try {
     classLoading.value = true
     let response = await ClassService.getAllClasses()
 
-    // 根据管理员权限过滤班级
     const allowedClasses = AuthService.getAdminClasses()
     if (allowedClasses !== null && Array.isArray(response)) {
-      response = response.filter(cls => allowedClasses.includes(cls.cid))
+      response = response.filter((classItem) => allowedClasses.includes(classItem.cid))
     }
 
     classList.value = response || []
   } catch (error) {
-    console.error($t('component.getClassListFailed') + ':', error)
-    notificationService.error(error.message || $t('component.getClassListFailed'));
+    console.error(`${$t('component.getClassListFailed')}:`, error)
+    notificationService.error(error.message || $t('component.getClassListFailed'))
     classList.value = []
   } finally {
     classLoading.value = false
   }
 }
 
-// 获取学生列表
 const fetchStudents = async () => {
   if (selectedClassIds.value.length === 0) {
     students.value = []
@@ -696,58 +665,53 @@ const fetchStudents = async () => {
     loading.value = true
     const allStudents = []
 
-    // 并行获取所有选中班级的学生
     const promises = selectedClassIds.value.map(async (cid) => {
       try {
         const response = await StudentService.getStudentListAll(cid)
         if (response && response.data) {
-          return response.data.map(student => ({
+          return response.data.map((student) => ({
             ...student,
-            cid // 添加班级ID
+            cid,
           }))
         }
         return []
       } catch (error) {
-        console.error($t('component.getStudentsForClassFailed', { className: cid }) + ':', error)
-        notificationService.warn($t('component.getStudentsForClassFailed', { className: getClassName(cid) }));
+        console.error(`${$t('component.getStudentsForClassFailed', { className: cid })}:`, error)
+        notificationService.warn($t('component.getStudentsForClassFailed', { className: getClassName(cid) }))
         return []
       }
     })
 
     const results = await Promise.all(promises)
-    results.forEach(studentList => {
+    results.forEach((studentList) => {
       allStudents.push(...studentList)
     })
 
     students.value = allStudents
   } catch (error) {
-    console.error($t('component.getStudentListFailed') + ':', error)
-    notificationService.error($t('component.getStudentListFailed'));
+    console.error(`${$t('component.getStudentListFailed')}:`, error)
+    notificationService.error($t('component.getStudentListFailed'))
     students.value = []
   } finally {
     loading.value = false
   }
 }
 
-// 切换出勤状态
 const toggleAttendance = async (student) => {
   try {
     const newAttendance = !student.attendance
     await StudentAdminService.changeAttendance(student.sid, newAttendance)
-
-    // 更新本地状态
     student.attendance = newAttendance
 
     notificationService.success(
       `${student.student_name} ${$t('component.statusChangedTo')} ${newAttendance ? $t('ui.inSchool') : $t('ui.leftSchool')}`,
     )
   } catch (error) {
-    console.error($t('component.changeAttendanceStatusFailed') + ':', error)
-    notificationService.error(error.message || $t('component.changeAttendanceStatusFailed'));
+    console.error(`${$t('component.changeAttendanceStatusFailed')}:`, error)
+    notificationService.error(error.message || $t('component.changeAttendanceStatusFailed'))
   }
 }
 
-// 删除学生
 const deleteStudent = async (student) => {
   if (!confirm($t('component.confirmDeleteStudent', { studentName: student.student_name }))) {
     return
@@ -756,60 +720,51 @@ const deleteStudent = async (student) => {
   try {
     await StudentAdminService.deleteStudent(student.sid)
 
-    // 从本地列表中移除
-    const index = students.value.findIndex(s => s.sid === student.sid)
+    const index = students.value.findIndex((item) => item.sid === student.sid)
     if (index > -1) {
       students.value.splice(index, 1)
     }
 
     notificationService.success($t('component.deleteStudentSuccess', { studentName: student.student_name }))
   } catch (error) {
-    console.error($t('component.deleteStudentFailed') + ':', error)
-    notificationService.error(error.message || $t('component.deleteStudentFailed'));
+    console.error(`${$t('component.deleteStudentFailed')}:`, error)
+    notificationService.error(error.message || $t('component.deleteStudentFailed'))
   }
 }
 
-// 显示学生详情
 const showStudentDetail = (student) => {
   selectedStudent.value = student
   showDetailModal.value = true
 }
 
-// 关闭学生详情
 const closeDetailModal = () => {
   showDetailModal.value = false
   selectedStudent.value = null
-  // 刷新学生列表以获取最新数据
   fetchStudents()
 }
 
-// 处理添加学生成功
 const handleAddStudentSuccess = () => {
   showAddModal.value = false
   fetchStudents()
 }
 
-// 清除搜索
 const clearSearch = () => {
   searchQuery.value = ''
   currentPage.value = 1
 }
 
-// 刷新数据
 const refreshData = () => {
   fetchStudents()
 }
 
-// 处理页面跳转
 const handleJumpToPage = () => {
-  const page = parseInt(jumpToPage.value)
+  const page = parseInt(jumpToPage.value, 10)
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page
   }
   jumpToPage.value = currentPage.value
 }
 
-// 导出相关方法
 const openExportDialog = () => {
   exportStudentIds.value = []
   exportStartDate.value = ''
@@ -820,15 +775,16 @@ const openExportDialog = () => {
 const toggleSelectAllStudents = () => {
   if (isAllStudentsSelected.value) {
     exportStudentIds.value = []
-  } else {
-    exportStudentIds.value = filteredStudents.value.map(s => s.sid)
+    return
   }
+
+  exportStudentIds.value = filteredStudents.value.map((student) => student.sid)
 }
 
 const setDateRange = (range) => {
   const today = new Date()
   const end = new Date(today)
-  let start = new Date(today)
+  const start = new Date(today)
 
   switch (range) {
     case 'week':
@@ -839,6 +795,8 @@ const setDateRange = (range) => {
       break
     case 'quarter':
       start.setMonth(start.getMonth() - 3)
+      break
+    default:
       break
   }
 
@@ -869,50 +827,41 @@ const exportStudentData = async () => {
 
     notificationService.success($t('component.exportSuccess'))
     showExportDialog.value = false
-  } catch (err) {
-    console.error('Export failed:', err)
-    notificationService.error(err.message || $t('component.exportFailed'))
+  } catch (error) {
+    console.error('Export failed:', error)
+    notificationService.error(error.message || $t('component.exportFailed'))
   } finally {
     exporting.value = false
   }
 }
 
-// 监听搜索变化，重置页码
 watch(searchQuery, () => {
   currentPage.value = 1
 })
 
-// 监听页面大小变化，重置页码
 watch(pageSize, () => {
   currentPage.value = 1
 })
 
-// 监听当前页码变化，更新跳转输入框
 watch(currentPage, (newPage) => {
   jumpToPage.value = newPage
 })
 
-// 监听班级选择变化
 watch(selectedClassIds, () => {
   currentPage.value = 1
 }, { deep: true })
 
-// 点击外部关闭下拉框
 const handleClickOutside = (event) => {
-  if (!event.target.closest('.relative')) {
+  if (!event.target.closest('.student-class-dropdown')) {
     showClassDropdown.value = false
   }
 }
 
-// 初始化
 onMounted(async () => {
   await fetchClassList()
-
-  // 添加全局点击事件监听
   document.addEventListener('click', handleClickOutside)
 })
 
-// 清理事件监听
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })

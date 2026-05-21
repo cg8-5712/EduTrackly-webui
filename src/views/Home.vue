@@ -4,9 +4,9 @@
     <FloatingSlogan :selected-cid="selectedCid" />
 
     <div class="flex h-full flex-col gap-3">
-      <section class="board-shell relative overflow-visible px-5 py-4 md:px-6 md:py-4">
-        <div class="mb-4 flex flex-wrap items-start justify-between gap-4">
-          <div class="space-y-2">
+      <section class="board-shell relative overflow-visible px-5 py-3 md:px-6 md:py-3.5">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div class="space-y-2.5">
             <div class="flex flex-wrap items-center gap-2">
               <Badge variant="primary">Night Study Board</Badge>
               <Badge variant="warning">{{ $t("common.today") }}</Badge>
@@ -22,7 +22,9 @@
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2 md:gap-3">
+          <div class="flex max-w-[72rem] flex-wrap items-center justify-end gap-2 md:gap-3">
+            <ClassSwitch v-model:cid="selectedCid" compact class="w-full md:w-auto" />
+
             <LanguageToggle />
             <ThemeToggle />
 
@@ -44,20 +46,15 @@
               {{ isFullscreen ? $t("common.exitFullscreen") : $t("common.fullscreen") }}
             </Button>
 
-            <div class="rounded-[1.5rem] border border-white/10 bg-white/6 px-4 py-2.5 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+            <span class="info-pill !px-3 !py-1.5">{{ selectedDateText }}</span>
+            <span class="info-pill !px-3 !py-1.5">Projection Ready</span>
+
+            <div class="rounded-[1.35rem] border border-white/10 bg-white/6 px-4 py-2 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
               <div class="text-[10px] uppercase tracking-[0.24em] text-[var(--color-text-tertiary)]">Clock</div>
-              <div class="font-display text-4xl tracking-[-0.08em] text-foreground md:text-5xl">
+              <div class="font-display text-3xl tracking-[-0.08em] text-foreground md:text-4xl">
                 {{ currentTime }}
               </div>
             </div>
-          </div>
-        </div>
-
-        <div class="flex flex-wrap items-center justify-between gap-4">
-          <ClassSwitch v-model:cid="selectedCid" />
-          <div class="flex flex-wrap gap-2">
-            <span class="info-pill">{{ selectedDateText }}</span>
-            <span class="info-pill">Projection Ready</span>
           </div>
         </div>
       </section>
@@ -100,9 +97,20 @@
       </main>
 
       <footer v-if="!isFullscreen" class="board-shell px-5 py-4 text-sm text-[var(--color-text-secondary)]">
-        <router-link to="/about" class="flex items-center justify-between gap-4 no-underline">
-          <span>EduTrackly classroom board system</span>
-          <span class="text-[var(--color-text-tertiary)]">GPL-3.0</span>
+        <router-link
+          to="/about"
+          class="flex flex-col gap-3 no-underline md:flex-row md:items-center md:justify-between"
+        >
+          <div class="space-y-1">
+            <p class="text-sm text-foreground">© 2025 EduTrackly. All rights reserved.</p>
+            <p class="text-xs text-[var(--color-text-tertiary)]">
+              Licensed under GNU General Public License v3.0
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="info-pill !px-3 !py-1.5">Classroom Board System</span>
+            <VersionInfo compact />
+          </div>
         </router-link>
       </footer>
     </div>
@@ -120,6 +128,7 @@ import ThemeToggle from "@/components/common/ThemeToggle.vue"
 import LanguageToggle from "@/components/common/LanguageToggle.vue"
 import FloatingCountdown from "@/components/common/FloatingCountdown.vue"
 import FloatingSlogan from "@/components/common/FloatingSlogan.vue"
+import VersionInfo from "@/components/VersionInfo.vue"
 import { formatYYYYMMDDToDate } from "@/utils/formatDate"
 import Button from "@/components/ui/button/Button.vue"
 import Badge from "@/components/ui/badge/Badge.vue"

@@ -1,13 +1,17 @@
 <template>
-  <div class="w-full max-w-[30rem]">
-    <div class="board-shell p-2.5">
-      <div class="mb-2 flex items-center justify-between px-3 pt-1">
+  <div :class="compact ? 'w-full max-w-[22rem]' : 'w-full max-w-[30rem]'">
+    <div class="board-shell" :class="compact ? 'p-2' : 'p-2.5'">
+      <div
+        class="flex items-center justify-between px-3"
+        :class="compact ? 'mb-1.5 pt-0.5' : 'mb-2 pt-1'"
+      >
         <span class="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[var(--color-text-tertiary)]">
           {{ $t("class.selectClass") }}
         </span>
         <button
           type="button"
-          class="info-pill !px-3 !py-1 text-[0.7rem]"
+          class="info-pill"
+          :class="compact ? '!px-2.5 !py-1 text-[0.66rem]' : '!px-3 !py-1 text-[0.7rem]'"
           @click="isSearching = !isSearching"
         >
           {{ isSearching ? $t("common.cancel") : $t("class.searchPlaceholder") }}
@@ -19,14 +23,17 @@
           v-if="isSearching"
           v-model="searchQuery"
           :placeholder="$t('class.searchPlaceholder')"
-          class="h-12"
+          :class="compact ? 'h-10' : 'h-12'"
           @blur="handleBlur"
         />
 
         <select
           v-else
           v-model="selectedCid"
-          class="flex h-12 w-full rounded-[1.35rem] border border-white/10 bg-white/6 px-4 py-3 text-sm text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm"
+          class="flex w-full border border-white/10 bg-white/6 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm"
+          :class="compact
+            ? 'h-10 rounded-[1.15rem] px-3 py-2 text-[0.92rem]'
+            : 'h-12 rounded-[1.35rem] px-4 py-3 text-sm'"
           @change="onClassChange"
         >
           <option value="" disabled>
@@ -57,6 +64,10 @@ const props = defineProps({
   cid: {
     type: [Number, String],
     default: null,
+  },
+  compact: {
+    type: Boolean,
+    default: false,
   },
 })
 
